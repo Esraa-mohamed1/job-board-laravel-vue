@@ -1,0 +1,15 @@
+{
+    "users": [
+      { "id": 1, "role": "admin", "name": "Admin User" },
+      { "id": 2, "role": "employer", "name": "Company Inc" },
+      { "id": 3, "role": "candidate", "name": "John Doe" }
+    ],
+    "jobs": [
+      { "id": 1, "title": "Frontend Developer", "employerId": 2 },
+      { "id": 2, "title": "Backend Developer", "employerId": 2 }
+    ],
+    "applications": [
+      { "id": 1, "jobId": 1, "candidateId": 3, "status": "pending" }
+    ]
+  }
+  

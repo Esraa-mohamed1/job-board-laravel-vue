@@ -1,0 +1,25 @@
+  {
+    "name": "job-board",
+    "version": "0.0.0",
+    "private": true,
+      "type": "module",
+    "scripts": {
+    "dev": "vite",
+    "start:app": "vite",
+    "start:server": "json-server --watch db.json --port 3000",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "concurrently \"npm run start:server\" \"npm run start:app\""
+  }
+,
+    "dependencies": {
+      "concurrently": "^9.1.2",
+      "vue": "^3.5.13"
+    },
+    "devDependencies": {
+      "@vitejs/plugin-vue": "^5.2.3",
+      "json-server": "^1.0.0-beta.3",
+      "vite": "^6.2.4",
+      "vite-plugin-vue-devtools": "^7.7.2"
+    }
+  }
