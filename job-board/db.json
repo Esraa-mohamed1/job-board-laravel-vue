@@ -1,0 +1,86 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "role": "admin",
+      "name": "Admin User"
+    },
+    {
+      "id": "2",
+      "role": "employer",
+      "name": "Company Inc"
+    },
+    {
+      "id": "3",
+      "role": "candidate",
+      "name": "John Doe"
+    }
+  ],
+  "employers": [
+    {
+      "id": "2",
+      "companyInfo": {
+        "logo": "",
+        "banner": "",
+        "name": "aa",
+        "about": "aa"
+      },
+      "foundingInfo": {
+        "organizationType": "corporation",
+        "establishmentYear": "12/12/2023",
+        "companyVision": "ss",
+        "industryType": "finance",
+        "teamSize": "1-10",
+        "companyWebsite": "https://github.com/aliaa11"
+      },
+      "socialMedia": {
+        "socialLinks": [
+          {
+            "platform": "facebook",
+            "url": "z"
+          },
+          {
+            "platform": "twitter",
+            "url": "z"
+          },
+          {
+            "platform": "instagram",
+            "url": "z"
+          }
+        ]
+      },
+      "contactInfo": {
+        "contactInfo": {
+          "phone": "+20z",
+          "email": "aliaaalihesh@gmail.com",
+          "address": {
+            "street": "z",
+            "city": "Minya",
+            "country": "Egypt"
+          }
+        },
+        "isComplete": true
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "id": "1",
+      "title": "Frontend Developer",
+      "employerId": 2
+    },
+    {
+      "id": "2",
+      "title": "Backend Developer",
+      "employerId": 2
+    }
+  ],
+  "applications": [
+    {
+      "id": "1",
+      "jobId": 1,
+      "candidateId": 3,
+      "status": "pending"
+    }
+  ]
+}
