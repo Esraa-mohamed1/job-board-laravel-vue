@@ -129,7 +129,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -145,7 +144,7 @@ const form = ref({
   email: '',
   password: '',
   confirmPassword: '',
-  role: 'candidate', // default to candidate
+  role: 'candidate',
   companyName: '',
   profilePhoto: null,
   agreeTerms: false
@@ -192,17 +191,17 @@ const handleFileUpload = (event) => {
 const handleRegister = async () => {
   if (!isFormValid.value) return
   
-  loading.value = true
-  
   try {
-    // Register user
+    loading.value = true
+    
+    // 1. Register user
     const user = await authStore.register({
       email: form.value.email,
-      password: form.value.password,
+      password: form.value.password, 
       role: form.value.role
     })
     
-    // Create user profile
+    // 2. Create profile
     await userStore.createProfile({
       userId: user.uid,
       fullName: form.value.fullName,
@@ -212,32 +211,27 @@ const handleRegister = async () => {
       ...(form.value.role === 'employer' && { companyName: form.value.companyName })
     })
     
-    // Redirect based on role
-    if (form.value.role === 'employer') {
-      router.push('/employer/setup')
-    } else {
-      router.push('/dashboard')
-    }
+    // 3. Redirect
+    router.push(form.value.role === 'employer' ? '/employer' : '/dashboard')
+    
   } catch (error) {
-    alert(error.message)
+    alert(error || 'Registration failed')
   } finally {
     loading.value = false
   }
 }
-
 const signInWithGoogle = async () => {
   try {
     loading.value = true
     await authStore.signInWithGoogle()
-    router.push('/dashboard')
+    await router.push('/dashboard')
   } catch (error) {
-    alert(error.message)
+    alert(error.message || 'Google sign-in failed')
   } finally {
     loading.value = false
   }
 }
 </script>
-
 <style scoped>
 .register-container {
   display: flex;
