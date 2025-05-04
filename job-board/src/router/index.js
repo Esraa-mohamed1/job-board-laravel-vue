@@ -1,8 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import EmployerLayout from '../layouts/EmployerLayout.vue'
+<<<<<<< HEAD
+=======
+// import Home from '../views/home.vue'
+import EmployerProfile from '../views/employer/EmployerProfile.vue'
+import CandidateRegister from '../views/candidate/register.vue'
+import CandidateDashboard from '../views/candidate/dashboard.vue'
+>>>>>>> origin/main
 
 const routes = [
   {
+<<<<<<< HEAD
     path: '/register',
     name: 'register',
     component: () => import('@/components/employer/Auth/Register.vue')
@@ -32,6 +40,22 @@ const routes = [
   //   ]
   // }
     ]    }
+=======
+    path: '/employer',
+    component: EmployerLayout,
+    children: [
+      { path: 'profile', component: EmployerProfile }
+    ]
+  },
+  {
+    path: '/',
+    component: CandidateRegister
+  },
+  {
+    path: '/candidate/dashboard',
+    component: CandidateDashboard
+  }
+>>>>>>> origin/main
 ]
 
 const router = createRouter({
