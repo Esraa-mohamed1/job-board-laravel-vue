@@ -1,29 +1,41 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// import DefaultLayout from '../layouts/DefaultLayout.vue'
 import EmployerLayout from '../layouts/EmployerLayout.vue'
-// import Home from '../views/home.vue'
-import EmployerProfile from '../views/employer/EmployerProfile.vue'
-
 
 const routes = [
-  // {
-  //   path: '/',
-  //   component: DefaultLayout,
-  //   children: [
-  //     { path: '', component: Home }
-  //   ]
-  // },
   {
-    path: '/employer',
-    component: EmployerLayout,
-    children: [
-      { path: 'profile', component: EmployerProfile }
-    ]
-  }
+    path: '/register',
+    name: 'register',
+    component: () => import('@/components/employer/Auth/Register.vue')
+  },
+  {
+    path: '/reset-password',
+    name: 'reset-password', 
+    component: () => import('@/components/employer/Auth/ResetPassword.vue')
+  },
+
+
+{
+  path: '/employer',
+  component: EmployerLayout,
+  children: [
+    { 
+      path: 'profile', 
+      name: 'employer-profile',
+      component: () => import('@/views/employer/EmployerProfile.vue'),
+      meta: { requiresAuth: true } }
+  //   },      {
+  //       path: 'dashboard',
+  //       name: 'employer-dashboard',
+  //       component: () => import('@/components/employer/Dashboard/EmployerOverview.vue'),
+  //       meta: { requiresAuth: true, role: 'employer' }
+  //     }
+  //   ]
+  // }
+    ]    }
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes
 })
 
