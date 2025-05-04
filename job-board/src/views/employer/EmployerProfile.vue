@@ -2,7 +2,7 @@
     <div class="employer-onboarding-container">
       <h1>Employer Profile Setup</h1>
   
-      <MultiStepForm 
+           <MultiStepForm 
         :employer-id="employerId"
         @complete="handleProfileComplete"
       />
