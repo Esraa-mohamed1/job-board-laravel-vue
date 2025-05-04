@@ -1,60 +1,46 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import axios from 'axios'
 import { useRouter } from 'vue-router'
 
 export const useAuthStore = defineStore('auth', () => {
-  const router = useRouter()
   const user = ref(null)
-  
-  // Mock API calls
-  const api = {
-    register: async (data) => {
-      // In a real app, this would be an actual API call
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          const newUser = {
-            id: Date.now().toString(),
-            email: data.email,
-            role: data.role,
-            name: data.role === 'employer' ? 'New Employer' : 'New Candidate'
-          }
-          resolve(newUser)
-        }, 500)
+  const loading = ref(false)
+  const error = ref(null)
+  const router = useRouter()
+  const API_BASE = 'http://localhost:3000'
+
+  const register = async ({ email, password, role }) => {
+    try {
+      loading.value = true
+      
+      // Generate a simple ID (in production, use a proper ID generator)
+      const userId = Date.now().toString()
+      
+      // Create user in JSON Server
+      const response = await axios.post(`${API_BASE}/users`, {
+        id: userId,
+        email,
+        password, // Note: In production, hash this password!
+        role,
+        createdAt: new Date().toISOString()
       })
-    },
-    
-    resetPassword: async (data) => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(true)
-        }, 500)
-      })
+      
+      // Set the user data
+      user.value = {
+        uid: userId,
+        email,
+        role
+      }
+      
+      return user.value
+    } catch (err) {
+      error.value = err.response?.data?.message || err.message
+      throw error.value
+    } finally {
+      loading.value = false
     }
   }
-  
-  const register = async (formData) => {
-    const userData = await api.register(formData)
-    user.value = userData
-    localStorage.setItem('user', JSON.stringify(userData))
-  }
-  
-  const resetPassword = async (formData) => {
-    await api.resetPassword(formData)
-  }
-  
-  const logout = () => {
-    user.value = null
-    localStorage.removeItem('user')
-    router.push('/login')
-  }
-  
-  // Check if user is logged in on app load
-  const loadUser = () => {
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      user.value = JSON.parse(storedUser)
-    }
-  }
-  
-  return { user, register, resetPassword, logout, loadUser }
+
+  return { user, loading, error, register }
 })
