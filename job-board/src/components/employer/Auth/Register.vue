@@ -1,8 +1,31 @@
 <template>
   <div class="register-container">
     <div class="register-card">
+      <div class="logo">
+        <img src="@/assets/logo.svg" alt="MyJob Logo" width="24" />
+        <span>MyJob</span>
+      </div>
+      
       <h1>Create account</h1>
       <p class="login-prompt">Already have account? <router-link to="/login">Log In</router-link></p>
+      
+      <!-- Profile Photo Upload -->
+      <div class="profile-upload">
+        <div class="upload-preview" @click="triggerFileInput">
+          <img v-if="form.profilePhoto" :src="form.profilePhoto" alt="Profile Preview" class="preview-image" />
+          <div v-else class="upload-placeholder">
+            <i class="fas fa-user-circle upload-icon"></i>
+            <span>Upload Photo</span>
+          </div>
+        </div>
+        <input 
+          type="file" 
+          ref="fileInput" 
+          accept="image/*" 
+          @change="handleFileUpload" 
+          class="file-input"
+        >
+      </div>
       
       <form @submit.prevent="handleRegister">
         <div class="form-group">
@@ -15,114 +38,232 @@
           <input v-model="form.email" type="email" placeholder="Enter your email" required>
         </div>
         
-        <div class="form-group">
+        <div class="form-group password-group">
           <label>Password</label>
-          <input v-model="form.password" type="password" placeholder="Create password" required>
+          <input v-model="form.password" :type="showPassword ? 'text' : 'password'" placeholder="Create password" required>
+          <button type="button" class="toggle-password" @click="showPassword = !showPassword">
+            <i class="fas" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </button>
         </div>
         
-        <div class="form-group">
+        <div class="form-group password-group">
           <label>Confirm Password</label>
-          <input v-model="form.confirmPassword" type="password" placeholder="Confirm password" required>
+          <input v-model="form.confirmPassword" :type="showConfirmPassword ? 'text' : 'password'" placeholder="Confirm password" required>
+          <button type="button" class="toggle-password" @click="showConfirmPassword = !showConfirmPassword">
+            <i class="fas" :class="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </button>
         </div>
 
         <div class="form-group">
           <label>Register as</label>
-          <select v-model="form.role" class="role-select" required>
-            <option value="" disabled selected>Select your role</option>
-            <option value="user">User</option>
-            <option value="candidate">Candidate</option>
-            <option value="employer">Employer</option>
-          </select>
+          <div class="role-selector">
+            <button 
+              type="button" 
+              class="role-btn" 
+              :class="{ 'active': form.role === 'candidate' }"
+              @click="form.role = 'candidate'"
+            >
+              <i class="fas fa-user-tie"></i>
+              Candidate
+            </button>
+            <button 
+              type="button" 
+              class="role-btn" 
+              :class="{ 'active': form.role === 'employer' }"
+              @click="form.role = 'employer'"
+            >
+              <i class="fas fa-building"></i>
+              Employer
+            </button>
+          </div>
+        </div>
+        
+        <!-- Conditional fields for employer -->
+        <div v-if="form.role === 'employer'" class="form-group">
+          <label>Company Name</label>
+          <input v-model="form.companyName" type="text" placeholder="Enter company name" required>
         </div>
         
         <div class="terms-agreement">
           <input type="checkbox" id="terms" v-model="form.agreeTerms" required>
-          <label for="terms">I've read and agree with your Terms of Services</label>
+          <label for="terms">I've read and agree with your <router-link to="/terms">Terms of Services</router-link></label>
         </div>
         
-        <button type="submit" class="btn-register">Create Account</button>
+        <button type="submit" class="btn-register" :disabled="!isFormValid || loading">
+          <span v-if="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          {{ loading ? 'Processing...' : 'Create Account' }}
+        </button>
         
         <div class="divider">or</div>
         
-        <button type="button" class="btn-google" @click="signInWithGoogle">
+        <button type="button" class="btn-google" @click="signInWithGoogle" :disabled="loading">
           <img src="@/assets/google-icon.svg" alt="Google">
           Sign up with Google
         </button>
       </form>
     </div>
+    
+    <div class="register-banner">
+      <div class="banner-content">
+        <h2>Find your perfect job or candidate</h2>
+        <p>Join thousands of employers and candidates who found their perfect match</p>
+        
+        <div class="stats-container">
+          <div class="stat-item">
+            <i class="fas fa-briefcase stat-icon"></i>
+            <div class="stat-number">10,000+</div>
+            <div class="stat-label">Live Jobs</div>
+          </div>
+          <div class="stat-item">
+            <i class="fas fa-building stat-icon"></i>
+            <div class="stat-number">5,000+</div>
+            <div class="stat-label">Companies</div>
+          </div>
+          <div class="stat-item">
+            <i class="fas fa-users stat-icon"></i>
+            <div class="stat-number">50,000+</div>
+            <div class="stat-label">Candidates</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
-
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/employer/auth'
+import { useUserStore } from '@/stores/employer/user'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const userStore = useUserStore()
 
 const form = ref({
   fullName: '',
   email: '',
   password: '',
   confirmPassword: '',
-  role: '',
+  role: 'candidate',
+  companyName: '',
+  profilePhoto: null,
   agreeTerms: false
 })
 
-const handleRegister = async () => {
-  if (form.value.password !== form.value.confirmPassword) {
-    alert("Passwords don't match")
-    return
-  }
-  
-  if (!form.value.agreeTerms) {
-    alert("You must agree to the Terms of Services")
-    return
-  }
+const fileInput = ref(null)
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
+const loading = ref(false)
 
-  if (!form.value.role) {
-    alert("Please select your role")
-    return
+const isFormValid = computed(() => {
+  const basicValidation = form.value.fullName && 
+                        form.value.email && 
+                        form.value.password && 
+                        form.value.password === form.value.confirmPassword && 
+                        form.value.agreeTerms
+  
+  if (form.value.role === 'employer') {
+    return basicValidation && form.value.companyName
   }
+  return basicValidation
+})
+
+const triggerFileInput = () => {
+  fileInput.value.click()
+}
+
+const handleFileUpload = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    if (file.size > 2 * 1024 * 1024) {
+      alert('File size exceeds 2MB limit')
+      return
+    }
+    
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      form.value.profilePhoto = e.target.result
+    }
+    reader.readAsDataURL(file)
+  }
+}
+
+const handleRegister = async () => {
+  if (!isFormValid.value) return
   
   try {
-    await authStore.register(form.value)
-    // Redirect based on role
-    if (form.value.role === 'employer') {
-      router.push('/employer/setup')
-    } else {
-      router.push('/dashboard')
-    }
+    loading.value = true
+    
+    // 1. Register user
+    const user = await authStore.register({
+      email: form.value.email,
+      password: form.value.password, 
+      role: form.value.role
+    })
+    
+    // 2. Create profile
+    await userStore.createProfile({
+      userId: user.uid,
+      fullName: form.value.fullName,
+      email: form.value.email,
+      role: form.value.role,
+      profilePhoto: form.value.profilePhoto,
+      ...(form.value.role === 'employer' && { companyName: form.value.companyName })
+    })
+    
+    // 3. Redirect
+    router.push(form.value.role === 'employer' ? '/employer' : '/dashboard')
+    
   } catch (error) {
-    alert(error.message)
+    alert(error || 'Registration failed')
+  } finally {
+    loading.value = false
   }
 }
-
-const signInWithGoogle = () => {
-  // Implement Google OAuth logic here
-  console.log("Signing up with Google")
-  // authStore.signInWithGoogle()
+const signInWithGoogle = async () => {
+  try {
+    loading.value = true
+    await authStore.signInWithGoogle()
+    await router.push('/dashboard')
+  } catch (error) {
+    alert(error.message || 'Google sign-in failed')
+  } finally {
+    loading.value = false
+  }
 }
 </script>
-
 <style scoped>
 .register-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #f8f9fa;
-  padding: 2rem;
+  height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .register-card {
-  background: white;
-  padding: 2.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  width: 100%;
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
   max-width: 450px;
+  margin: 0 auto;
+  overflow-y: auto;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  justify-content: center;
+}
+
+.logo img {
+  margin-right: 0.5rem;
+}
+
+.logo span {
+  font-weight: bold;
+  color: #0A65CC;
+  font-size: 1.2rem;
 }
 
 h1 {
@@ -145,6 +286,52 @@ h1 {
   font-weight: 500;
 }
 
+.profile-upload {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.upload-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px dashed #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+
+.upload-preview:hover {
+  border-color: #0A65CC;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #666;
+}
+
+.upload-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.file-input {
+  display: none;
+}
+
 .form-group {
   margin-bottom: 1.25rem;
 }
@@ -154,10 +341,10 @@ h1 {
   margin-bottom: 0.5rem;
   font-weight: 500;
   color: #333;
+  font-size: 0.9rem;
 }
 
-.form-group input,
-.form-group select {
+.form-group input {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #ddd;
@@ -165,24 +352,66 @@ h1 {
   font-size: 1rem;
 }
 
-.role-select {
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 16px;
-}
-
-.form-group input:focus,
-.form-group select:focus {
+.form-group input:focus {
   border-color: #0A65CC;
   outline: none;
+  box-shadow: 0 0 0 2px rgba(10, 101, 204, 0.1);
+}
+
+.password-group {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+}
+
+.role-selector {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.role-btn {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.role-btn i {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #666;
+}
+
+.role-btn.active {
+  border-color: #0A65CC;
+  background-color: rgba(10, 101, 204, 0.05);
+}
+
+.role-btn.active i {
+  color: #0A65CC;
 }
 
 .terms-agreement {
   display: flex;
   align-items: center;
   margin: 1.5rem 0;
+  font-size: 0.9rem;
 }
 
 .terms-agreement input {
@@ -190,8 +419,12 @@ h1 {
 }
 
 .terms-agreement label {
-  font-size: 0.9rem;
   color: #666;
+}
+
+.terms-agreement a {
+  color: #0A65CC;
+  text-decoration: none;
 }
 
 .btn-register {
@@ -207,8 +440,13 @@ h1 {
   transition: background 0.2s;
 }
 
-.btn-register:hover {
+.btn-register:hover:not(:disabled) {
   background: #084b99;
+}
+
+.btn-register:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
 
 .divider {
@@ -249,13 +487,85 @@ h1 {
   transition: all 0.2s;
 }
 
-.btn-google:hover {
+.btn-google:hover:not(:disabled) {
   border-color: #ccc;
   background: #f9f9f9;
+}
+
+.btn-google:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .btn-google img {
   width: 18px;
   height: 18px;
+}
+
+.register-banner {
+  flex: 1;
+  background: linear-gradient(rgba(0, 20, 40, 0.8), rgba(0, 20, 40, 0.8)), 
+              url('@/assets/auth-banner.jpg') center/cover;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.banner-content {
+  max-width: 500px;
+  text-align: center;
+}
+
+.banner-content h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.banner-content p {
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.stats-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.stat-item {
+  text-align: center;
+  flex: 1;
+}
+
+.stat-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-number {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .register-container {
+    flex-direction: column;
+  }
+  
+  .register-banner {
+    display: none;
+  }
+  
+  .role-selector {
+    flex-direction: column;
+  }
 }
 </style>

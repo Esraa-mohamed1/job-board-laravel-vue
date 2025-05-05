@@ -1,60 +1,43 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import axios from 'axios'
 
 export const useAuthStore = defineStore('auth', () => {
-  const router = useRouter()
+  const API_URL = 'http://localhost:3000'
   const user = ref(null)
-  
-  // Mock API calls
-  const api = {
-    register: async (data) => {
-      // In a real app, this would be an actual API call
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          const newUser = {
-            id: Date.now().toString(),
-            email: data.email,
-            role: data.role,
-            name: data.role === 'employer' ? 'New Employer' : 'New Candidate'
-          }
-          resolve(newUser)
-        }, 500)
+  const error = ref(null)
+  const loading = ref(false)
+
+  const register = async ({ email, password, role }) => {
+    try {
+      loading.value = true
+      
+      // Create user ID
+      const userId = Date.now().toString()
+      
+      // 1. Create user record
+      await axios.post(`${API_URL}/users`, {
+        id: userId,
+        email,
+        password,
+        role,
+        createdAt: new Date().toISOString()
       })
-    },
-    
-    resetPassword: async (data) => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(true)
-        }, 500)
-      })
+      
+      // Return minimal user data
+      return { 
+        uid: userId,
+        email,
+        role
+      }
+      
+    } catch (err) {
+      error.value = err.response?.data || 'Registration failed'
+      throw error.value
+    } finally {
+      loading.value = false
     }
   }
-  
-  const register = async (formData) => {
-    const userData = await api.register(formData)
-    user.value = userData
-    localStorage.setItem('user', JSON.stringify(userData))
-  }
-  
-  const resetPassword = async (formData) => {
-    await api.resetPassword(formData)
-  }
-  
-  const logout = () => {
-    user.value = null
-    localStorage.removeItem('user')
-    router.push('/login')
-  }
-  
-  // Check if user is logged in on app load
-  const loadUser = () => {
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      user.value = JSON.parse(storedUser)
-    }
-  }
-  
-  return { user, register, resetPassword, logout, loadUser }
+
+  return { user, error, loading, register }
 })
