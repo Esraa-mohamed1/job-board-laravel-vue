@@ -8,17 +8,17 @@
           <span>MyJob</span>
         </div>
         
-        <h1> Sign in</h1>
+        <h1 class="signin-title">Sign in</h1>
         <p class="login-link">Don’t have account? <a href="/register"> Create Account</a></p>  
-        <form @submit.prevent="handleRegister">
+        <form @submit.prevent="handleLogin">
               <div class="form-group">
             <label>Email address</label>
-            <input v-model="form.email" type="email" placeholder="Enter your email" required>
+            <input v-model="form.email" type="email" placeholder="Enter your email" >
           </div>
           
           <div class="form-group password-group">
             <label>Password</label>
-            <input v-model="form.password" :type="showPassword ? 'text' : 'password'" placeholder="Create password" required>
+            <input v-model="form.password" :type="showPassword ? 'text' : 'password'" placeholder="Create password" >
             <button type="button" class="toggle-password d-flex" @click="showPassword = !showPassword">
               <i class="fas pb" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
             </button>
@@ -76,41 +76,90 @@
     </div>
 </div>
 
+
   </template>
   <script setup>
-  import { ref, computed } from 'vue'
-  import { useRouter } from 'vue-router'
-  import { useAuthStore } from '@/stores/employer/auth'
-  import { useUserStore } from '@/stores/employer/user'
-  
-  const router = useRouter()
-  const authStore = useAuthStore()
-  const userStore = useUserStore()
-  
-  const form = ref({
-    email: '',
-    password: '',
-  
-  })
-  
-  const showPassword = ref(false)
-  const loading = ref(false)
-  
-  const isFormValid = computed(() => {
-    const basicValidation = 
-                          form.value.email && 
-                          form.value.password 
-                         
-    return basicValidation
-  })
-  
 
-  const handleRegister = async () => {
-   
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import Swal from 'sweetalert2'
+
+
+const router = useRouter()
+const showPassword = ref(false)
+const loading = ref(false)
+const error = ref('')
+
+const form = ref({
+  email: '',
+  password: ''
+})
+
+
+const handleLogin = async () => {
+  try {
+    loading.value = true
+    error.value = ''
+    const emailResponse = await fetch('http://localhost:3000/users?email=' + form.value.email)
+    const users = await emailResponse.json()
+    if (users.length === 0) {
+      throw new Error('User not found')
+    }
+    
+    const user = users[0]
+
+    if (user.password !== form.value.password) {
+      throw new Error('Incorrect password')
+    }
+    
+    const token = 'mock-jwt-token-' + Math.random().toString(36).substring(2)
+    
+    localStorage.setItem('authToken', token)
+    localStorage.setItem('userRole', user.role)
+    localStorage.setItem('userData', JSON.stringify(user)) // Store the entire user object
+
+    showWelcomeAlert(user.role)
+
+    if (user.role === 'employer') {
+      router.push('/employer/profile')
+    } else if (user.role === 'candidate') {
       router.push('/candidate/dashboard')
-      
- 
+    }
+    
+  } catch (err) {
+    showErrorAlert(err.message || 'Login failed. Please check your credentials.')
+    error.value = err.message || 'Login failed'
+    console.error('Login error:', err)
+  } finally {
+    loading.value = false
   }
+}
+const showWelcomeAlert = (role) => {
+  const title = role === 'employer' ? 'Welcome Employer!' : 'Welcome Candidate!'
+  const message = role === 'employer' 
+    ? 'You now have access to employer dashboard features.' 
+    : 'Start browsing jobs that match your skills.'
+  
+  Swal.fire({
+    icon: 'success',
+    title: title,
+    text: message,
+    timer: 3000,
+    showConfirmButton: false,
+    toast: true,
+    position: 'top-end'
+  })
+}
+
+const showErrorAlert = (message) => {
+  Swal.fire({
+    icon: 'error',
+    title: 'Login Error',
+    text: message,
+    timer: 3000
+  })}
+
+
   const signInWithGoogle = async () => {
     try {
       loading.value = true
@@ -124,12 +173,19 @@
   }
   </script>
   <style scoped>
-  .register-container {
-    display: flex;
-    height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-  
+      .signin-title {
+      font-weight: 600;
+      align-self: start;
+      margin-bottom: 1rem;
+      color: #333;
+        }
+
+      .register-container {
+      display: flex;
+      height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
   .register-card {
     flex: 1;
     padding: 2rem;
