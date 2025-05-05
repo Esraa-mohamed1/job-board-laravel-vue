@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import EmployerLayout from '../layouts/EmployerLayout.vue'
-// import Home from '../views/home.vue'
+
 import EmployerProfile from '../views/employer/EmployerProfile.vue'
 import CandidateDashboard from '../views/candidate/dashboard.vue'
+import CandidateProfile from '../views/candidate/profile.vue'
 import Login from '../views/auth/login.vue'
 
 const routes = [
@@ -30,7 +31,7 @@ const routes = [
 ]},
   {
     path: '/',
-    component: Login
+    component: CandidateDashboard
   },
   {
     path: '/login',
@@ -39,6 +40,10 @@ const routes = [
   {
     path: '/candidate/dashboard',
     component: CandidateDashboard
+  },
+  {
+    path: '/candidate/profile',
+    component: CandidateProfile
   },
 ] 
 
