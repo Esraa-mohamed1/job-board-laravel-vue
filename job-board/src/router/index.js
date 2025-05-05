@@ -2,8 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import EmployerLayout from '../layouts/EmployerLayout.vue'
 // import Home from '../views/home.vue'
 import EmployerProfile from '../views/employer/EmployerProfile.vue'
-import CandidateRegister from '../views/candidate/register.vue'
 import CandidateDashboard from '../views/candidate/dashboard.vue'
+import Login from '../views/auth/login.vue'
 
 const routes = [
   {
@@ -27,24 +27,19 @@ const routes = [
       name: 'employer-profile',
       component: () => import('@/views/employer/EmployerProfile.vue'),
       meta: { requiresAuth: true } },
-  //   },      {
-  //       path: 'dashboard',
-  //       name: 'employer-dashboard',
-  //       component: () => import('@/components/employer/Dashboard/EmployerOverview.vue'),
-  //       meta: { requiresAuth: true, role: 'employer' }
-  //     }
-  //   ]
-  // }
-    
 ]},
   {
     path: '/',
-    component: CandidateRegister
+    component: Login
+  },
+  {
+    path: '/login',
+    component: Login
   },
   {
     path: '/candidate/dashboard',
     component: CandidateDashboard
-  }
+  },
 ] 
 
 const router = createRouter({
