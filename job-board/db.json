@@ -1,14 +1,16 @@
 {
   "users": [
     {
-      "id": "1",
-      "role": "admin",
-      "name": "Admin User"
+      "id": 1,
+      "email": "test@example.com",
+      "password": "oldpassword",
+      "resetToken": "reset-123456789"
     },
     {
       "id": "2",
       "role": "employer",
-      "name": "Company Inc"
+      "name": "Company Inc",
+      "resetToken": "reset-1746489223016"
     },
     {
       "id": "3",

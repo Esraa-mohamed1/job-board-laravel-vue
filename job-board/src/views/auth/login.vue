@@ -44,7 +44,9 @@
         </form>
       </div>
     </div>
-   
+          <div><p class="forgot-password-link">
+    <router-link to="/forgot-password">Forgot your password?</router-link>
+  </p></div>
     <div class="col-6">
       <div class="register-banner">
         <div class="banner-content">

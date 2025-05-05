@@ -54,6 +54,10 @@
           </button>
         </div>
 
+
+
+
+
         <div class="form-group">
           <label>Register as</label>
           <div class="role-selector">
@@ -88,6 +92,9 @@
           <input type="checkbox" id="terms" v-model="form.agreeTerms" required>
           <label for="terms">I've read and agree with your <router-link to="/terms">Terms of Services</router-link></label>
         </div>
+
+
+ 
         
         <button type="submit" class="btn-register" :disabled="!isFormValid || loading">
           <span v-if="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -103,6 +110,8 @@
       </form>
     </div>
     
+
+
     <div class="register-banner">
       <div class="banner-content">
         <h2>Find your perfect job or candidate</h2>
@@ -232,6 +241,7 @@ const signInWithGoogle = async () => {
   }
 }
 </script>
+
 <style scoped>
 .register-container {
   display: flex;
