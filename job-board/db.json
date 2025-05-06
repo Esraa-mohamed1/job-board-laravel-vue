@@ -63,15 +63,17 @@
     {
       "id": "1746395158394",
       "email": "esraa1@gmail.com",
+      "email": "employer@example.com",
       "password": "123456",
       "role": "employer",
-      "createdAt": "2025-05-04T21:45:58.394Z"
+      "name": "John Employer"
     },
     {
-      "id": "1746395176453",
-      "email": "esraa1@gmail.com",
+      "id": 2,
+      "email": "candidate@example.com",
       "password": "123456",
       "role": "candidate",
+<<<<<<< HEAD
       "createdAt": "2025-05-04T21:46:16.453Z"
     },
     {
@@ -321,6 +323,12 @@
     }
   ],
   "jobs": [
+=======
+      "name": "Alice Candidate"
+    }
+  ],
+"jobs": [
+>>>>>>> main
     {
       "id": "1",
       "title": "Frontend Developer",

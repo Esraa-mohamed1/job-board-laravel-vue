@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import EmployerLayout from '../layouts/EmployerLayout.vue'
+
 import EmployerProfile from '../views/employer/EmployerProfile.vue'
 import CandidateDashboard from '../views/candidate/dashboard.vue'
+import CandidateProfile from '../views/candidate/profile.vue'
 import Login from '../views/auth/login.vue'
 
 
@@ -33,7 +35,7 @@ const routes = [
   },
   {
     path: '/',
-    component: Login
+    component: CandidateDashboard
   },
   {
     path: '/login',
@@ -48,6 +50,11 @@ const routes = [
     path: '/forgot-password',
     name: 'forgot-password',
     component: () => import('@/views/employer/Auth/ForgotPassword.vue'), // fixed casing
+  },
+
+  {
+    path: '/candidate/profile',
+    component: CandidateProfile
   },
  
 ]
