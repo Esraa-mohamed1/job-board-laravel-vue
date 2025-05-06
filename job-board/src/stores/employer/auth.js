@@ -16,37 +16,42 @@ export const useAuthStore = defineStore('auth', () => {
 
 
 
+
   const register = async ({ email, password, role }) => {
     try {
       loading.value = true
+      error.value = null
       
-      // Create user ID
+      // Generate unique ID
       const userId = Date.now().toString()
       
-      // 1. Create user record
-      await axios.post(`${API_URL}/users`, {
+      // Create user record
+      const response = await axios.post(`${API_URL}/users`, {
         id: userId,
         email,
-        password,
+        password, // Note: In production, hash this password!
         role,
         createdAt: new Date().toISOString()
       })
       
-      // Return minimal user data
-      return { 
+      // Set the current user
+      user.value = {
         uid: userId,
         email,
         role
       }
       
+      return user.value
+      
     } catch (err) {
-      error.value = err.response?.data || 'Registration failed'
+      error.value = err.response?.data?.message || 
+                   err.message || 
+                   'Registration failed. Please try again.'
       throw error.value
     } finally {
       loading.value = false
     }
   }
-
 
 
 
@@ -140,3 +145,18 @@ export const useAuthStore = defineStore('auth', () => {
     resetPassword
   }
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
