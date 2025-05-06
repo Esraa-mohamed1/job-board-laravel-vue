@@ -73,7 +73,6 @@
       "email": "candidate@example.com",
       "password": "123456",
       "role": "candidate",
-<<<<<<< HEAD
       "createdAt": "2025-05-04T21:46:16.453Z"
     },
     {
@@ -322,24 +321,18 @@
       "createdAt": "2025-05-06T00:50:23.193Z"
     }
   ],
+ 
+
+
   "jobs": [
-=======
-      "name": "Alice Candidate"
+    {
+      
+     
+      "name": "Alice"
     }
   ],
-"jobs": [
->>>>>>> main
-    {
-      "id": "1",
-      "title": "Frontend Developer",
-      "employerId": 2
-    },
-    {
-      "id": "2",
-      "title": "Backend Developer",
-      "employerId": 2
-    }
-  ],
+
+
   "applications": [
     {
       "id": "1",
@@ -348,4 +341,19 @@
       "status": "pending"
     }
   ]
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
