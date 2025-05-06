@@ -54,6 +54,10 @@
           </button>
         </div>
 
+
+
+
+
         <div class="form-group">
           <label>Register as</label>
           <div class="role-selector">
@@ -88,6 +92,9 @@
           <input type="checkbox" id="terms" v-model="form.agreeTerms" required>
           <label for="terms">I've read and agree with your <router-link to="/terms">Terms of Services</router-link></label>
         </div>
+
+
+ 
         
         <button type="submit" class="btn-register" :disabled="!isFormValid || loading">
           <span v-if="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -103,6 +110,8 @@
       </form>
     </div>
     
+
+
     <div class="register-banner">
       <div class="banner-content">
         <h2>Find your perfect job or candidate</h2>
@@ -187,35 +196,47 @@ const handleFileUpload = (event) => {
     reader.readAsDataURL(file)
   }
 }
-
 const handleRegister = async () => {
-  if (!isFormValid.value) return
-  
+  if (!isFormValid.value) {
+    alert('Please fill all required fields correctly')
+    return
+  }
+
   try {
     loading.value = true
     
     // 1. Register user
     const user = await authStore.register({
       email: form.value.email,
-      password: form.value.password, 
+      password: form.value.password,
       role: form.value.role
     })
     
-    // 2. Create profile
-    await userStore.createProfile({
+    // 2. Prepare profile data
+    const profileData = {
       userId: user.uid,
       fullName: form.value.fullName,
       email: form.value.email,
       role: form.value.role,
-      profilePhoto: form.value.profilePhoto,
-      ...(form.value.role === 'employer' && { companyName: form.value.companyName })
-    })
+      ...(form.value.profilePhoto && { profilePhoto: form.value.profilePhoto }),
+      ...(form.value.role === 'employer' && { 
+        companyName: form.value.companyName 
+      })
+    }
     
-    // 3. Redirect
-    router.push(form.value.role === 'employer' ? '/employer' : '/dashboard')
+    // 3. Create profile
+    await userStore.createProfile(profileData)
+    
+    // 4. Redirect based on role
+    const redirectPath = form.value.role === 'employer' 
+      ? '/employer-dashboard' 
+      : '/candidate-dashboard'
+    
+    router.push(redirectPath)
     
   } catch (error) {
-    alert(error || 'Registration failed')
+    console.error('Registration error:', error)
+    alert(authStore.error || userStore.error || 'Registration failed. Please try again.')
   } finally {
     loading.value = false
   }

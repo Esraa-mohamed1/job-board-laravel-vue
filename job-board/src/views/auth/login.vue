@@ -23,8 +23,9 @@
               <i class="fas pb" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
             </button>
           </div>
-          <p class="login-link"><a href="/reset-password">Forget password</a></p>  
-
+<div><p class="forgot-password-link">
+    <router-link to="/forgot-password">Forgot your password?</router-link>
+  </p></div>
           <button type="submit" class="btn-register">
             <span v-if="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             {{ loading ? 'Processing...' : 'Sign in' }}
@@ -44,7 +45,7 @@
         </form>
       </div>
     </div>
-   
+          
     <div class="col-6">
       <div class="register-banner">
         <div class="banner-content">
