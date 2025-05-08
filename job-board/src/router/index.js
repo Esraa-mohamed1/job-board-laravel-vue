@@ -5,9 +5,16 @@ import EmployerProfile from '../views/employer/EmployerProfile.vue'
 import CandidateDashboard from '../views/candidate/dashboard.vue'
 import CandidateProfile from '../views/candidate/profile.vue'
 import Login from '../views/auth/login.vue'
+
 import profile from '../views/employer/profile.vue'
 import EmployerDashboard from '../views/employer/EmployerDashboard.vue'
 import EmployerOverview from '../views/employer/Auth/EmployerOverview.vue'
+import EmployerOverview from '@/views/employer/Auth/EmployerOverview.vue'
+
+import admindashboard from '../views/admin/home.vue'
+
+
+
 const routes = [
   {
     path: '/register',
@@ -82,6 +89,11 @@ const routes = [
     path: '/candidate/profile',
     component: CandidateProfile
   },
+  {
+    path:'/admin',
+    name:'admin',
+    component: admindashboard,
+  }
  
 ]
 
