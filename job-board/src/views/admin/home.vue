@@ -333,5 +333,111 @@ export default {
   }
 }
 </script>
+<style scoped>
+.admin-dashboard {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.sidebar {
+  background-color: white;
+  height: 100vh;
+  position: fixed;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-link {
+  padding: 12px 16px;
+  color: #555;
+  border-left: 4px solid transparent;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  background-color: #f8f9fa;
+  color: #3498db;
+  border-left-color: #3498db;
+}
+
+.nav-link.active {
+  background-color: #e6f2ff;
+  color: #3498db;
+  border-left-color: #3498db;
+  font-weight: 500;
+}
+
+.main-content {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.stat-card {
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.pending-icon {
+  background-color: #fff5e6;
+  color: #f39c12;
+}
+
+.approved-icon {
+  background-color: #e6ffee;
+  color: #2ecc71;
+}
+
+.rejected-icon {
+  background-color: #ffe6e6;
+  color: #e74c3c;
+}
+
+.company-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.table th {
+  font-weight: 500;
+  color: #555;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.badge {
+  font-weight: 500;
+  padding: 6px 10px;
+}
+
+.card-header {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.log-out-section {
+  margin-top: auto;
+}
+</style>
+
 
 
