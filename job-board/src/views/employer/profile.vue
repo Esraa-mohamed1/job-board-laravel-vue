@@ -22,7 +22,6 @@
         </div>
       </div>
 
-      <!-- Main Content -->
       <div class="profile-content fade-in">
         <div class="left-column">
           <!-- About Company -->
