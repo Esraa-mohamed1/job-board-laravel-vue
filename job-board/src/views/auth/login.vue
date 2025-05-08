@@ -122,7 +122,7 @@ const handleLogin = async () => {
     showWelcomeAlert(user.role)
 
     if (user.role === 'employer') {
-      router.push('/employer/profile')
+      router.push('/employer/steps')
     } else if (user.role === 'candidate') {
       router.push('/candidate/dashboard')
     }

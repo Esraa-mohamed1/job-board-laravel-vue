@@ -5,8 +5,9 @@ import EmployerProfile from '../views/employer/EmployerProfile.vue'
 import CandidateDashboard from '../views/candidate/dashboard.vue'
 import CandidateProfile from '../views/candidate/profile.vue'
 import Login from '../views/auth/login.vue'
-
-
+import profile from '../views/employer/profile.vue'
+import EmployerDashboard from '../views/employer/EmployerDashboard.vue'
+import EmployerOverview from '@/views/employer/Auth/EmployerOverview.vue'
 
 const routes = [
   {
@@ -26,11 +27,31 @@ const routes = [
     component: EmployerLayout,
     children: [
       { 
-        path: 'profile', 
-        name: 'employer-profile',
+        path: 'steps', 
+        name: 'employer-steps',
         component: EmployerProfile,
         meta: { requiresAuth: true }
       },
+    ]
+  },
+  {
+    path: '/employer/dashboard',
+  name: 'employer-dashboard',
+  component: EmployerDashboard,
+  children: [
+    {
+      path: '',
+      redirect: { name: 'employer-overview' }
+    },
+    {
+      path: 'overview',
+      name: 'employer-overview',
+      component: EmployerOverview
+    },{
+      path: 'profile',
+      name: 'employer-profile',
+      component: profile
+    },
     ]
   },
   {

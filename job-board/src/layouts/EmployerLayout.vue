@@ -13,8 +13,8 @@
         </div>
       </div>
     </nav>
-      <div class="container-fluid ">
-          <div class="p-4 ">
+      <div class="container ">
+          <div class="p-3 ">
             <router-view />
           </div>
       </div>

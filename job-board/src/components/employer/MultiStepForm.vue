@@ -45,8 +45,18 @@
     socialMedia: {},
     contactInfo: {}
   })
-  const employerId = ref(Number(route.params.id) || 2)
-  
+  const employerId = ref(null)
+
+onMounted(() => {
+  const storedUser = localStorage.getItem('userData')
+  if (storedUser) {
+    const parsed = JSON.parse(storedUser)
+    employerId.value = parsed.id
+    initializeEmployer()
+  } else {
+    alert('User not logged in.')
+  }
+})  
   const steps = [
     { name: 'Company Info', component: CompanyInfo },
     { name: 'Founding Info', component: FoundingInfo },
@@ -124,14 +134,13 @@
     }
   }
   
-  onMounted(initializeEmployer)
   </script>
   
   <style scoped>
   .multi-step-form {
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 20px 0;
   }
   
   .step-progress-container {

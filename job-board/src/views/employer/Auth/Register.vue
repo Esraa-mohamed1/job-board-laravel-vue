@@ -229,7 +229,7 @@ const handleRegister = async () => {
     
     // 4. Redirect based on role
     const redirectPath = form.value.role === 'employer' 
-      ? '/employer-dashboard' 
+      ? '/login' 
       : '/candidate-dashboard'
     
     router.push(redirectPath)
