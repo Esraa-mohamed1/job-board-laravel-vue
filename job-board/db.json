@@ -1,7 +1,7 @@
 {
   "users": [
     {
-      "id": 1,
+      "id": "1",
       "email": "test@example.com",
       "password": "oldpassword",
       "resetToken": "reset-123456789"
@@ -62,18 +62,16 @@
     },
     {
       "id": "1746395158394",
-      "email": "esraa1@gmail.com",
       "email": "employer@example.com",
       "password": "123456",
       "role": "employer",
       "name": "John Employer"
     },
     {
-      "id": 2,
+      "id": "2",
       "email": "candidate@example.com",
       "password": "123456",
       "role": "candidate",
-<<<<<<< HEAD
       "createdAt": "2025-05-04T21:46:16.453Z"
     },
     {
@@ -229,6 +227,13 @@
       "password": "123456",
       "role": "candidate",
       "createdAt": "2025-05-06T02:58:13.338Z"
+    },
+    {
+      "id": "1746539128330",
+      "email": "es@gmail.com",
+      "password": "123456",
+      "role": "candidate",
+      "createdAt": "2025-05-06T13:45:28.330Z"
     }
   ],
   "employers": [
@@ -323,21 +328,9 @@
     }
   ],
   "jobs": [
-=======
-      "name": "Alice Candidate"
-    }
-  ],
-"jobs": [
->>>>>>> main
     {
-      "id": "1",
-      "title": "Frontend Developer",
-      "employerId": 2
-    },
-    {
-      "id": "2",
-      "title": "Backend Developer",
-      "employerId": 2
+      "name": "Alice Candidate",
+      "id": "a008"
     }
   ],
   "applications": [
