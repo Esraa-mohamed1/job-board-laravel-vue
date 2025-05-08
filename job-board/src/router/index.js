@@ -77,7 +77,7 @@ const routes = [
   {
     path: '/forgot-password',
     name: 'forgot-password',
-    component: () => import('@/views/employer/Auth/ForgotPassword.vue'), // fixed casing
+    component: () => import('@/views/employer/Auth/ForgotPassword.vue'), 
   },
  ,
   {
