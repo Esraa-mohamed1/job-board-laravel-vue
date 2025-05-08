@@ -9,7 +9,6 @@ import Login from '../views/auth/login.vue'
 import profile from '../views/employer/profile.vue'
 import EmployerDashboard from '../views/employer/EmployerDashboard.vue'
 import EmployerOverview from '../views/employer/Auth/EmployerOverview.vue'
-import EmployerOverview from '@/views/employer/Auth/EmployerOverview.vue'
 
 import admindashboard from '../views/admin/home.vue'
 
