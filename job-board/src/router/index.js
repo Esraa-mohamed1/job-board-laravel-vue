@@ -3,66 +3,18 @@ import EmployerLayout from '../layouts/EmployerLayout.vue'
 
 import EmployerProfile from '../views/employer/EmployerProfile.vue'
 import CandidateDashboard from '../views/candidate/dashboard.vue'
-import CandidateProfile from  '../views/candidate/myprofile.vue'
-
+import CandidateProfile from '../views/candidate/profile.vue'
 import Login from '../views/auth/login.vue'
+
+import profile from '../views/employer/profile.vue'
+import EmployerDashboard from '../views/employer/EmployerDashboard.vue'
+import EmployerOverview from '../views/employer/Auth/EmployerOverview.vue'
+
+import admindashboard from '../views/admin/home.vue'
 
 
 
 const routes = [
-  // Make dashboard the default route
-  {
-    path: '/',
-    redirect: '/dashboard'
-  },
-  
-  {
-    path: '/dashboard',
-    component: CandidateDashboard,
-    children: [
-      {
-        path: 'profile',
-        component: CandidateProfile
-      },
-      {
-        path: 'applications',
-        component: () => import('@/views/candidate/applications.vue')
-      },
-      // {
-      //   path: 'alerts',
-      //   component: () => import('@/views/candidate/alerts.vue')
-      // },
-      // {
-      //   path: 'saved',
-      //   component: () => import('@/views/candidate/saved.vue')
-      // },
-      // {
-      //   path: 'resume',
-      //   component: () => import('@/views/candidate/resume.vue')
-      // },
-      {
-        path: '',
-        redirect: 'profile' 
-      }
-    ]
-  },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   {
     path: '/register',
     name: 'register',
@@ -80,11 +32,37 @@ const routes = [
     component: EmployerLayout,
     children: [
       { 
-        path: 'profile', 
-        name: 'employer-profile',
+        path: 'steps', 
+        name: 'employer-steps',
         component: EmployerProfile,
         meta: { requiresAuth: true }
       },
+    ]
+  },
+  {
+    path: '/employer/edit/:id',
+    name: 'EmployerProfile',
+    component: () => import('@/views/employer/EmployerProfile.vue'),
+    props: true
+  },
+  {
+    path: '/employer/dashboard',
+  name: 'employer-dashboard',
+  component: EmployerDashboard,
+  children: [
+    {
+      path: '',
+      redirect: { name: 'employer-overview' }
+    },
+    {
+      path: 'overview',
+      name: 'employer-overview',
+      component: EmployerOverview
+    },{
+      path: 'profile',
+      name: 'employer-profile',
+      component: profile
+    },
     ]
   },
   {
@@ -95,8 +73,10 @@ const routes = [
     path: '/login',
     component: Login
   },
-
-
+  {
+    path: '/candidate/dashboard',
+    component: CandidateDashboard
+  },
 
   {
     path: '/forgot-password',
@@ -104,7 +84,15 @@ const routes = [
     component: () => import('@/views/employer/Auth/ForgotPassword.vue'), // fixed casing
   },
 
- 
+  {
+    path: '/candidate/profile',
+    component: CandidateProfile
+  },
+  {
+    path:'/admin',
+    name:'admin',
+    component: admindashboard,
+  }
  
 ]
 

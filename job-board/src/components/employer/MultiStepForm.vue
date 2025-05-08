@@ -45,8 +45,27 @@
     socialMedia: {},
     contactInfo: {}
   })
-  const employerId = ref(Number(route.params.id) || 2)
-  
+  const employerId = ref(null)
+  const profileData = JSON.parse(localStorage.getItem('EditEmployerProfile'))
+
+  onMounted(() => {
+  const storedUser = localStorage.getItem('userData')
+  if (storedUser) {
+    const parsedUser = JSON.parse(storedUser)
+    employerId.value = parsedUser.id
+
+    const localData = localStorage.getItem('editProfileData')
+    if (localData) {
+      const parsedProfile = JSON.parse(localData)
+      Object.assign(formData, parsedProfile)  
+    } else {
+      initializeEmployer() 
+    }
+  } else {
+    alert('User not logged in.')
+  }
+})
+
   const steps = [
     { name: 'Company Info', component: CompanyInfo },
     { name: 'Founding Info', component: FoundingInfo },
@@ -124,14 +143,13 @@
     }
   }
   
-  onMounted(initializeEmployer)
   </script>
   
   <style scoped>
   .multi-step-form {
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 20px 0;
   }
   
   .step-progress-container {
