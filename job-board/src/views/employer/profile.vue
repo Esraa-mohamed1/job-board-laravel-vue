@@ -30,7 +30,6 @@
             <p>{{ profileData.companyInfo.about || 'No description provided' }}</p>
           </section>
 
-          <!-- Company Vision -->
           <section class="vision-section fade-in-delay">
             <h2>Our Vision</h2>
             <p>{{ profileData.foundingInfo.companyVision || 'No vision statement provided' }}</p>
