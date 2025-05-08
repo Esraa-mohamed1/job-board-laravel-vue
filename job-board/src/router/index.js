@@ -8,7 +8,7 @@ import Login from '../views/auth/login.vue'
 
 import profile from '../views/employer/profile.vue'
 import EmployerDashboard from '../views/employer/EmployerDashboard.vue'
-import EmployerOverview from '../views/employer/Auth/EmployerOverview.vue'
+import EmployerOverview from '@/views/employer/Auth/EmployerOverview.vue'
 
 import admindashboard from '../views/admin/home.vue'
 
@@ -73,26 +73,48 @@ const routes = [
     path: '/login',
     component: Login
   },
-  {
-    path: '/candidate/dashboard',
-    component: CandidateDashboard
-  },
-
+,
   {
     path: '/forgot-password',
     name: 'forgot-password',
     component: () => import('@/views/employer/Auth/ForgotPassword.vue'), // fixed casing
   },
-
-  {
-    path: '/candidate/profile',
-    component: CandidateProfile
-  },
+ ,
   {
     path:'/admin',
     name:'admin',
     component: admindashboard,
-  }
+  },
+  {
+    path: '/dashboard',
+    component: CandidateDashboard,
+    children: [
+      {
+        path: 'profile',
+        component: CandidateProfile
+      },
+      {
+        path: 'applications',
+        component: () => import('@/views/candidate/applications.vue')
+      },
+      // {
+      //   path: 'alerts',
+      //   component: () => import('@/views/candidate/alerts.vue')
+      // },
+      // {
+      //   path: 'saved',
+      //   component: () => import('@/views/candidate/saved.vue')
+      // },
+      // {
+      //   path: 'resume',
+      //   component: () => import('@/views/candidate/resume.vue')
+      // },
+      {
+        path: '',
+        redirect: 'profile' 
+      }
+    ]
+  },
  
 ]
 

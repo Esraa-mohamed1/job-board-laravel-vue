@@ -109,14 +109,14 @@ const handleLogin = async () => {
     
     localStorage.setItem('authToken', token)
     localStorage.setItem('userRole', user.role)
-    localStorage.setItem('userData', JSON.stringify(user)) // Store the entire user object
+    localStorage.setItem('userData', JSON.stringify(user)) 
 
     showWelcomeAlert(user.role)
 
     if (user.role === 'employer') {
       router.push('/employer/steps')
     } else if (user.role === 'candidate') {
-      router.push('/candidate/dashboard')
+      router.push('/dashboard/profile')
     }
     
   } catch (err) {

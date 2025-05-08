@@ -74,7 +74,6 @@
                   <span class="small">My Profile</span>
                 </router-link>
               </div>
-              
               <div class="sidebar-menu-item mb-2">
                 <router-link 
                   to="/employer/dashboard/post-job" 
@@ -85,6 +84,7 @@
                   <span class="small">Post a Job</span>
                 </router-link>
               </div>
+              
               
               <div class="sidebar-menu-item mb-2">
                 <router-link 
