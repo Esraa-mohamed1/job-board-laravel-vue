@@ -5,6 +5,7 @@ import EmployerProfile from '../views/employer/EmployerProfile.vue'
 import CandidateDashboard from '../views/candidate/dashboard.vue'
 import CandidateProfile from '../views/candidate/profile.vue'
 import Login from '../views/auth/login.vue'
+import admindashboard from '../views/admin/home.vue'
 
 
 
@@ -56,6 +57,11 @@ const routes = [
     path: '/candidate/profile',
     component: CandidateProfile
   },
+  {
+    path:'/admin',
+    name:'admin',
+    component: admindashboard,
+  }
  
 ]
 
