@@ -3,12 +3,66 @@ import EmployerLayout from '../layouts/EmployerLayout.vue'
 
 import EmployerProfile from '../views/employer/EmployerProfile.vue'
 import CandidateDashboard from '../views/candidate/dashboard.vue'
-import CandidateProfile from '../views/candidate/profile.vue'
+import CandidateProfile from  '../views/candidate/myprofile.vue'
+
 import Login from '../views/auth/login.vue'
 
 
 
 const routes = [
+  // Make dashboard the default route
+  {
+    path: '/',
+    redirect: '/dashboard'
+  },
+  
+  {
+    path: '/dashboard',
+    component: CandidateDashboard,
+    children: [
+      {
+        path: 'profile',
+        component: CandidateProfile
+      },
+      {
+        path: 'applications',
+        component: () => import('@/views/candidate/applications.vue')
+      },
+      // {
+      //   path: 'alerts',
+      //   component: () => import('@/views/candidate/alerts.vue')
+      // },
+      // {
+      //   path: 'saved',
+      //   component: () => import('@/views/candidate/saved.vue')
+      // },
+      // {
+      //   path: 'resume',
+      //   component: () => import('@/views/candidate/resume.vue')
+      // },
+      {
+        path: '',
+        redirect: 'profile' 
+      }
+    ]
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   {
     path: '/register',
     name: 'register',
@@ -41,10 +95,8 @@ const routes = [
     path: '/login',
     component: Login
   },
-  {
-    path: '/candidate/dashboard',
-    component: CandidateDashboard
-  },
+
+
 
   {
     path: '/forgot-password',
@@ -52,10 +104,7 @@ const routes = [
     component: () => import('@/views/employer/Auth/ForgotPassword.vue'), // fixed casing
   },
 
-  {
-    path: '/candidate/profile',
-    component: CandidateProfile
-  },
+ 
  
 ]
 
