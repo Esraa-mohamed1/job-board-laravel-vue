@@ -3,7 +3,7 @@ import EmployerLayout from '../layouts/EmployerLayout.vue'
 
 import EmployerProfile from '../views/employer/EmployerProfile.vue'
 import CandidateDashboard from '../views/candidate/dashboard.vue'
-import CandidateProfile from '../views/candidate/profile.vue'
+import CandidateProfile from '../views/candidate/myprofile.vue'
 import Login from '../views/auth/login.vue'
 
 import profile from '../views/employer/profile.vue'
