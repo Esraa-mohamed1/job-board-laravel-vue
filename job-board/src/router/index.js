@@ -45,6 +45,16 @@ const routes = [
     component: () => import('@/views/employer/EmployerProfile.vue'),
     props: true
   },
+
+
+
+
+
+
+
+
+
+  
   {
     path: '/employer/dashboard',
   name: 'employer-dashboard',
