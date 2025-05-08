@@ -11,7 +11,7 @@
   
   <script setup>
   import { ref } from 'vue'
-  import MultiStepForm from '@/components/employer/MultiStepForm.vue'
+  import MultiStepForm from '../../components/employer/MultiStepForm.vue'
   
   const employerId = ref(1)
   

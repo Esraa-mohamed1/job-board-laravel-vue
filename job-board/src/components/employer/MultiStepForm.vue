@@ -46,17 +46,26 @@
     contactInfo: {}
   })
   const employerId = ref(null)
+  const profileData = JSON.parse(localStorage.getItem('EditEmployerProfile'))
 
-onMounted(() => {
+  onMounted(() => {
   const storedUser = localStorage.getItem('userData')
   if (storedUser) {
-    const parsed = JSON.parse(storedUser)
-    employerId.value = parsed.id
-    initializeEmployer()
+    const parsedUser = JSON.parse(storedUser)
+    employerId.value = parsedUser.id
+
+    const localData = localStorage.getItem('editProfileData')
+    if (localData) {
+      const parsedProfile = JSON.parse(localData)
+      Object.assign(formData, parsedProfile)  
+    } else {
+      initializeEmployer() 
+    }
   } else {
     alert('User not logged in.')
   }
-})  
+})
+
   const steps = [
     { name: 'Company Info', component: CompanyInfo },
     { name: 'Founding Info', component: FoundingInfo },
