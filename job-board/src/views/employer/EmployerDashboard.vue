@@ -2,7 +2,7 @@
     <div class="dashboard-container">
       <!-- Top Navigation Bar -->
       <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom py-2">
-        <div class="container-fluid px-3 px-lg-4">
+        <div class="container-fluid px-3 px-lg-4 ">
           <div class="d-flex align-items-center">
             <button 
             class="navbar-toggler me-2 d-lg-none" 
@@ -13,9 +13,8 @@
           >
             <i class="fas fa-bars"></i>
           </button>
-            <router-link class="navbar-brand me-4  me-lg-4" to="/">
-              <img src="@/assets/logo.svg" alt="MyJob Logo" width="20" class="d-inline-block align-text-top" />
-              <span class="fw-bold text-primary ms-1 fs-6 ">MyJob</span>
+            <router-link class="navbar-brand me-4  me-lg-4  text-dark fw-bold fs-4" to="/">
+              <i class="fas fa-briefcase me-2 text-primary fs-3"></i>MyJob
             </router-link>
             <div class="navbar-nav me-auto d-none d-lg-flex flex-row gap-3">
               <router-link class="nav-link small px-2" to="/">Home</router-link>
@@ -52,12 +51,7 @@
                 'd-lg-block': windowWidth >= 992
             }"
             ref="sidebar">
-            <div class="d-flex align-items-center px-3 mb-3">
-              <img src="@/assets/logo.svg" alt="MyJob Logo" width="18" class="me-2" />
-              <span class="fw-bold text-primary small">MyJob</span>
-              <span class="ms-auto badge bg-primary rounded-pill small py-1 px-2">Jobs</span>
-            </div>
-            
+
             <div class="sidebar-menu px-3">
               <div class="sidebar-menu-item mb-2">
                 <router-link 

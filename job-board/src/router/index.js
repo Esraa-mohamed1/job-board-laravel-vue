@@ -7,8 +7,7 @@ import CandidateProfile from '../views/candidate/profile.vue'
 import Login from '../views/auth/login.vue'
 import profile from '../views/employer/profile.vue'
 import EmployerDashboard from '../views/employer/EmployerDashboard.vue'
-import EmployerOverview from '@/views/employer/Auth/EmployerOverview.vue'
-
+import EmployerOverview from '../views/employer/Auth/EmployerOverview.vue'
 const routes = [
   {
     path: '/register',
@@ -33,6 +32,12 @@ const routes = [
         meta: { requiresAuth: true }
       },
     ]
+  },
+  {
+    path: '/employer/edit/:id',
+    name: 'EmployerProfile',
+    component: () => import('@/views/employer/EmployerProfile.vue'),
+    props: true
   },
   {
     path: '/employer/dashboard',

@@ -5,6 +5,9 @@
         <div class="banner-container">
           <img v-if="profileData.companyInfo.banner" :src="profileData.companyInfo.banner" alt="Company Banner" class="banner-img fade-in">
           <div v-else class="default-banner fade-in"></div>
+          <button class="edit-profile-btn" @click="editProfile">
+          <i class="fas fa-pencil-alt"></i> Edit Profile
+          </button>
           <div class="company-logo-container slide-in-left">
             <img v-if="profileData.companyInfo.logo" :src="profileData.companyInfo.logo" alt="Company Logo" class="company-logo">
             <div v-else class="default-logo">{{ getCompanyInitials(profileData.companyInfo.name || profileData.companyName) }}</div>
@@ -117,101 +120,143 @@
     </div>
 </template>
   
-  <script setup>
-  import { ref, onMounted, computed } from 'vue'
-  import { useRoute } from 'vue-router'
-  
-  const route = useRoute()
-  const profileData = ref(null)
-  const loading = ref(true)
-  const error = ref(null)
-  
-  // Computed property to get unique social links
-  const uniqueSocialLinks = computed(() => {
-    if (!profileData.value?.socialMedia?.socialLinks) return []
-    const unique = []
-    const platforms = new Set()
-    profileData.value.socialMedia.socialLinks.forEach(link => {
-      if (!platforms.has(link.platform.toLowerCase())) {
-        platforms.add(link.platform.toLowerCase())
-        unique.push(link)
-      }
+<script setup>
+import { ref, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
+const profileData = ref(null)
+const loading = ref(true)
+const error = ref(null)
+
+const uniqueSocialLinks = computed(() => {
+  if (!profileData.value?.socialMedia?.socialLinks) return []
+  const unique = []
+  const platforms = new Set()
+  profileData.value.socialMedia.socialLinks.forEach(link => {
+    if (!platforms.has(link.platform.toLowerCase())) {
+      platforms.add(link.platform.toLowerCase())
+      unique.push(link)
+    }
+  })
+  return unique
+})
+
+const getCompanyInitials = (name) => {
+  if (!name) return 'CO'
+  return name.split(' ').map(part => part.charAt(0)).join('').toUpperCase()
+}
+
+const getSocialIcon = (platform) => {
+  const icons = {
+    facebook: 'fab fa-facebook-f',
+    twitter: 'fab fa-twitter',
+    instagram: 'fab fa-instagram',
+    linkedin: 'fab fa-linkedin-in',
+    github: 'fab fa-github'
+  }
+  return icons[platform.toLowerCase()] || 'fas fa-link'
+}
+
+const formatIndustryType = (industry) => {
+  if (!industry) return 'Not specified'
+  return industry.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
+}
+
+const formatOrganizationType = (type) => {
+  if (!type) return 'Not specified'
+  return type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
+}
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'Not specified'
+  try {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric', month: 'long', day: 'numeric'
     })
-    return unique
-  })
-  
-  const getCompanyInitials = (name) => {
-    if (!name) return 'CO'
-    const parts = name.split(' ')
-    return parts.map(part => part.charAt(0)).join('').toUpperCase()
+  } catch {
+    return dateString
   }
-  
-  const getSocialIcon = (platform) => {
-    const platforms = {
-      'facebook': 'fab fa-facebook-f',
-      'twitter': 'fab fa-twitter',
-      'instagram': 'fab fa-instagram',
-      'linkedin': 'fab fa-linkedin-in',
-      'github': 'fab fa-github'
+}
+
+const editProfile = async () => {
+  try {
+    const user = JSON.parse(localStorage.getItem('userData'))
+    if (!user || user.role !== 'employer') {
+      throw new Error('You do not have permission to edit this profile')
     }
-    return platforms[platform.toLowerCase()] || 'fas fa-link'
-  }
-  
-  const formatIndustryType = (industry) => {
-    if (!industry) return 'Not specified'
-    return industry.split('_').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-    ).join(' ')
-  }
-  
-  const formatOrganizationType = (type) => {
-    if (!type) return 'Not specified'
-    return type.split('_').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-    ).join(' ')
-  }
-  
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Not specified'
-    try {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      })
-    } catch {
-      return dateString
+
+    if (!profileData.value) {
+      await loadProfileData()
+      if (!profileData.value) throw new Error('Profile data could not be loaded')
     }
-  }
-  
-  const formatAddress = (address) => {
-    if (!address) return 'Not specified'
-    const { street, city, country } = address
-    return [street, city, country].filter(Boolean).join(', ')
-  }
-  
-  const ensureHttp = (url) => {
-    if (!url) return '#'
-    return url.startsWith('http') ? url : `https://${url}`
-  }
-  
-  onMounted(async () => {
-    try {
-      // Get employerId from route params or use the logged-in user's ID
-      const employerId = route.params.id || JSON.parse(localStorage.getItem('userData')).id
-      
-      const response = await fetch(`http://localhost:3000/employers/${employerId}`)
-      if (!response.ok) throw new Error('Failed to fetch profile data')
-      
-      profileData.value = await response.json()
-    } catch (err) {
-      console.error('Error loading profile:', err)
-      error.value = err.message
-    } finally {
-      loading.value = false
+
+    const prepared = {
+      ...profileData.value,
+      foundingInfo: {
+        ...profileData.value.foundingInfo,
+        establishmentYear: profileData.value.foundingInfo?.establishmentYear
+          ? new Date(profileData.value.foundingInfo.establishmentYear).toISOString().split('T')[0]
+          : ''
+      },
+      socialMedia: {
+        socialLinks: profileData.value.socialMedia?.socialLinks || []
+      }
     }
-  })
-  </script>
+
+    localStorage.setItem('editProfileData', JSON.stringify(prepared))
+
+    await router.push({ name: 'EmployerProfile', params: { id: user.id }, query: { edit: true } })
+
+  } catch (err) {
+    handleEditError(err)
+  }
+}
+
+const loadProfileData = async () => {
+  try {
+    const employerId = route.params.id || JSON.parse(localStorage.getItem('userData')).id
+    const response = await fetch(`http://localhost:3000/employers/${employerId}`)
+    if (!response.ok) throw new Error('Failed to fetch profile data')
+    profileData.value = await response.json()
+  } catch (err) {
+    console.error('Error loading profile:', err)
+    throw err
+  }
+}
+
+const handleEditError = (err) => {
+  alert(`Edit Error: ${err.message}`)
+  router.push({ name: 'EditEmployerProfile', query: { error: err.message } })
+}
+
+const formatAddress = (address) => {
+  if (!address) return 'Not specified'
+  const { street, city, country } = address
+  return [street, city, country].filter(Boolean).join(', ')
+}
+
+const ensureHttp = (url) => {
+  if (!url) return '#'
+  return url.startsWith('http') ? url : `https://${url}`
+}
+
+onMounted(async () => {
+  try {
+    await loadProfileData()
+
+    if (route.params.updated) {
+      alert('Profile Updated Successfully')
+    }
+  } catch (err) {
+    error.value = err.message
+  } finally {
+    loading.value = false
+  }
+})
+</script>
+
   
   <style scoped>
   /* Same CSS as in the previous example */
@@ -236,7 +281,34 @@
     background: linear-gradient(135deg, #4a6baf 0%, #2c3e50 100%);
     position: relative;
   }
-  
+  .edit-profile-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  padding: 8px 15px;
+  border-radius: 20px;
+  color: #4a6baf;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  z-index: 10;
+}
+
+.edit-profile-btn:hover {
+  background: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.edit-profile-btn i {
+  font-size: 0.9rem;
+}
   .default-banner {
     width: 100%;
     height: 100%;
