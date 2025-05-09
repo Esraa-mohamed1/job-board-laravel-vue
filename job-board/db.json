@@ -209,6 +209,13 @@
       "password": "123456",
       "role": "employer",
       "createdAt": "2025-05-08T15:58:23.410Z"
+    },
+    {
+      "id": "1746726841951",
+      "email": "omarokstar2001@gmail.com",
+      "password": "123456",
+      "role": "employer",
+      "createdAt": "2025-05-08T17:54:01.951Z"
     }
   ],
   "employers": [
@@ -274,16 +281,16 @@
       "companyInfo": {
         "logo": "",
         "banner": "",
-        "name": "Meni",
-        "about": "ddd"
+        "name": "ssssssss",
+        "about": "ssssssssss"
       },
       "foundingInfo": {
         "organizationType": "corporation",
-        "establishmentYear": "12/13/2020",
-        "companyVision": "xx",
+        "establishmentYear": "01/02/2010",
+        "companyVision": "ssssssssssssss",
         "industryType": "technology",
-        "teamSize": "11-50",
-        "companyWebsite": "https://www.behance.net/"
+        "teamSize": "1-10",
+        "companyWebsite": "https://www.facebook.com/"
       },
       "socialMedia": {
         "socialLinks": [
@@ -332,6 +339,15 @@
       "role": "employer",
       "companyName": "okstar",
       "createdAt": "2025-05-08T15:58:23.455Z"
+    },
+    {
+      "id": "1746726841951",
+      "userId": "1746726841951",
+      "fullName": "omar",
+      "email": "omarokstar2001@gmail.com",
+      "role": "employer",
+      "companyName": "okstar",
+      "createdAt": "2025-05-08T17:54:02.350Z"
     }
   ],
   "jobs": [

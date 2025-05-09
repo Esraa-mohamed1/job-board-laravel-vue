@@ -2,6 +2,7 @@
 
 <template>
     <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-2 sticky-top">
+      
       <div class="container-fluid px-3 px-lg-4">
         <router-link class="navbar-brand me-3 me-lg-4" to="/">
           <img src="@/assets/logo.svg" alt="MyJob Logo" width="24" class="d-inline-block align-text-top" />
@@ -62,6 +63,7 @@
         </div>
       </div>
     </nav>
+    
   </template>
   
 
@@ -78,7 +80,7 @@ const { locale, t } = useI18n()
 
 const navItems = [
   { titleKey: 'nav.home', path: '/' },
-  { titleKey: 'nav.jobs', path: '/jobs' },
+  { titleKey: 'nav.jobs', path: '/findjob' },
   { titleKey: 'nav.employers', path: '/employers' },
   { titleKey: 'nav.dashboard', path: '/dashboard' },
   { titleKey: 'nav.alerts', path: '/alerts' },

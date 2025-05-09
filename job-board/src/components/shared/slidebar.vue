@@ -67,7 +67,7 @@
   
   <style scoped>
   .sidebar-menu-item a:hover {
-    background-color: #f0f0f0;
+    background-color: #ffffff;
     color: #0d6efd !important;
   }
   </style>
