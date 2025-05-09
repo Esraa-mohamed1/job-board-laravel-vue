@@ -9,7 +9,7 @@ import Login from '../views/auth/login.vue'
 
 import profile from '../views/employer/profile.vue'
 import EmployerDashboard from '../views/employer/EmployerDashboard.vue'
-import EmployerOverview from '../views/employer/Auth/EmployerOverview.vue'
+import EmployerOverview from '@/views/employer/Auth/EmployerOverview.vue'
 
 import admindashboard from '../views/admin/home.vue'
 import candidateHome from '../views/candidate/home.vue'
@@ -19,10 +19,8 @@ import candidateSupport from '../views/candidate/candidateSupport.vue'
 
 
 
-import JobPosting from '../views/employer/posts/postjosb.vue';
-import EmployerJops from '../views/employer/EmployerJops.vue'
-import JobApplications from '@/views/employer/JobApplications.vue'
- 
+import JobPosting from '@/views/employer/posts/postjosb.vue';
+
 
 
 const routes = [
@@ -31,10 +29,7 @@ const routes = [
     name: 'register',
     component: () => import('@/views/employer/Auth/Register.vue') 
   },
-<<<<<<< HEAD
 
-=======
->>>>>>> 4875034d98269ee77bae4e73c2e7c30343939873
   {
     path: '/reset-password',
     name: 'reset-password', 
@@ -58,13 +53,10 @@ const routes = [
   {
     path: '/employer/edit/:id',
     name: 'EmployerProfile',
-    component:EmployerProfile ,
+    component: () => import('@/views/employer/EmployerProfile.vue'),
     props: true
   },
-<<<<<<< HEAD
   
-=======
->>>>>>> 4875034d98269ee77bae4e73c2e7c30343939873
   {
     path: '/employer/dashboard',
   name: 'employer-dashboard',
@@ -91,25 +83,9 @@ const routes = [
         requiresAuth: true,
         role: 'employer'
       }
-    },
-    {
-      path:'myjobs',
-      name: 'my-jobs',
-      component:EmployerJops,
-      meta: {
-        requiresAuth: true,
-        role: 'employer'
-      }
-    },
-    {
-      path: 'myjobs/:id/applications',
-      name: 'job-applications',
-      component: JobApplications,
-      props: true
     }
     ]
   },
-<<<<<<< HEAD
 
 
 
@@ -169,9 +145,6 @@ const routes = [
     
   },
 
-=======
- 
->>>>>>> 4875034d98269ee77bae4e73c2e7c30343939873
   {
     path: '/login',
     component: Login
