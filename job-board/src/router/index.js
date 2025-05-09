@@ -19,8 +19,9 @@ import candidateSupport from '../views/candidate/candidateSupport.vue'
 
 
 
-import JobPosting from '@/views/employer/posts/postjosb.vue';
-
+import JobPosting from '../views/employer/posts/postjosb.vue';
+import EmployerJops from '../views/employer/EmployerJops.vue'
+import JobApplications from '@/views/employer/JobApplications.vue'
 
 
 const routes = [
@@ -83,11 +84,24 @@ const routes = [
         requiresAuth: true,
         role: 'employer'
       }
+    },
+ {
+      path:'myjobs',
+      name: 'my-jobs',
+      component:EmployerJops,
+      meta: {
+        requiresAuth: true,
+        role: 'employer'
+      }
+    },
+    {
+      path: 'myjobs/:id/applications',
+      name: 'job-applications',
+      component: JobApplications,
+      props: true
     }
     ]
   },
-
-
 
   {
     path: '/candidate',
