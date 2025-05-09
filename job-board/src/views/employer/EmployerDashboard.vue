@@ -76,7 +76,7 @@
               </div>
               <div class="sidebar-menu-item mb-2">
                 <router-link 
-                  to="/employer/dashboard/post-job" 
+                  to="/employer/dashboard/post" 
                   class="d-flex align-items-center text-decoration-none py-2 px-2 rounded"
                   :class="{ 'text-primary bg-light': $route.path.includes('post-job') }"
                 >
