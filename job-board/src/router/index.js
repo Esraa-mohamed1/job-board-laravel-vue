@@ -30,10 +30,6 @@ const routes = [
     component: () => import('@/views/employer/Auth/Register.vue') 
   },
 
-
-  
-
-
   {
     path: '/reset-password',
     name: 'reset-password', 
@@ -53,21 +49,13 @@ const routes = [
       },
     ]
   },
+
   {
     path: '/employer/edit/:id',
     name: 'EmployerProfile',
     component: () => import('@/views/employer/EmployerProfile.vue'),
     props: true
   },
-
-
-
-
-
-
-
-
-
   
   {
     path: '/employer/dashboard',
@@ -107,36 +95,56 @@ const routes = [
   component: candidateHome,
   children: [
     {
-      path: '/dashboard',
-      component: CandidateDashboard
-      
-    },
-    {
-      path: '/findjob',
+      path: 'findjob',
       component: findjob
     },
     {
-      path: '/jobs/:id',
+      path: 'jobs/:id',
       name: 'JobDetails',
       component: jobDetails
     },
     {
-        path: '/alerts',
+        path: 'alerts',
         component:jobAlert
       },
     
     {
-        path: '/Candidate-Support',
+        path: 'Candidate-Support',
         component: candidateSupport
       },
+      {
+    
+    path: 'dashboard',
+    component: CandidateDashboard,
+    children: [
+      {
+        path: 'profile',
+        component: CandidateProfile
+      },
+      {
+        path: 'applications',
+        component: () => import('@/views/candidate/applications.vue')
+      },
+     
+      // {
+      //   path: 'alerts',
+      //   component: () => import('@/views/candidate/alerts.vue')
+      // },
+      // {
+      //   path: 'saved',
+      //   component: () => import('@/views/candidate/saved.vue')
+      // },
+      // {
+      //   path: 'resume',
+      //   component: () => import('@/views/candidate/resume.vue')
+      // },
+    
+    ]
+  },
     ]
     
   },
 
-  {
-    path: '/',
-    component: CandidateDashboard
-  },
   {
     path: '/login',
     component: Login
@@ -154,42 +162,8 @@ const routes = [
     name:'admin',
     component: admindashboard,
   },
-  {
-    path: '/dashboard',
-    component: CandidateDashboard,
-    children: [
-      {
-        path: 'profile',
-        component: CandidateProfile
-      },
-      {
-        path: 'applications',
-        component: () => import('@/views/candidate/applications.vue')
-      },
-      {
-        path: '/findjob',
-        component: findjob,
-      },
-     
 
-      // {
-      //   path: 'alerts',
-      //   component: () => import('@/views/candidate/alerts.vue')
-      // },
-      // {
-      //   path: 'saved',
-      //   component: () => import('@/views/candidate/saved.vue')
-      // },
-      // {
-      //   path: 'resume',
-      //   component: () => import('@/views/candidate/resume.vue')
-      // },
-      {
-        path: '',
-        redirect: 'profile' 
-      }
-    ]
-  },
+  
  
 ]
 

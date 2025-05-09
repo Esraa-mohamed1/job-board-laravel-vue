@@ -18,18 +18,21 @@
   
         <p class="mb-1 text-muted small">{{ company.name }}</p>
         <div class="d-flex flex-wrap gap-2 align-items-center text-muted small">
-          <i class="bi bi-geo-alt-fill"></i> <span>{{ location }}</span>
+         <i class="fas fa-map-marker-alt"></i>
+           <span>{{ location }}</span>
           <span class="mx-2">|</span>
-          <i class="bi bi-currency-dollar"></i> <span>{{ salary }}</span>
+          <i class="fas fa-dollar-sign"></i>
+              <span>{{ salary }}</span>
           <span class="mx-2">|</span>
-          <i class="bi bi-calendar"></i> <span>{{ time }}</span>
+        <i class="fas fa-calendar-alt"></i>
+             <span>{{ time }}</span>
         </div>
       </div>
   
       <div class="text-end">
         <div class="mt-2 d-flex align-items-center gap-2">
-          <i class="bi bi-bookmark fs-5 text-secondary" :class="{ 'hover-icon': hover }"></i>
-          <RouterLink :to="`/jobs/${id}`">
+    <i class="fas fa-bookmark fs-5 text-secondary p-3" :class="{ 'hover-icon': hover }"></i>
+          <RouterLink :to="`/candidate/jobs/${id}`">
         <button
           class="btn btn-primary btn-md d-flex align-items-center gap-1"
           @mousedown="buttonClick = true"
@@ -39,7 +42,6 @@
           Apply Now <i class="bi bi-arrow-right"></i>
         </button>
         </RouterLink>
-
         </div>
       </div>
     </div>

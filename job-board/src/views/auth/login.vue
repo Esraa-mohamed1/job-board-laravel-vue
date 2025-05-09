@@ -116,7 +116,7 @@ const handleLogin = async () => {
     if (user.role === 'employer') {
       router.push('/employer/steps')
     } else if (user.role === 'candidate') {
-      router.push('/dashboard/profile')
+      router.push('/candidate/findjob')
     }
     
   } catch (err) {

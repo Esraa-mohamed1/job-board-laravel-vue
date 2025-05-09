@@ -28,8 +28,6 @@
           </div>
         </div>
 
-
-
         <div class="d-flex flex-column flex-lg-row align-items-center px-5 mt-3 mt-lg-0 ms-lg-auto">
           <span class="me-3 text-muted mb-2 mb-lg-0">
             <i class="fas fa-phone-alt me-1"></i> +1 202-555-0156
@@ -77,10 +75,10 @@ const { locale, t } = useI18n()
 
 const navItems = [
   { titleKey: 'nav.home', path: '/' },
-  { titleKey: 'nav.jobs', path: '/findjob' },
-  { titleKey: 'nav.dashboard', path: '/dashboard' },
-  { titleKey: 'nav.alerts', path: '/alerts' },
-  { titleKey: 'nav.support', path: '/Candidate-Support' }
+  { titleKey: 'nav.jobs', path: '/candidate/findjob' },
+  { titleKey: 'nav.dashboard', path: '/candidate/dashboard' },
+  { titleKey: 'nav.alerts', path: '/candidate/alerts' },
+  { titleKey: 'nav.support', path: '/candidate/Candidate-Support' }
 ]
 
 const languages = [
