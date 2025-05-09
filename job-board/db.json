@@ -192,8 +192,9 @@
       "id": "1",
       "jobId": "d077",
       "candidateId": "1746401689981",
-      "status": "pending",
-      "appliedDate": "2023-06-15T10:30:00Z"
+      "status": "accepted",
+      "appliedDate": "2023-06-15T10:30:00Z",
+      "acceptedDate": "2025-05-09T19:19:15.487Z"
     },
     {
       "id": "2",

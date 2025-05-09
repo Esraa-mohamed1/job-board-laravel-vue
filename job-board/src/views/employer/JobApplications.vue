@@ -6,32 +6,34 @@
         <span> / </span>
         <router-link to="/employer/dashboard/myjobs">Jobs</router-link>
         <span> / </span>
-        <span>{{ job.title }}</span>
+        <span>{{ job.title || 'Job' }}</span>
         <span> / </span>
         <span>Applications</span>
       </div>
   
       <div class="header">
-        <h1>Job Applications for {{ job.title }}</h1>
+        <h1>Job Applications for {{ job.title || 'This Position' }}</h1>
         <router-link to="/employer/dashboard/myjobs" class="back-btn">
           <i class="fas fa-arrow-left"></i> Back to Jobs
         </router-link>
       </div>
   
       <div class="controls">
-        <div class="tabs">
-          <button 
-            :class="{ active: activeTab === 'all' }"
-            @click="activeTab = 'all'"
-          >
-            <i class="fas fa-list"></i> All Applications ({{ allApplications.length }})
-          </button>
-          <button 
-            :class="{ active: activeTab === 'shortlisted' }"
-            @click="activeTab = 'shortlisted'"
-          >
-            <i class="fas fa-star"></i> Shortlisted ({{ shortlistedApplications.length }})
-          </button>
+        <div class="tabs  container">
+            <div class="row">
+                <div class="col-lg-12 col-md-6 col-sm-12">
+                    <button 
+                        v-for="tab in tabs"
+                        :key="tab"
+                        :class="{ active: activeTab === tab }"
+                        @click="activeTab = tab"
+
+                    >
+                        <i :class="tabIcons[tab]"></i> 
+                        {{ tabLabels[tab] }} ({{ tabCounts[tab] }})
+                    </button>
+                </div>  
+            </div>
         </div>
   
         <div class="filter-sort">
@@ -93,6 +95,8 @@
         </div>
       </div>
   
+     
+      <!-- All Applications Tab -->
       <div v-if="activeTab === 'all'" class="applications-container">
         <div v-if="loading" class="loading">
           <i class="fas fa-spinner fa-spin"></i> Loading applications...
@@ -101,7 +105,9 @@
           <i class="fas fa-folder-open"></i> No applications found for this job
         </div>
         
-        <div v-else v-for="application in filteredApplications" :key="application.id" class="application-card" @click="viewCandidate(application)">
+        <div v-else v-for="application in filteredApplications" :key="application.id" 
+             class="application-card" :class="application.status" 
+             @click="viewCandidate(application)">
           <div class="candidate-info">
             <div class="candidate-avatar">
               <img :src="getCandidateImage(application.candidateId)" :alt="application.candidateName">
@@ -128,15 +134,26 @@
             <button 
               class="shortlist-btn" 
               @click.stop="toggleShortlist(application)"
-              :disabled="application.status === 'shortlisted'"
+              v-if="application.status !== 'accepted'"
             >
               <i class="fas fa-star"></i> {{ application.status === 'shortlisted' ? 'Shortlisted' : 'Shortlist' }}
             </button>
+            <button 
+              class="accept-btn" 
+              @click.stop="acceptCandidate(application)"
+              v-if="application.status !== 'accepted'"
+            >
+              <i class="fas fa-check-circle"></i> Accept
+            </button>
+            <span class="badge accepted-badge" v-if="application.status === 'accepted'">
+              <i class="fas fa-check-circle"></i> Accepted
+            </span>
           </div>
         </div>
       </div>
   
-      <div v-else class="applications-container">
+      <!-- Shortlisted Applications Tab -->
+      <div v-else-if="activeTab === 'shortlisted'" class="applications-container">
         <div v-if="loading" class="loading">
           <i class="fas fa-spinner fa-spin"></i> Loading applications...
         </div>
@@ -144,7 +161,8 @@
           <i class="fas fa-star"></i> No shortlisted applications
         </div>
         
-        <div v-else v-for="application in filteredShortlisted" :key="application.id" class="application-card" @click="viewCandidate(application)">
+        <div v-else v-for="application in filteredShortlisted" :key="application.id" 
+             class="application-card shortlisted" @click="viewCandidate(application)">
           <div class="candidate-info">
             <div class="candidate-avatar">
               <img :src="getCandidateImage(application.candidateId)" :alt="application.candidateName">
@@ -168,8 +186,55 @@
             <button class="download-btn" @click.stop="downloadCV(application)">
               <i class="fas fa-download"></i> CV
             </button>
+            <button class="accept-btn badge" @click.stop="acceptCandidate(application)">
+              <i class="fas fa-check-circle"></i> Accept
+            </button>
             <button class="remove-btn" @click.stop="toggleShortlist(application)">
               <i class="fas fa-times"></i> Remove
+            </button>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Accepted Applications Tab -->
+      <div v-else-if="activeTab === 'accepted'" class="applications-container">
+        <div v-if="loading" class="loading">
+          <i class="fas fa-spinner fa-spin"></i> Loading applications...
+        </div>
+        <div v-else-if="filteredAccepted.length === 0" class="no-applications">
+          <i class="fas fa-check-circle"></i> No accepted applications yet
+        </div>
+        
+        <div v-else v-for="application in filteredAccepted" :key="application.id" 
+             class="application-card accepted" @click="viewCandidate(application)">
+          <div class="candidate-info">
+            <div class="candidate-avatar">
+              <img :src="getCandidateImage(application.candidateId)" :alt="application.candidateName">
+            </div>
+            <div>
+              <h3>{{ application.candidateName }}</h3>
+              <p class="position">{{ application.position }}</p>
+              <div class="candidate-meta">
+                <span><i class="fas fa-briefcase"></i> {{ application.experience }} Years</span>
+                <span><i class="fas fa-graduation-cap"></i> {{ application.education }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="application-details">
+            <p><i class="fas fa-calendar-alt"></i> Applied: {{ formatDate(application.appliedDate) }}</p>
+            <p><i class="fas fa-check-circle"></i> Accepted: {{ formatDate(application.acceptedDate) }}</p>
+          </div>
+          
+          <div class="application-actions">
+            <button class="download-btn" @click.stop="downloadCV(application)">
+              <i class="fas fa-download"></i> CV
+            </button>
+            <button class="contact-btn" @click.stop="contactCandidate(application)">
+              <i class="fas fa-envelope"></i> Contact
+            </button>
+            <button class="reject-btn" @click.stop="rejectCandidate(application)">
+              <i class="fas fa-times"></i> Reject
             </button>
           </div>
         </div>
@@ -213,9 +278,9 @@
                 {{ selectedCandidate.bio || 'No biography available' }}
               </p>
               <div class="skills-tags">
-                <span class="skill-tag"><i class="fas fa-palette"></i> UI/UX Design</span>
-                <span class="skill-tag"><i class="fas fa-mobile-alt"></i> Mobile App</span>
-                <span class="skill-tag"><i class="fas fa-pencil-ruler"></i> Wireframing</span>
+                <span v-for="(skill, index) in selectedCandidate.skills" :key="index" class="skill-tag">
+                  <i :class="skillIcons[skill] || 'fas fa-check'"></i> {{ skill }}
+                </span>
               </div>
             </div>
   
@@ -249,10 +314,18 @@
             <div class="section">
               <h3><i class="fas fa-share-alt icon-title"></i> SOCIAL MEDIA</h3>
               <div class="social-media-links">
-                <a href="#" class="social-link linkedin"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#" class="social-link twitter"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="social-link dribbble"><i class="fab fa-dribbble"></i></a>
-                <a href="#" class="social-link behance"><i class="fab fa-behance"></i></a>
+                <a v-if="selectedCandidate.linkedin" :href="selectedCandidate.linkedin" class="social-link linkedin">
+                  <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a v-if="selectedCandidate.twitter" :href="selectedCandidate.twitter" class="social-link twitter">
+                  <i class="fab fa-twitter"></i>
+                </a>
+                <a v-if="selectedCandidate.github" :href="selectedCandidate.github" class="social-link github">
+                  <i class="fab fa-github"></i>
+                </a>
+                <a v-if="selectedCandidate.portfolio" :href="selectedCandidate.portfolio" class="social-link portfolio">
+                  <i class="fas fa-globe"></i>
+                </a>
               </div>
             </div>
   
@@ -261,6 +334,26 @@
                 <i class="fas fa-download"></i> Download Resume
               </button>
               <p class="resume-name">{{ selectedCandidate.name }}.pdf</p>
+            </div>
+  
+            <div class="section action-section" v-if="selectedApplication.status !== 'accepted'">
+              <button class="accept-btn" @click="acceptCandidate(selectedApplication)">
+                <i class="fas fa-check-circle"></i> Accept Candidate
+              </button>
+              <button class="shortlist-btn" 
+                      @click="toggleShortlist(selectedApplication)"
+                      v-if="selectedApplication.status !== 'shortlisted'">
+                <i class="fas fa-star"></i> Shortlist
+              </button>
+            </div>
+  
+            <div class="section action-section" v-else>
+              <button class="contact-btn" @click="contactCandidate(selectedCandidate)">
+                <i class="fas fa-envelope"></i> Contact Candidate
+              </button>
+              <button class="reject-btn badge" @click="rejectCandidate(selectedApplication)">
+                <i class="fas fa-times"></i> Reject
+              </button>
             </div>
           </div>
         </div>
@@ -281,7 +374,19 @@
         job: {},
         allApplications: [],
         shortlistedApplications: [],
+        acceptedApplications: [],
         activeTab: 'all',
+        tabs: ['all', 'shortlisted', 'accepted'],
+        tabIcons: {
+          all: 'fas fa-list',
+          shortlisted: 'fas fa-star',
+          accepted: 'fas fa-check-circle'
+        },
+        tabLabels: {
+          all: 'All Applications',
+          shortlisted: 'Shortlisted',
+          accepted: 'Accepted'
+        },
         loading: true,
         showFilterDropdown: false,
         showSortDropdown: false,
@@ -293,10 +398,28 @@
         showCandidateModal: false,
         selectedCandidate: {},
         selectedApplication: {},
-        candidatesData: []
+        candidatesData: [],
+        skillIcons: {
+          'UI/UX Design': 'fas fa-palette',
+          'Mobile App': 'fas fa-mobile-alt',
+          'Wireframing': 'fas fa-pencil-ruler',
+          'JavaScript': 'fab fa-js',
+          'CSS': 'fab fa-css3-alt',
+          'HTML': 'fab fa-html5',
+          'React': 'fab fa-react',
+          'Vue': 'fab fa-vuejs',
+          'Node.js': 'fab fa-node-js'
+        }
       };
     },
     computed: {
+      tabCounts() {
+        return {
+          all: this.allApplications.length,
+          shortlisted: this.shortlistedApplications.length,
+          accepted: this.acceptedApplications.length
+        }
+      },
       filteredApplications() {
         let apps = this.allApplications;
         
@@ -312,6 +435,9 @@
       },
       filteredShortlisted() {
         return this.sortApps([...this.shortlistedApplications]);
+      },
+      filteredAccepted() {
+        return this.sortApps([...this.acceptedApplications]);
       }
     },
     async created() {
@@ -320,33 +446,32 @@
       await this.fetchCandidatesData();
     },
     methods: {
-        async fetchJob() {
-  try {
-    const response = await fetch(`http://localhost:3000/jobs/${this.id}`);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-
-    const data = await response.json();
-    
-    if (!data || !data.title) {
-      console.warn('Job data exists but has no title:', data);
-      this.job = { title: 'Untitled Position', ...data };
-    } else {
-      this.job = data;
-    }
-    
-  } catch (error) {
-    console.error('Error fetching job:', error);
-    this.job = { 
-      id: this.id,
-      title: 'Position Not Available',
-      company: 'Unknown Company'
-    };
-  }
-},
+      async fetchJob() {
+        try {
+          const response = await fetch(`http://localhost:3000/jobs/${this.id}`);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          
+          if (!data || !data.title) {
+            console.warn('Job data exists but has no title:', data);
+            this.job = { title: 'Untitled Position', ...data };
+          } else {
+            this.job = data;
+          }
+          
+        } catch (error) {
+          console.error('Error fetching job:', error);
+          this.job = { 
+            id: this.id,
+            title: 'Position Not Available',
+            company: 'Unknown Company'
+          };
+        }
+      },
       
       async fetchApplications() {
         try {
@@ -354,6 +479,10 @@
             fetch(`http://localhost:3000/applications?jobId=${this.id}`),
             fetch('http://localhost:3000/candidates')
           ]);
+          
+          if (!appsResponse.ok || !candidatesResponse.ok) {
+            throw new Error('Failed to fetch data');
+          }
           
           const applications = await appsResponse.json();
           this.candidatesData = await candidatesResponse.json();
@@ -368,6 +497,7 @@
               experience: candidate.experience || 0,
               education: candidate.education || 'Not specified',
               appliedDate: app.appliedDate || new Date().toISOString(),
+              acceptedDate: app.acceptedDate || null,
               status: app.status || 'pending',
               cvUrl: candidate.resumeUrl || '#',
               candidateData: candidate
@@ -375,6 +505,7 @@
           });
           
           this.shortlistedApplications = this.allApplications.filter(app => app.status === 'shortlisted');
+          this.acceptedApplications = this.allApplications.filter(app => app.status === 'accepted');
           
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -480,28 +611,224 @@
         }
       },
       
+      async acceptCandidate(application) {
+        try {
+          const acceptedDate = new Date().toISOString();
+          
+          const response = await fetch(`http://localhost:3000/applications/${application.id}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+              status: 'accepted',
+              acceptedDate: acceptedDate
+            })
+          });
+          
+          if (!response.ok) throw new Error('Failed to accept application');
+          
+          application.status = 'accepted';
+          application.acceptedDate = acceptedDate;
+          this.shortlistedApplications = this.allApplications.filter(app => app.status === 'shortlisted');
+          this.acceptedApplications = this.allApplications.filter(app => app.status === 'accepted');
+          
+          this.$notify({
+            title: 'Candidate Accepted',
+            text: `${application.candidateName} has been accepted for this position`,
+            type: 'success'
+          });
+          
+        } catch (error) {
+          console.error('Error accepting application:', error);
+          this.$notify({
+            title: 'Error',
+            text: 'Failed to accept candidate',
+            type: 'error'
+          });
+        }
+      },
+      
+      async rejectCandidate(application) {
+        try {
+          const response = await fetch(`http://localhost:3000/applications/${application.id}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status: 'rejected' })
+          });
+          
+          if (!response.ok) throw new Error('Failed to reject application');
+          
+          application.status = 'rejected';
+          this.acceptedApplications = this.allApplications.filter(app => app.status === 'accepted');
+          
+          this.$notify({
+            title: 'Candidate Rejected',
+            text: `${application.candidateName} has been rejected`,
+            type: 'warn'
+          });
+          
+        } catch (error) {
+          console.error('Error rejecting application:', error);
+          this.$notify({
+            title: 'Error',
+            text: 'Failed to reject candidate',
+            type: 'error'
+          });
+        }
+      },
+      
+      contactCandidate(candidate) {
+        // This could be expanded to open an email client or messaging interface
+        const subject = `Regarding Your Application for ${this.job.title}`;
+        const body = `Dear ${candidate.name},\n\n`;
+        const mailtoLink = `mailto:${candidate.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        
+        window.open(mailtoLink, '_blank');
+      },
+      
       downloadCV(application) {
-        window.open(application.cvUrl, '_blank');
+        if (application.cvUrl) {
+          window.open(application.cvUrl, '_blank');
+        } else {
+          this.$notify({
+            title: 'Error',
+            text: 'CV not available for download',
+            type: 'error'
+          });
+        }
       },
       
       downloadResume(candidate) {
         if (candidate.resumeUrl) {
           window.open(candidate.resumeUrl, '_blank');
+        } else {
+          this.$notify({
+            title: 'Error',
+            text: 'Resume not available for download',
+            type: 'error'
+          });
         }
       }
     }
   };
   </script>
   
+  
   <style scoped>
   
-  .applications-page {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  
+.applications-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.application-card.accepted {
+  border-left: 4px solid #28a745;
+  background-color: rgba(40, 167, 69, 0.05);
+}
+
+.application-card.shortlisted {
+  border-left: 4px solid #ffc107;
+  background-color: rgba(255, 193, 7, 0.05);
+}
+
+.accept-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+}
+
+.accept-btn:hover {
+  background-color: #218838;
+}
+
+.reject-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+}
+
+.reject-btn:hover {
+  background-color: #c82333;
+}
+
+.contact-btn {
+  background-color: #17a2b8;
+  color: white;
+  border: none;
+}
+
+.contact-btn:hover {
+  background-color: #138496;
+}
+
+.badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.accepted-badge {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.shortlisted-badge {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.action-section {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+  margin-top: 20px;
+}
+
+.vue-notification {
+  padding: 15px;
+  margin: 10px;
+  font-size: 14px;
+  color: white;
+  border-radius: 4px;
+}
+
+.vue-notification.success {
+  background-color: #28a745;
+}
+
+.vue-notification.error {
+  background-color: #dc3545;
+}
+
+.vue-notification.warn {
+  background-color: #ffc107;
+  color: #333;
+}
+@media (max-width: 768px) {
+  .action-section {
+    flex-direction: column;
   }
   
+  .application-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .application-actions button {
+    width: 100%;
+  }
+}
   .breadcrumb {
     margin-bottom: 20px;
     font-size: 14px;
@@ -545,17 +872,12 @@
   }
   
   .controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 15px;
+ 
   }
   
   .tabs {
-    display: flex;
-    gap: 10px;
+    
     border-bottom: 1px solid #eee;
     padding-bottom: 10px;
   }
@@ -565,10 +887,7 @@
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+ 
   }
   
   .tabs button.active {
