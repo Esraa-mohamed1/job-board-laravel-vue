@@ -1,5 +1,5 @@
 <template>
-    <div class="col-md-2-5 sidebar py-3 border-end">
+    <div class="col-md-2-5 sidebar py-3 border-end bg-light">
       <div class="d-flex align-items-center px-3 mb-3">
         <img src="@/assets/logo.svg" alt="MyJob Logo" width="18" class="me-2" />
         <span class="fw-bold text-primary small">MyJob</span>
@@ -67,7 +67,7 @@
   
   <style scoped>
   .sidebar-menu-item a:hover {
-    background-color: #f0f0f0;
+    background-color: #ffffff;
     color: #0d6efd !important;
   }
   </style>

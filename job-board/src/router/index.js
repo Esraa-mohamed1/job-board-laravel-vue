@@ -4,6 +4,7 @@ import EmployerLayout from '../layouts/EmployerLayout.vue'
 import EmployerProfile from '../views/employer/EmployerProfile.vue'
 import CandidateDashboard from '../views/candidate/dashboard.vue'
 import CandidateProfile from '../views/candidate/myprofile.vue'
+import findjob from '../views/candidate/findJob.vue'
 import Login from '../views/auth/login.vue'
 
 import profile from '../views/employer/profile.vue'
@@ -11,6 +12,10 @@ import EmployerDashboard from '../views/employer/EmployerDashboard.vue'
 import EmployerOverview from '@/views/employer/Auth/EmployerOverview.vue'
 
 import admindashboard from '../views/admin/home.vue'
+import candidateHome from '../views/candidate/home.vue'
+import jobDetails from '../views/candidate/jobDetails.vue'
+import jobAlert from '../views/candidate/jobAlert.vue'
+import candidateSupport from '../views/candidate/candidateSupport.vue'
 
 
 
@@ -22,7 +27,7 @@ const routes = [
   {
     path: '/register',
     name: 'register',
-    component: () => import('@/views/employer/Auth/Register.vue') // updated path
+    component: () => import('@/views/employer/Auth/Register.vue') 
   },
 
 
@@ -32,7 +37,7 @@ const routes = [
   {
     path: '/reset-password',
     name: 'reset-password', 
-    component: () => import('@/views/employer/Auth/ResetPassword.vue'), // updated path
+    component: () => import('@/views/employer/Auth/ResetPassword.vue'), 
     props: (route) => ({ token: route.query.token })
   },
 
@@ -93,6 +98,41 @@ const routes = [
     }
     ]
   },
+
+
+
+  {
+    path: '/candidate',
+  name: 'candidate',
+  component: candidateHome,
+  children: [
+    {
+      path: '/dashboard',
+      component: CandidateDashboard
+      
+    },
+    {
+      path: '/findjob',
+      component: findjob
+    },
+    {
+      path: '/jobs/:id',
+      name: 'JobDetails',
+      component: jobDetails
+    },
+    {
+        path: '/alerts',
+        component:jobAlert
+      },
+    
+    {
+        path: '/Candidate-Support',
+        component: candidateSupport
+      },
+    ]
+    
+  },
+
   {
     path: '/',
     component: CandidateDashboard
@@ -101,11 +141,12 @@ const routes = [
     path: '/login',
     component: Login
   },
+
 ,
   {
     path: '/forgot-password',
     name: 'forgot-password',
-    component: () => import('@/views/employer/Auth/ForgotPassword.vue'), // fixed casing
+    component: () => import('@/views/employer/Auth/ForgotPassword.vue'), 
   },
  ,
   {
@@ -125,6 +166,12 @@ const routes = [
         path: 'applications',
         component: () => import('@/views/candidate/applications.vue')
       },
+      {
+        path: '/findjob',
+        component: findjob,
+      },
+     
+
       // {
       //   path: 'alerts',
       //   component: () => import('@/views/candidate/alerts.vue')

@@ -1,6 +1,5 @@
 <template>
     <div class="dashboard-container">
-      <!-- Top Navigation Bar -->
       <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom py-2">
         <div class="container-fluid px-3 px-lg-4 ">
           <div class="d-flex align-items-center">

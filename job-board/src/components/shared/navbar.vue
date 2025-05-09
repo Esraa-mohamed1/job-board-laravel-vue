@@ -1,24 +1,19 @@
 
-
 <template>
-    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-2 sticky-top">
-      <div class="container-fluid px-3 px-lg-4">
-        <router-link class="navbar-brand me-3 me-lg-4" to="/">
-          <img src="@/assets/logo.svg" alt="MyJob Logo" width="24" class="d-inline-block align-text-top" />
-          <span class="fw-bold text-primary ms-2 fs-5">MyJob</span>
-        </router-link>
-  
-        <button 
-          class="navbar-toggler" 
-          type="button" 
-          @click="toggleNavbar"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-  
-        <div class="collapse navbar-collapse" :class="{ show: navbarOpen }" id="navbarContent">
-          <div class="navbar-nav me-auto d-flex flex-column flex-lg-row gap-1 gap-lg-2">
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-2 sticky-top">
+    <div class="container-fluid px-3 px-lg-4">
+      <button 
+        class="navbar-toggler" 
+        type="button" 
+        @click="toggleNavbar"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" :class="{ show: navbarOpen }" id="navbarContent">
+        <div class="d-flex flex-grow-1 justify-content-center">
+          <div class="navbar-nav d-flex flex-column flex-lg-row gap-1 gap-lg-2">
             <router-link 
               v-for="(item, index) in navItems" 
               :key="index"
@@ -31,38 +26,42 @@
               {{ $t(item.titleKey) }}
             </router-link>
           </div>
-  
-          <div class="d-flex flex-column flex-lg-row align-items-center mt-3 mt-lg-0">
-            <span class="me-3 text-muted mb-2 mb-lg-0">
-              <i class="fas fa-phone-alt me-1"></i> +1 202-555-0156
-            </span>
-            <div class="dropdown">
-              <button 
-                class="btn btn-sm dropdown-toggle d-flex align-items-center py-1" 
-                type="button" 
-                @click="toggleDropdown"
-              >
-                <img :src="currentLanguage.flag" width="16" :alt="currentLanguage.name" class="me-1" />
-                <span class="small">{{ currentLanguage.name }}</span>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end" :class="{ show: dropdownOpen }">
-                <li v-for="(lang, index) in languages" :key="index">
-                  <a 
-                    class="dropdown-item small d-flex align-items-center" 
-                    href="#"
-                    @click.prevent="changeLanguage(lang)"
-                  >
-                    <img :src="lang.flag" width="16" :alt="lang.name" class="me-2" />
-                    {{ lang.name }}
-                  </a>
-                </li>
-              </ul>
-            </div>
+        </div>
+
+
+
+        <div class="d-flex flex-column flex-lg-row align-items-center px-5 mt-3 mt-lg-0 ms-lg-auto">
+          <span class="me-3 text-muted mb-2 mb-lg-0">
+            <i class="fas fa-phone-alt me-1"></i> +1 202-555-0156
+          </span>
+          <div class="dropdown">
+            <button 
+              class="btn btn-sm dropdown-toggle d-flex align-items-center py-1" 
+              type="button" 
+              @click="toggleDropdown"
+            >
+              <img :src="currentLanguage.flag" width="16" :alt="currentLanguage.name" class="me-1" />
+              <span class="small">{{ currentLanguage.name }}</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" :class="{ show: dropdownOpen }">
+              <li v-for="(lang, index) in languages" :key="index">
+                <a 
+                  class="dropdown-item small d-flex align-items-center" 
+                  href="#"
+                  @click.prevent="changeLanguage(lang)"
+                >
+                  <img :src="lang.flag" width="16" :alt="lang.name" class="me-2" />
+                  {{ lang.name }}
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
-    </nav>
-  </template>
+    </div>
+  </nav>
+</template>
+
   
 
 
@@ -78,11 +77,10 @@ const { locale, t } = useI18n()
 
 const navItems = [
   { titleKey: 'nav.home', path: '/' },
-  { titleKey: 'nav.jobs', path: '/jobs' },
-  { titleKey: 'nav.employers', path: '/employers' },
+  { titleKey: 'nav.jobs', path: '/findjob' },
   { titleKey: 'nav.dashboard', path: '/dashboard' },
   { titleKey: 'nav.alerts', path: '/alerts' },
-  { titleKey: 'nav.support', path: '/support' }
+  { titleKey: 'nav.support', path: '/Candidate-Support' }
 ]
 
 const languages = [
