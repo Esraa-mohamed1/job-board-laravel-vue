@@ -163,32 +163,74 @@
   ],
   "jobs": [
     {
-      "id": 1,
-      "title": "Frontend Developer",
-      "company": {
-        "name": "Google",
-        "logo": "../assets/google-icon.svg",
-        "banner": "../assets/google-icon.svg"
-      },
-      "location": "Mountain View, CA",
-      "salary": "$120,000 - $150,000",
-      "type": "Full-Time",
-      "postedDate": "2025-05-01T14:00:00Z",
-      "description": "We are looking for a skilled Frontend Developer to join our team.",
-      "responsibilities": ["Develop and maintain front-end features."],
-      "skills": ["HTML", "CSS", "JavaScript", "React.js"],
-      "contact": {
-        "email": "jobs@google.com",
-        "phone": "+1 800-555-0199"
-      }
+      "id": "d077",
+      "title": "MyJob",
+      "type": "internship",
+      "category": "development",
+      "location": "Welcome",
+      "salaryType": "range",
+      "minSalary": 1500,
+      "maxSalary": 2000,
+      "fixedSalary": 2222,
+      "salaryTax": "",
+      "education": "bachelor",
+      "experience": "entry",
+      "level": "intern",
+      "description": "eeerewr",
+      "responsibilities": "eeeewrwrrrr",
+      "skills": [
+        "JS",
+        "Css"
+      ],
+      "keywords": "eeee, weew, wwwes, doctor",
+      "endDate": "Expired",
+      "status": "Active"
     }
   ],
   "applications": [
     {
       "id": "1",
-      "jobId": 1,
+      "jobId": "d077",
       "candidateId": "1746401689981",
-      "status": "pending"
+      "status": "pending",
+      "appliedDate": "2023-06-15T10:30:00Z"
+    },
+    {
+      "id": "2",
+      "jobId": "d077",
+      "candidateId": "2746401689982",
+      "status": "shortlisted",
+      "appliedDate": "2023-06-10T14:45:00Z"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "1746401689981",
+      "name": "Esther Howard",
+      "position": "Website Designer (UI/UX)",
+      "bio": "I've been passionate about graphic design and digital art from an early age...",
+      "coverLetter": "Dear Sir,\n\nI am writing to express my interest...",
+      "experience": 7,
+      "education": "Master Degree",
+      "nationality": "Bangladesh",
+      "location": "Beverly Hills, California 90102",
+      "phone": "+1-202-555-0141",
+      "email": "esther.howard@gmail.com",
+      "resumeUrl": "/resumes/esther-howard.pdf"
+    },
+    {
+      "id": "2746401689982",
+      "name": "John Smith",
+      "position": "Product Designer",
+      "bio": "Experienced product designer with 5 years in the field...",
+      "coverLetter": "Dear Hiring Manager,\n\nI'm excited to apply...",
+      "experience": 5,
+      "education": "Bachelor Degree",
+      "nationality": "USA",
+      "location": "New York, NY 10001",
+      "phone": "+1-212-555-1234",
+      "email": "john.smith@example.com",
+      "resumeUrl": "/resumes/john-smith.pdf"
     }
   ]
 }
