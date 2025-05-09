@@ -56,7 +56,7 @@ const routes = [
   {
     path: '/employer/edit/:id',
     name: 'EmployerProfile',
-    component: () => import('@/views/employer/EmployerProfile.vue'),
+    component:EmployerProfile ,
     props: true
   },
 
