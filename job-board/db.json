@@ -17,23 +17,9 @@
     {
       "id": "1746401689981",
       "email": "omarokstar2001@gmail.com",
-      "password": "123456",
-      "role": "candidate",
-      "createdAt": "2025-05-04T23:34:49.981Z"
-    },
-    {
-      "id": "1746401698156",
-      "email": "omarokstar2001@gmail.com",
-      "password": "123456",
-      "role": "candidate",
-      "createdAt": "2025-05-04T23:34:58.156Z"
-    },
-    {
-      "id": "1746401766303",
-      "email": "omarokstar2001@gmail.com",
       "password": "omar@123",
       "role": "candidate",
-      "createdAt": "2025-05-04T23:36:06.303Z"
+      "createdAt": "2025-05-04T23:34:49.981Z"
     },
     {
       "id": "1746401773579",
@@ -43,97 +29,6 @@
       "createdAt": "2025-05-04T23:36:13.579Z"
     },
     {
-      "id": "1746401822166",
-      "email": "omarokstar2001@gmail.com",
-      "password": "123456",
-      "role": "candidate",
-      "createdAt": "2025-05-04T23:37:02.166Z"
-    },
-    {
-      "id": "1746401828659",
-      "email": "asdasdasdas@gmail.com",
-      "password": "123456",
-      "role": "candidate",
-      "createdAt": "2025-05-04T23:37:08.659Z"
-    },
-    {
-      "id": "1746401835606",
-      "email": "asdasdasdas@gmail.com",
-      "password": "123456",
-      "role": "candidate",
-      "createdAt": "2025-05-04T23:37:15.606Z"
-    },
-    {
-      "id": "1746402487309",
-      "email": "omarokstar2001@gmail.com",
-      "password": "omar@123",
-      "role": "candidate",
-      "createdAt": "2025-05-04T23:48:07.309Z"
-    },
-    {
-      "id": "1746402490724",
-      "email": "omarokstar2001@gmail.com",
-      "password": "omar@123",
-      "role": "candidate",
-      "createdAt": "2025-05-04T23:48:10.724Z"
-    },
-    {
-      "id": "1746402511271",
-      "email": "omarokstar2001@gmail.com",
-      "password": "omar@123",
-      "role": "candidate",
-      "createdAt": "2025-05-04T23:48:31.271Z"
-    },
-    {
-      "id": "1746402718969",
-      "email": "omarokstar2001@gmail.com",
-      "password": "omar@123",
-      "role": "candidate",
-      "createdAt": "2025-05-04T23:51:58.970Z"
-    },
-    {
-      "id": "1746402890511",
-      "email": "omarokstar2001@gmail.com",
-      "password": "123456",
-      "role": "candidate",
-      "createdAt": "2025-05-04T23:54:50.511Z"
-    },
-    {
-      "id": "1746402942797",
-      "email": "omar@1234gmail.com",
-      "password": "116102",
-      "role": "candidate",
-      "createdAt": "2025-05-04T23:55:42.797Z"
-    },
-    {
-      "id": "1746403136749",
-      "email": "omarokstar2001@gmail.com",
-      "password": "123456",
-      "role": "candidate",
-      "createdAt": "2025-05-04T23:58:56.749Z"
-    },
-    {
-      "id": "1746403208512",
-      "email": "omarokstar2001@gmail.com",
-      "password": "123456",
-      "role": "candidate",
-      "createdAt": "2025-05-05T00:00:08.512Z"
-    },
-    {
-      "id": "1746403220293",
-      "email": "omarokstar2001@gmail.com",
-      "password": "123456",
-      "role": "employer",
-      "createdAt": "2025-05-05T00:00:20.293Z"
-    },
-    {
-      "id": "1746490036254",
-      "email": "esraaaaa@gmail.com",
-      "password": "123456",
-      "role": "candidate",
-      "createdAt": "2025-05-06T00:07:16.254Z"
-    },
-    {
       "id": "1746491264145",
       "email": "esraacan@gmail.com",
       "password": "1234567",
@@ -141,32 +36,11 @@
       "createdAt": "2025-05-06T00:27:44.145Z"
     },
     {
-      "id": "1746492252518",
-      "email": "esraacan@gmail.com",
-      "password": "1234567",
-      "role": "candidate",
-      "createdAt": "2025-05-06T00:44:12.518Z"
-    },
-    {
-      "id": "1746492609539",
-      "email": "nadacan@gmail.com",
-      "password": "123456",
-      "role": "candidate",
-      "createdAt": "2025-05-06T00:50:09.539Z"
-    },
-    {
       "id": "1746492623162",
       "email": "nadacan@gmail.com",
       "password": "123456",
       "role": "employer",
       "createdAt": "2025-05-06T00:50:23.162Z"
-    },
-    {
-      "id": "1746500293338",
-      "email": "esraacand@gmail.com",
-      "password": "123456",
-      "role": "candidate",
-      "createdAt": "2025-05-06T02:58:13.338Z"
     },
     {
       "id": "1746663376018",
@@ -181,41 +55,6 @@
       "password": "aliaaalihesh@gmail.com",
       "role": "employer",
       "createdAt": "2025-05-08T12:08:53.204Z"
-    },
-    {
-      "id": "1746717051325",
-      "email": "omarokstar2001@gmail.com",
-      "password": "123456",
-      "role": "candidate",
-      "createdAt": "2025-05-08T15:10:51.325Z"
-    },
-    {
-      "id": "1746717057356",
-      "email": "omarokstar2001@gmail.com",
-      "password": "123456",
-      "role": "candidate",
-      "createdAt": "2025-05-08T15:10:57.356Z"
-    },
-    {
-      "id": "1746717136189",
-      "email": "omarokstar2001@gmail.com",
-      "password": "123456",
-      "role": "employer",
-      "createdAt": "2025-05-08T15:12:16.189Z"
-    },
-    {
-      "id": "1746719903410",
-      "email": "omarokstar2001@gmail.com",
-      "password": "123456",
-      "role": "employer",
-      "createdAt": "2025-05-08T15:58:23.410Z"
-    },
-    {
-      "id": "1746726841951",
-      "email": "omarokstar2001@gmail.com",
-      "password": "123456",
-      "role": "employer",
-      "createdAt": "2025-05-08T17:54:01.951Z"
     }
   ],
   "employers": [
@@ -281,16 +120,16 @@
       "companyInfo": {
         "logo": "",
         "banner": "",
-        "name": "ssssssss",
-        "about": "ssssssssss"
+        "name": "Meni",
+        "about": "ddd"
       },
       "foundingInfo": {
         "organizationType": "corporation",
-        "establishmentYear": "01/02/2010",
-        "companyVision": "ssssssssssssss",
+        "establishmentYear": "12/13/2020",
+        "companyVision": "xx",
         "industryType": "technology",
-        "teamSize": "1-10",
-        "companyWebsite": "https://www.facebook.com/"
+        "teamSize": "11-50",
+        "companyWebsite": "https://www.behance.net/"
       },
       "socialMedia": {
         "socialLinks": [
@@ -320,132 +159,35 @@
         },
         "isComplete": true
       }
-    },
-    {
-      "id": "1746717136189",
-      "userId": "1746717136189",
-      "fullName": "omar",
-      "email": "omarokstar2001@gmail.com",
-      "role": "employer",
-      "profilePhoto": "",
-      "companyName": "asdasda",
-      "createdAt": "2025-05-08T15:12:16.207Z"
-    },
-    {
-      "id": "1746719903410",
-      "userId": "1746719903410",
-      "fullName": "sadasdasdas",
-      "email": "omarokstar2001@gmail.com",
-      "role": "employer",
-      "companyName": "okstar",
-      "createdAt": "2025-05-08T15:58:23.455Z"
-    },
-    {
-      "id": "1746726841951",
-      "userId": "1746726841951",
-      "fullName": "omar",
-      "email": "omarokstar2001@gmail.com",
-      "role": "employer",
-      "companyName": "okstar",
-      "createdAt": "2025-05-08T17:54:02.350Z"
     }
   ],
-  
-    "jobs": [
-      {
-        "id": 1,
-        "title": "Frontend Developer",
-        "company": {
-          "name": "Google",
-          "logo": "../assets/google-icon.svg",
-          "banner": "../assets/google-banner.jpg"
-        },
-        "location": "Mountain View, CA",
-        "salary": "$120,000 - $150,000",
-        "type": "Full-Time",
-        "postedDate": "2025-05-01",
-        "description": "We are looking for a skilled Frontend Developer to join our team. You will work on building user-friendly and innovative web applications.",
-        "responsibilities": [
-          "Develop and maintain front-end features.",
-          "Collaborate with back-end developers and designers.",
-          "Ensure the technical feasibility of UI/UX designs."
-        ],
-        "skills": [
-          "HTML",
-          "CSS",
-          "JavaScript",
-          "React.js"
-        ],
-        "contact": {
-          "email": "jobs@google.com",
-          "phone": "+1 800-555-0199"
-        }
+  "jobs": [
+    {
+      "id": 1,
+      "title": "Frontend Developer",
+      "company": {
+        "name": "Google",
+        "logo": "../assets/google-icon.svg",
+        "banner": "../assets/google-icon.svg"
       },
-      {
-        "id": 2,
-        "title": "Backend Developer",
-        "company": {
-          "name": "Amazon",
-          "logo": "../assets/amazon-icon.svg",
-          "banner": "../assets/amazon-banner.jpg"
-        },
-        "location": "Seattle, WA",
-        "salary": "$110,000 - $140,000",
-        "type": "Full-Time",
-        "postedDate": "2025-05-03",
-        "description": "Join Amazon as a Backend Developer to work on scalable and efficient back-end systems that power our global platform.",
-        "responsibilities": [
-          "Design and implement RESTful APIs.",
-          "Optimize server-side architecture for scalability.",
-          "Collaborate with the front-end team to integrate user-facing elements."
-        ],
-        "skills": [
-          "Node.js",
-          "Express.js",
-          "MongoDB",
-          "AWS"
-        ],
-        "contact": {
-          "email": "careers@amazon.com",
-          "phone": "+1 800-555-0200"
-        }
-      },
-      {
-        "id": 3,
-        "title": "UI/UX Designer",
-        "company": {
-          "name": "Slack",
-          "logo": "../assets/slack-icon.svg",
-          "banner": "../assets/slack-banner.jpg"
-        },
-        "location": "San Francisco, CA",
-        "salary": "$90,000 - $120,000",
-        "type": "Remote",
-        "postedDate": "2025-05-02",
-        "description": "Slack is seeking a talented UI/UX Designer to help us create user-friendly and visually appealing designs.",
-        "responsibilities": [
-          "Create wireframes, prototypes, and mockups.",
-          "Work closely with developers to ensure design consistency.",
-          "Conduct user research to improve usability."
-        ],
-        "skills": [
-          "Figma",
-          "Adobe XD",
-          "User Research",
-          "Interaction Design"
-        ],
-        "contact": {
-          "email": "design@slack.com",
-          "phone": "+1 800-555-0211"
-        }
+      "location": "Mountain View, CA",
+      "salary": "$120,000 - $150,000",
+      "type": "Full-Time",
+      "postedDate": "2025-05-01T14:00:00Z",
+      "description": "We are looking for a skilled Frontend Developer to join our team.",
+      "responsibilities": ["Develop and maintain front-end features."],
+      "skills": ["HTML", "CSS", "JavaScript", "React.js"],
+      "contact": {
+        "email": "jobs@google.com",
+        "phone": "+1 800-555-0199"
       }
-    ],
-  
+    }
+  ],
   "applications": [
     {
       "id": "1",
       "jobId": 1,
-      "candidateId": 3,
+      "candidateId": "1746401689981",
       "status": "pending"
     }
   ]
