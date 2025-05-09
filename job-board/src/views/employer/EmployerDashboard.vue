@@ -20,7 +20,7 @@
               <router-link class="nav-link small px-2" to="/">Home</router-link>
               <router-link class="nav-link small px-2" to="/candidates">Find Candidate</router-link>
               <router-link class="nav-link small px-2" to="/employer/dashboard">Dashboard</router-link>
-              <router-link class="nav-link small px-2" to="/my-jobs">My Jobs</router-link>
+              <router-link class="nav-link small px-2" to="/myjobs">My Jobs</router-link>
               <router-link class="nav-link small px-2" to="/applications">Applications</router-link>
               <router-link class="nav-link small px-2" to="/support">Customer Support</router-link>
             </div>
@@ -88,45 +88,12 @@
               
               <div class="sidebar-menu-item mb-2">
                 <router-link 
-                  to="/employer/dashboard/my-jobs" 
+                  to="/employer/dashboard/myjobs" 
                   class="d-flex align-items-center text-decoration-none py-2 px-2 rounded"
                   :class="{ 'text-primary bg-light': $route.path.includes('my-jobs') }"
                 >
                   <i class="fas fa-briefcase me-2" :class="{ 'text-muted': !$route.path.includes('my-jobs') }"></i>
                   <span class="small">My Jobs</span>
-                </router-link>
-              </div>
-              
-              <div class="sidebar-menu-item mb-2">
-                <router-link 
-                  to="/employer/dashboard/applications" 
-                  class="d-flex align-items-center text-decoration-none py-2 px-2 rounded"
-                  :class="{ 'text-primary bg-light': $route.path.includes('applications') }"
-                >
-                  <i class="fas fa-file-alt me-2" :class="{ 'text-muted': !$route.path.includes('applications') }"></i>
-                  <span class="small">Applications</span>
-                </router-link>
-              </div>
-              
-              <div class="sidebar-menu-item mb-2">
-                <router-link 
-                  to="/employer/dashboard/saved-candidates" 
-                  class="d-flex align-items-center text-decoration-none py-2 px-2 rounded"
-                  :class="{ 'text-primary bg-light': $route.path.includes('saved-candidates') }"
-                >
-                  <i class="fas fa-heart me-2" :class="{ 'text-muted': !$route.path.includes('saved-candidates') }"></i>
-                  <span class="small">Saved Candidates</span>
-                </router-link>
-              </div>
-              
-              <div class="sidebar-menu-item mb-2">
-                <router-link 
-                  to="/employer/dashboard/billing" 
-                  class="d-flex align-items-center text-decoration-none py-2 px-2 rounded"
-                  :class="{ 'text-primary bg-light': $route.path.includes('billing') }"
-                >
-                  <i class="fas fa-credit-card me-2" :class="{ 'text-muted': !$route.path.includes('billing') }"></i>
-                  <span class="small">Plans & Billing</span>
                 </router-link>
               </div>
               

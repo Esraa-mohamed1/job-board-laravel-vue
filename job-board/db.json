@@ -397,7 +397,9 @@
     {
       "id": "1",
       "title": "Frontend Developer",
-      "employerId": 2
+      "employerId": 2,
+      "type": "full-time",
+      "endDate": "Mar 15, 2026"
     },
     {
       "id": "2",
@@ -409,6 +411,30 @@
     },
     {
       "id": "8480"
+    },
+    {
+      "id": "d077",
+      "title": "MyJob",
+      "type": "internship",
+      "category": "development",
+      "location": "Welcome",
+      "salaryType": "range",
+      "minSalary": 1500,
+      "maxSalary": 2000,
+      "fixedSalary": 2222,
+      "salaryTax": "",
+      "education": "bachelor",
+      "experience": "entry",
+      "level": "intern",
+      "description": "eeerewr",
+      "responsibilities": "eeeewrwrrrr",
+      "skills": [
+        "JS",
+        "Css"
+      ],
+      "keywords": "eeee, weew, wwwes, doctor",
+      "endDate": "Jan 19, 2025",
+      "status": "Active"
     }
   ],
   "applications": [
