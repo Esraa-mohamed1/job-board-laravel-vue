@@ -12,7 +12,10 @@ import EmployerDashboard from '../views/employer/EmployerDashboard.vue'
 import EmployerOverview from '@/views/employer/Auth/EmployerOverview.vue'
 
 import admindashboard from '../views/admin/home.vue'
-import home from '../views/candidate/home.vue'
+import candidateHome from '../views/candidate/home.vue'
+import jobDetails from '../views/candidate/jobDetails.vue'
+import jobAlert from '../views/candidate/jobAlert.vue'
+import candidateSupport from '../views/candidate/candidateSupport.vue'
 
 
 
@@ -73,7 +76,7 @@ const routes = [
   {
     path: '/candidate',
   name: 'candidate',
-  component: home,
+  component: candidateHome,
   children: [
     {
       path: '/dashboard',
@@ -84,13 +87,23 @@ const routes = [
       path: '/findjob',
       component: findjob
     },
+    {
+      path: '/jobs/:id',
+      name: 'JobDetails',
+      component: jobDetails
+    },
+    {
+        path: '/alerts',
+        component:jobAlert
+      },
+    
+    {
+        path: '/Candidate-Support',
+        component: candidateSupport
+      },
     ]
+    
   },
-
-  
-
-
-
 
   {
     path: '/',
@@ -105,7 +118,7 @@ const routes = [
   {
     path: '/forgot-password',
     name: 'forgot-password',
-    component: () => import('@/views/employer/Auth/ForgotPassword.vue'), // fixed casing
+    component: () => import('@/views/employer/Auth/ForgotPassword.vue'), 
   },
  ,
   {
@@ -127,8 +140,9 @@ const routes = [
       },
       {
         path: '/findjob',
-        component: findjob
+        component: findjob,
       },
+     
 
       // {
       //   path: 'alerts',

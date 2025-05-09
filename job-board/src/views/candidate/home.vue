@@ -6,11 +6,13 @@
       <div class="container-fluid px-0">
         <div class="row g-0">
        
-          <div class="col-md-9-5 p-4 bg-white">
-            <RouterView />
+            <div class="col-md-10 offset-md-1 p-4 bg-white">
+        <RouterView />
         </div>
+
       </div>
       </div>
+      
       <footer class="bg-light border-top py-2 mt-auto">
         <div class="container-fluid">
           <div class="d-flex justify-content-center align-items-center">

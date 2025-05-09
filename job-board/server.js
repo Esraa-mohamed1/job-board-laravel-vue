@@ -6,6 +6,11 @@ const middlewares = defaults()
 server.use(middlewares)
 server.use(bodyParser)
 
+server.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
+
 // Custom middleware to handle missing employers
 server.use((req, res, next) => {
   if (req.method === 'PUT' && req.path.includes('/employers/')) {
