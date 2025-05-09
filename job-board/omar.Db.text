@@ -1,0 +1,194 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "email": "employer@example.com",
+      "password": "123456",
+      "role": "employer",
+      "name": "John Employer"
+    },
+    {
+      "id": "2",
+      "email": "candidate@example.com",
+      "password": "123456",
+      "role": "candidate",
+      "createdAt": "2025-05-04T21:46:16.453Z"
+    },
+    {
+      "id": "1746401689981",
+      "email": "omarokstar2001@gmail.com",
+      "password": "omar@123",
+      "role": "candidate",
+      "createdAt": "2025-05-04T23:34:49.981Z"
+    },
+    {
+      "id": "1746401773579",
+      "email": "omarokstar2001@gmail.com",
+      "password": "omar@123",
+      "role": "employer",
+      "createdAt": "2025-05-04T23:36:13.579Z"
+    },
+    {
+      "id": "1746491264145",
+      "email": "esraacan@gmail.com",
+      "password": "1234567",
+      "role": "candidate",
+      "createdAt": "2025-05-06T00:27:44.145Z"
+    },
+    {
+      "id": "1746492623162",
+      "email": "nadacan@gmail.com",
+      "password": "123456",
+      "role": "employer",
+      "createdAt": "2025-05-06T00:50:23.162Z"
+    },
+    {
+      "id": "1746663376018",
+      "email": "mai1@gmail.com",
+      "password": "mai1@gmail.com",
+      "role": "employer",
+      "createdAt": "2025-05-08T00:16:16.018Z"
+    },
+    {
+      "id": "1746706133204",
+      "email": "aliaaalihesh@gmail.com",
+      "password": "aliaaalihesh@gmail.com",
+      "role": "employer",
+      "createdAt": "2025-05-08T12:08:53.204Z"
+    }
+  ],
+  "employers": [
+    {
+      "id": "1746663376018",
+      "userId": "1746663376018",
+      "fullName": "Mai",
+      "email": "mai1@gmail.com",
+      "role": "employer",
+      "companyName": "GDG",
+      "createdAt": "2025-05-08T00:16:16.063Z",
+      "companyInfo": {
+        "logo": "",
+        "banner": "",
+        "name": "DDD",
+        "about": "asas"
+      },
+      "foundingInfo": {
+        "organizationType": "corporation",
+        "establishmentYear": "12/04/2020",
+        "companyVision": "ddfff",
+        "industryType": "finance",
+        "teamSize": "11-50",
+        "companyWebsite": "https://github.com/aliaa11"
+      },
+      "socialMedia": {
+        "socialLinks": [
+          {
+            "platform": "facebook",
+            "url": "https://www.facebook.com/"
+          },
+          {
+            "platform": "facebook",
+            "url": "https://www.facebook.com/"
+          },
+          {
+            "platform": "facebook",
+            "url": "https://www.facebook.com/"
+          }
+        ]
+      },
+      "contactInfo": {
+        "contactInfo": {
+          "phone": "+201069730946",
+          "email": "mai1@gmail.com",
+          "address": {
+            "street": "Hamam",
+            "city": "Minya",
+            "country": "Egypt"
+          }
+        },
+        "isComplete": true
+      }
+    },
+    {
+      "id": "1746706133204",
+      "userId": "1746706133204",
+      "fullName": "Aliaa",
+      "email": "aliaaalihesh@gmail.com",
+      "role": "employer",
+      "companyName": "MA",
+      "createdAt": "2025-05-08T12:08:53.247Z",
+      "companyInfo": {
+        "logo": "",
+        "banner": "",
+        "name": "Meni",
+        "about": "ddd"
+      },
+      "foundingInfo": {
+        "organizationType": "corporation",
+        "establishmentYear": "12/13/2020",
+        "companyVision": "xx",
+        "industryType": "technology",
+        "teamSize": "11-50",
+        "companyWebsite": "https://www.behance.net/"
+      },
+      "socialMedia": {
+        "socialLinks": [
+          {
+            "platform": "facebook",
+            "url": "https://www.facebook.com/"
+          },
+          {
+            "platform": "facebook",
+            "url": "https://www.facebook.com/"
+          },
+          {
+            "platform": "facebook",
+            "url": "https://www.facebook.com/"
+          }
+        ]
+      },
+      "contactInfo": {
+        "contactInfo": {
+          "phone": "+2010222222",
+          "email": "aliaaalihesh@gmail.com",
+          "address": {
+            "street": "Hamam",
+            "city": "Minya",
+            "country": "Egypt"
+          }
+        },
+        "isComplete": true
+      }
+    }
+  ],
+  "jobs": [
+    {
+      "id": 1,
+      "title": "Frontend Developer",
+      "company": {
+        "name": "Google",
+        "logo": "../assets/google-icon.svg",
+        "banner": "../assets/google-icon.svg"
+      },
+      "location": "Mountain View, CA",
+      "salary": "$120,000 - $150,000",
+      "type": "Full-Time",
+      "postedDate": "2025-05-01T14:00:00Z",
+      "description": "We are looking for a skilled Frontend Developer to join our team.",
+      "responsibilities": ["Develop and maintain front-end features."],
+      "skills": ["HTML", "CSS", "JavaScript", "React.js"],
+      "contact": {
+        "email": "jobs@google.com",
+        "phone": "+1 800-555-0199"
+      }
+    }
+  ],
+  "applications": [
+    {
+      "id": "1",
+      "jobId": 1,
+      "candidateId": "1746401689981",
+      "status": "pending"
+    }
+  ]
+}
