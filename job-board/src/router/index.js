@@ -14,12 +14,21 @@ import admindashboard from '../views/admin/home.vue'
 
 
 
+import JobPosting from '@/views/employer/posts/postjosb.vue';
+
+
+
 const routes = [
   {
     path: '/register',
     name: 'register',
     component: () => import('@/views/employer/Auth/Register.vue') // updated path
   },
+
+
+  
+
+
   {
     path: '/reset-password',
     name: 'reset-password', 
@@ -45,6 +54,16 @@ const routes = [
     component: () => import('@/views/employer/EmployerProfile.vue'),
     props: true
   },
+
+
+
+
+
+
+
+
+
+  
   {
     path: '/employer/dashboard',
   name: 'employer-dashboard',
@@ -63,6 +82,15 @@ const routes = [
       name: 'employer-profile',
       component: profile
     },
+    {
+      path: 'post',
+      name: 'JobPosting',
+      component: JobPosting,
+      meta: {
+        requiresAuth: true,
+        role: 'employer'
+      }
+    }
     ]
   },
   {
