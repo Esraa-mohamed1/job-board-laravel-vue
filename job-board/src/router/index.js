@@ -188,6 +188,61 @@ const routes = [
     component: admindashboard,
   },
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // {
+  //   path: '/home',
+  //   name: 'Home',
+  //   component: Home
+  // },
+  {
+    path: '/browsejobs',
+    name: 'BrowseJobs',
+    component: BrowseJobs
+  },
+  {
+    path: '/candidates',
+    name: 'Candidates',
+    component: Candidates
+  },
+  {
+    path: '/blog',
+    name: 'Blog',
+    component: Blog
+  },
+  {
+    path: '/contact',
+    name: 'Contact',
+    component: Contact
+  },
+  // {
+  //   path: '/job-post',
+  //   name: 'JobPost',
+  //   component: JobPost
+  // },
+  // {
+  //   path: '/new-post',
+  //   name: 'NewPost',
+  //   component: NewPost
+  // },
+
+
   
  
 ]

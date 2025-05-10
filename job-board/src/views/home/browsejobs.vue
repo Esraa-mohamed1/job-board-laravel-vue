@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="browse-jobs-page">
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
       <div class="container-fluid px-md-4">
@@ -31,7 +31,7 @@
     <!-- END nav -->
 
     <!-- Hero Section -->
-    <div class="hero-wrap hero-wrap-2" style="background-image: url('/images/bg_1.jpg');" data-stellar-background-ratio="0.5">
+    <div class="hero-wrap hero-wrap-2" data-stellar-background-ratio="0.5">
       <div class="overlay"></div>
       <div class="container">
         <div class="row no-gutters slider-text align-items-end justify-content-start">
@@ -47,14 +47,21 @@
     </div>
 
     <!-- Jobs Section -->
-    <section class="ftco-section bg-light">
+    <section class="ftco-section bg-light jobs-section">
       <div class="container">
-        <div class="row">
+        <div v-if="loading" class="text-center loading-container">
+          <div class="custom-loader"></div>
+          <p>Loading jobs...</p>
+        </div>
+        <div v-else-if="error" class="text-center text-danger error-message">
+          <p>{{ error }}</p>
+        </div>
+        <div v-else class="row">
           <div class="col-lg-9 pr-lg-4">
             <div class="row">
-              <div class="col-md-12 ftco-animate" v-for="(job, index) in filteredJobs" :key="index">
-                <div class="job-post-item p-4 d-block d-lg-flex align-items-center">
-                  <div class="one-third mb-4 mb-md-0">
+              <div class="col-md-12 ftco-animate job-card" v-for="(job, index) in filteredJobs" :key="job.id">
+                <div class="job-post-item p-4 d-flex align-items-center">
+                  <div class="job-details">
                     <div class="job-post-item-header align-items-center">
                       <span class="subadge">{{ job.jobType }}</span>
                       <h2 class="mr-3 text-black">
@@ -65,28 +72,35 @@
                       <div class="mr-3"><span class="icon-layers"></span> <a href="#">{{ job.company }}</a></div>
                       <div><span class="icon-my_location"></span> <span>{{ job.location }}</span></div>
                     </div>
+                    <div class="job-tags mt-2">
+                      <span
+                        v-for="tag in job.tags || [job.category]"
+                        :key="tag"
+                        class="tag-badge"
+                      >{{ tag }}</span>
+                    </div>
                   </div>
-                  <div class="one-forth ml-auto d-flex align-items-center mt-4 md-md-0">
+                  <div class="job-actions ml-auto d-flex align-items-center">
                     <div>
-                      <a href="#" class="icon text-center d-flex justify-content-center align-items-center icon mr-2" @click.prevent="bookmarkJob(job)">
+                      <a href="#" class="icon text-center d-flex justify-content-center align-items-center icon mr-2 bookmark-btn" @click.prevent="bookmarkJob(job)">
                         <span class="icon-heart"></span>
                       </a>
                     </div>
-                    <router-link :to="'/job/' + job.id" class="btn btn-primary py-2">Apply Job</router-link>
+                    <router-link :to="'/job/' + job.id" class="btn btn-primary py-2 apply-btn">Apply Job</router-link>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="row mt-5">
+            <div class="row mt-5" v-if="filteredJobs.length > 0">
               <div class="col text-center">
                 <div class="block-27">
-                  <ul>
-                    <li><a href="#" @click.prevent="changePage(currentPage - 1)">&lt;</a></li>
+                  <ul class="pagination">
+                    <li><a href="#" @click.prevent="changePage(currentPage - 1)"><</a></li>
                     <li v-for="page in totalPages" :key="page" :class="{ active: page === currentPage }">
                       <span v-if="page === currentPage">{{ page }}</span>
                       <a v-else href="#" @click.prevent="changePage(page)">{{ page }}</a>
                     </li>
-                    <li><a href="#" @click.prevent="changePage(currentPage + 1)">&gt;</a></li>
+                    <li><a href="#" @click.prevent="changePage(currentPage + 1)">></a></li>
                   </ul>
                 </div>
               </div>
@@ -94,7 +108,7 @@
           </div>
           <div class="col-lg-3 sidebar">
             <!-- Category Filter -->
-            <div class="sidebar-box bg-white p-4 ftco-animate">
+            <div class="sidebar-box bg-white p-4 ftco-animate filter-card">
               <h3 class="heading-sidebar">Browse Category</h3>
               <form class="search-form mb-3">
                 <div class="form-group">
@@ -102,13 +116,13 @@
                   <input
                     v-model="categorySearch"
                     type="text"
-                    class="form-control"
+                    class="form-control search-input"
                     placeholder="Search..."
                   />
                 </div>
               </form>
               <form class="browse-form">
-                <label v-for="(category, index) in categories" :key="index">
+                <label class="filter-option" v-for="category in categories" :key="category.value">
                   <input
                     type="checkbox"
                     :value="category.value"
@@ -121,7 +135,7 @@
             </div>
 
             <!-- Location Filter -->
-            <div class="sidebar-box bg-white p-4 ftco-animate">
+            <div class="sidebar-box bg-white p-4 ftco-animate filter-card">
               <h3 class="heading-sidebar">Select Location</h3>
               <form class="search-form mb-3">
                 <div class="form-group">
@@ -129,13 +143,13 @@
                   <input
                     v-model="locationSearch"
                     type="text"
-                    class="form-control"
+                    class="form-control search-input"
                     placeholder="Search..."
                   />
                 </div>
               </form>
               <form class="browse-form">
-                <label v-for="(location, index) in locations" :key="index">
+                <label class="filter-option" v-for="location in locations" :key="location.value">
                   <input
                     type="checkbox"
                     :value="location.value"
@@ -148,10 +162,10 @@
             </div>
 
             <!-- Job Type Filter -->
-            <div class="sidebar-box bg-white p-4 ftco-animate">
+            <div class="sidebar-box bg-white p-4 ftco-animate filter-card">
               <h3 class="heading-sidebar">Job Type</h3>
               <form class="browse-form">
-                <label v-for="(jobType, index) in jobTypes" :key="index">
+                <label class="filter-option" v-for="jobType in jobTypes" :key="jobType.value">
                   <input
                     type="checkbox"
                     :value="jobType.value"
@@ -161,36 +175,6 @@
                   {{ jobType.label }}
                 </label>
               </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Newsletter Section -->
-    <section class="ftco-section-parallax">
-      <div class="parallax-img d-flex align-items-center">
-        <div class="container">
-          <div class="row d-flex justify-content-center">
-            <div class="col-md-7 text-center heading-section heading-section-white ftco-animate">
-              <h2>Subscribe to our Newsletter</h2>
-              <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-              <div class="row d-flex justify-content-center mt-4 mb-4">
-                <div class="col-md-12">
-                  <form class="subscribe-form" @submit.prevent="subscribe">
-                    <div class="form-group d-flex">
-                      <input
-                        v-model="newsletterEmail"
-                        type="text"
-                        class="form-control"
-                        placeholder="Enter email address"
-                        required
-                      />
-                      <input type="submit" value="Subscribe" class="submit px-3" />
-                    </div>
-                  </form>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -265,7 +249,7 @@
         <div class="row">
           <div class="col-md-12 text-center">
             <p>
-              Copyright &copy; {{ new Date().getFullYear() }} All rights reserved | This template is made with
+              Copyright © {{ new Date().getFullYear() }} All rights reserved | This template is made with
               <i class="icon-heart text-danger" aria-hidden="true"></i> by
               <a href="https://colorlib.com" target="_blank">Colorlib</a>
             </p>
@@ -275,10 +259,10 @@
     </footer>
 
     <!-- Loader -->
-    <div id="ftco-loader" class="show fullscreen">
+    <div id="ftco-loader" class="fullscreen" :class="{ show: loading }">
       <svg class="circular" width="48px" height="48px">
         <circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" />
-        <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00" />
+        <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#FF69B4" />
       </svg>
     </div>
   </div>
@@ -290,104 +274,10 @@ export default {
   data() {
     return {
       navbarOpen: false,
-      jobs: [
-        {
-          id: 1,
-          title: 'Frontend Development',
-          jobType: 'Partime',
-          company: 'Facebook, Inc.',
-          location: 'Western City, UK',
-          category: 'Website & Software'
-        },
-        {
-          id: 2,
-          title: 'Full Stack Developer',
-          jobType: 'Fulltime',
-          company: 'Google, Inc.',
-          location: 'Western City, UK',
-          category: 'Website & Software'
-        },
-        {
-          id: 3,
-          title: 'Open Source Interactive Developer',
-          jobType: 'Freelance',
-          company: 'New York Times',
-          location: 'Western City, UK',
-          category: 'Website & Software'
-        },
-        {
-          id: 4,
-          title: 'Frontend Development',
-          jobType: 'Partime',
-          company: 'Facebook, Inc.',
-          location: 'Western City, UK',
-          category: 'Website & Software'
-        },
-        {
-          id: 5,
-          title: 'Open Source Interactive Developer',
-          jobType: 'Temporary',
-          company: 'New York Times',
-          location: 'Western City, UK',
-          category: 'Website & Software'
-        },
-        {
-          id: 6,
-          title: 'Full Stack Developer',
-          jobType: 'Fulltime',
-          company: 'Google, Inc.',
-          location: 'Western City, UK',
-          category: 'Website & Software'
-        },
-        {
-          id: 7,
-          title: 'Open Source Interactive Developer',
-          jobType: 'Freelance',
-          company: 'New York Times',
-          location: 'Western City, UK',
-          category: 'Website & Software'
-        },
-        {
-          id: 8,
-          title: 'Frontend Development',
-          jobType: 'Internship',
-          company: 'Facebook, Inc.',
-          location: 'Western City, UK',
-          category: 'Website & Software'
-        },
-        {
-          id: 9,
-          title: 'Open Source Interactive Developer',
-          jobType: 'Temporary',
-          company: 'New York Times',
-          location: 'Western City, UK',
-          category: 'Website & Software'
-        }
-      ],
-      categories: [
-        { label: 'Website & Software', value: 'Website & Software' },
-        { label: 'Education & Training', value: 'Education & Training' },
-        { label: 'Graphics Design', value: 'Graphics Design' },
-        { label: 'Accounting & Finance', value: 'Accounting & Finance' },
-        { label: 'Restaurant & Food', value: 'Restaurant & Food' },
-        { label: 'Health & Hospital', value: 'Health & Hospital' }
-      ],
-      locations: [
-        { label: 'Sydney, Australia', value: 'Sydney, Australia' },
-        { label: 'New York, United States', value: 'New York, United States' },
-        { label: 'Tokyo, Japan', value: 'Tokyo, Japan' },
-        { label: 'Manila, Philippines', value: 'Manila, Philippines' },
-        { label: 'Seoul, South Korea', value: 'Seoul, South Korea' },
-        { label: 'Western City, UK', value: 'Western City, UK' }
-      ],
-      jobTypes: [
-        { label: 'Partime', value: 'Partime' },
-        { label: 'Fulltime', value: 'Fulltime' },
-        { label: 'Internship', value: 'Internship' },
-        { label: 'Temporary', value: 'Temporary' },
-        { label: 'Freelance', value: 'Freelance' },
-        { label: 'Fixed', value: 'Fixed' }
-      ],
+      jobs: [],
+      categories: [],
+      locations: [],
+      jobTypes: [],
       selectedCategories: [],
       selectedLocations: [],
       selectedJobTypes: [],
@@ -395,7 +285,9 @@ export default {
       locationSearch: '',
       newsletterEmail: '',
       currentPage: 1,
-      jobsPerPage: 9
+      jobsPerPage: 9,
+      loading: false,
+      error: null
     };
   },
   computed: {
@@ -426,7 +318,6 @@ export default {
         );
       }
 
-      // Pagination
       const start = (this.currentPage - 1) * this.jobsPerPage;
       const end = start + this.jobsPerPage;
       return filtered.slice(start, end);
@@ -435,12 +326,44 @@ export default {
       return Math.ceil(this.jobs.length / this.jobsPerPage);
     }
   },
+  async mounted() {
+    await this.loadJobsData();
+  },
   methods: {
+    async loadJobsData() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const response = await fetch('/db.json');
+        if (!response.ok) {
+          throw new Error('Failed to fetch jobs data');
+        }
+        const data = await response.json();
+        this.jobs = data.jobs || [];
+        this.categories = [...new Set(this.jobs.map(job => job.category))].map(value => ({
+          value,
+          label: value
+        }));
+        this.locations = [...new Set(this.jobs.map(job => job.location))].map(value => ({
+          value,
+          label: value
+        }));
+        this.jobTypes = [...new Set(this.jobs.map(job => job.jobType))].map(value => ({
+          value,
+          label: value
+        }));
+      } catch (error) {
+        console.error('Error loading jobs:', error);
+        this.error = 'Unable to load jobs. Please try again later.';
+      } finally {
+        this.loading = false;
+      }
+    },
     toggleNavbar() {
       this.navbarOpen = !this.navbarOpen;
     },
     filterJobs() {
-      this.currentPage = 1; // Reset to first page on filter change
+      this.currentPage = 1;
     },
     bookmarkJob(job) {
       console.log('Bookmarked:', job);
@@ -460,6 +383,405 @@ export default {
 };
 </script>
 
-<style scoped>
-/* External styles are loaded from css/style.css, etc. */
+<style scoped lang="scss">
+@use "sass:color";
+
+$primary-color: #1E90FF; // Dodger Blue
+$secondary-color: #87CEFA; // Light Sky Blue
+$accent-color: #FF69B4; // Hot Pink
+$light-accent: #FFB6C1; // Light Pink
+$tag-color: #28A745; // Green for tags
+$bg-light: #F5F7FA; // Light Blue-Gray
+$white: #FFFFFF;
+$border-color: #E6ECF5; // Light Blue Border
+$text-color: #333333;
+$footer-bg: #2F4F4F; // Dark Slate Gray
+$shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+.browse-jobs-page {
+  font-family: 'Roboto', sans-serif;
+  background-color: $bg-light;
+}
+
+// Hero Section
+.hero-wrap-2 {
+  position: relative;
+  background-image: url('https://media.istockphoto.com/id/1013058562/photo/space-travel.jpg?s=612x612&w=is&k=20&c=iPejpvCNMBTzfJPkFNMKSfrsLUJ6vIlbmWdQE_wjczo=');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  .overlay {
+    background: rgba(0, 0, 0, 0.5);
+  }
+  .slider-text {
+    h1.bread {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: $white;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .breadcrumbs {
+      font-size: 1rem;
+      color: $white;
+      a {
+        color: $white;
+        text-decoration: none;
+        &:hover {
+          color: $light-accent;
+        }
+      }
+      .ion-ios-arrow-forward {
+        margin: 0 5px;
+      }
+    }
+  }
+}
+
+// Jobs Section
+.jobs-section {
+  padding: 3rem 0;
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin: 2rem 0;
+    p {
+      font-size: 1.2rem;
+      color: $text-color;
+    }
+    .custom-loader {
+      border: 4px solid $border-color;
+      border-top: 4px solid $accent-color;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  }
+  .error-message {
+    margin: 2rem 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: $accent-color;
+  }
+  .job-card {
+    margin-bottom: 1.5rem;
+    .job-post-item {
+      background: $white;
+      border: 1px solid $border-color;
+      border-radius: 10px;
+      box-shadow: $shadow;
+      padding: 1.5rem;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+      justify-content: space-between;
+      gap: 2rem;
+      &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border-color: $primary-color;
+      }
+      .job-details {
+        flex: 1;
+        .subadge {
+          background: $secondary-color;
+          color: $white;
+          padding: 0.3rem 0.8rem;
+          border-radius: 12px;
+          font-size: 0.85rem;
+          margin-bottom: 0.5rem;
+          display: inline-block;
+        }
+        h2 {
+          font-size: 1.4rem;
+          margin: 0;
+          line-height: 1.4;
+          a {
+            color: $text-color;
+            text-decoration: none;
+            &:hover {
+              color: $primary-color;
+            }
+          }
+        }
+        .job-post-item-body {
+          color: $text-color;
+          font-size: 0.9rem;
+          .icon-layers,
+          .icon-my_location {
+            margin-right: 0.5rem;
+            color: $primary-color;
+          }
+          a {
+            color: $text-color;
+            &:hover {
+              color: $primary-color;
+            }
+          }
+        }
+        .job-tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          .tag-badge {
+            background: $tag-color;
+            color: $white;
+            padding: 0.3rem 0.7rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+          }
+        }
+      }
+      .job-actions {
+        flex-shrink: 0;
+        gap: 0.5rem;
+        .bookmark-btn {
+          background: $border-color;
+          border-radius: 50%;
+          width: 38px;
+          height: 38px;
+          transition: background 0.3s ease;
+          &:hover {
+            background: $accent-color;
+            .icon-heart {
+              color: $white;
+            }
+          }
+          .icon-heart {
+            color: $text-color;
+          }
+        }
+        .apply-btn {
+          background: $primary-color;
+          border: none;
+          border-radius: 6px;
+          padding: 0.5rem 1.5rem;
+          font-weight: 500;
+          color: $white;
+          transition: background 0.3s ease;
+          &:hover {
+            background: color.adjust($primary-color, $lightness: -10%);
+          }
+        }
+      }
+    }
+  }
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    li {
+      &.active span {
+        background: $primary-color;
+        color: $white;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+      }
+      a {
+        color: $primary-color;
+        padding: 0.5rem 1rem;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: background 0.3s ease;
+        &:hover {
+          background: $border-color;
+        }
+      }
+    }
+  }
+}
+
+// Sidebar Filters
+.sidebar {
+  .filter-card {
+    border-radius: 10px;
+    box-shadow: $shadow;
+    margin-bottom: 1.5rem;
+    border: 1px solid $border-color;
+    .heading-sidebar {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: $text-color;
+      margin-bottom: 1rem;
+    }
+    .search-form {
+      .form-group {
+        position: relative;
+        .icon-search {
+          position: absolute;
+          top: 50%;
+          left: 1rem;
+          transform: translateY(-50%);
+          color: $secondary-color;
+        }
+        .search-input {
+          padding-left: 2.5rem;
+          border: 1px solid $border-color;
+          border-radius: 6px;
+          font-size: 0.9rem;
+          transition: border-color 0.3s ease;
+          &:focus {
+            border-color: $primary-color;
+            box-shadow: 0 0 0 0.2rem rgba($primary-color, 0.2);
+          }
+        }
+      }
+    }
+    .browse-form {
+      .filter-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: $text-color;
+        input[type="checkbox"] {
+          appearance: none;
+          width: 1.1rem;
+          height: 1.1rem;
+          border: 1px solid $border-color;
+          border-radius: 4px;
+          cursor: pointer;
+          position: relative;
+          &:checked {
+            background: $primary-color;
+            border-color: $primary-color;
+            &:after {
+              content: '\2713';
+              color: $white;
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              font-size: 0.8rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Newsletter Section
+.newsletter-section {
+  .parallax-img {
+    background: linear-gradient(135deg, $primary-color, $accent-color);
+    .heading-section {
+      h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: $white;
+      }
+      p {
+        color: $white;
+        opacity: 0.9;
+        font-size: 1rem;
+      }
+      .subscribe-form {
+        .form-group {
+          .subscribe-input {
+            border: none;
+            border-radius: 6px 0 0 6px;
+            padding: 0.7rem;
+            font-size: 0.9rem;
+            &:focus {
+              box-shadow: 0 0 0 0.2rem rgba($primary-color, 0.2);
+            }
+          }
+          .subscribe-btn {
+            background: $light-accent;
+            border: none;
+            border-radius: 0 6px 6px 0;
+            padding: 0.7rem 1.5rem;
+            font-weight: 500;
+            color: $white;
+            transition: background 0.3s ease;
+            &:hover {
+              background: color.adjust($light-accent, $lightness: -10%);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Loader
+#ftco-loader {
+  &.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.95);
+    .circular {
+      .path {
+        stroke: $accent-color;
+      }
+    }
+  }
+}
+
+// Footer
+.ftco-footer {
+  background: $footer-bg;
+  .ftco-heading-2 {
+    font-size: 1.4rem;
+    color: $white;
+  }
+  p, a, .text {
+    color: rgba($white, 0.85);
+    font-size: 0.9rem;
+    &:hover {
+      color: $light-accent;
+    }
+  }
+  .ftco-footer-social {
+    li a {
+      background: $secondary-color;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.3s ease;
+      &:hover {
+        background: $accent-color;
+      }
+    }
+  }
+}
+
+// Responsive Adjustments
+@media (max-width: 991.98px) {
+  .sidebar {
+    margin-top: 2rem;
+  }
+  .job-card .job-post-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    .job-actions {
+      margin-left: 0;
+      margin-top: 1rem;
+    }
+  }
+}
+
+@media (max-width: 767.98px) {
+  .hero-wrap-2 .slider-text h1.bread {
+    font-size: 2rem;
+  }
+  .job-card .job-post-item {
+    padding: 1rem;
+  }
+  .pagination li a, .pagination li span {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+}
 </style>

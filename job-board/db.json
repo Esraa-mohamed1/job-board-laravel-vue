@@ -162,14 +162,26 @@
     }
   ],
   "jobs": [
+  
     {
       "id": 1,
-      "title": "Frontend Developer",
-      "company": {
-        "name": "Google",
-        "logo": "../assets/google-icon.svg",
-        "banner": "../assets/google-icon.svg"
-      },
+      "title": "Frontend Development",
+      "jobType": "Partime",
+      "company": "Facebook, Inc.",
+      "location": "Western City, UK",
+      "category": "Website & Software",
+      "tags": ["React", "JavaScript", "Remote"]
+    },
+    {
+      "id": 2,
+      "title": "backend Development",
+      "jobType": "Partime",
+      "company": "Facebook, Inc.",
+      "location": "Western City, UK",
+      "category": "Website & Software",
+      "tags": ["React", "JavaScript", "Remote"]
+    },
+    {
       "location": "Mountain View, CA",
       "salary": "$120,000 - $150,000",
       "type": "Full-Time",
