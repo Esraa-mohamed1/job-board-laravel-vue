@@ -18,6 +18,16 @@ import JobPosting from '@/views/employer/posts/postjosb.vue';
 
 
 
+
+
+import BrowseJobs from '../views/home/browsejobs.vue'
+import Candidates from '../views/home/candidate.vue'
+import Blog from '../views/home/blog.vue'
+import Contact from '../views/home/candidate.vue'
+// import JobPost from '../views/home/JobPost.vue'
+// import NewPost from '../views/home/NewPost.vue'
+
+
 const routes = [
   {
     path: '/register',
@@ -93,6 +103,48 @@ const routes = [
     }
     ]
   },
+
+
+
+  // {
+  //   path: '/home',
+  //   name: 'Home',
+  //   component: Home
+  // },
+  {
+    path: '/browsejobs',
+    name: 'BrowseJobs',
+    component: BrowseJobs
+  },
+  {
+    path: '/candidates',
+    name: 'Candidates',
+    component: Candidates
+  },
+  {
+    path: '/blog',
+    name: 'Blog',
+    component: Blog
+  },
+  {
+    path: '/contact',
+    name: 'Contact',
+    component: Contact
+  },
+  // {
+  //   path: '/job-post',
+  //   name: 'JobPost',
+  //   component: JobPost
+  // },
+  // {
+  //   path: '/new-post',
+  //   name: 'NewPost',
+  //   component: NewPost
+  // },
+
+
+
+
   {
     path: '/',
     component: CandidateDashboard
@@ -125,6 +177,7 @@ const routes = [
         path: 'applications',
         component: () => import('@/views/candidate/applications.vue')
       },
+      
       // {
       //   path: 'alerts',
       //   component: () => import('@/views/candidate/alerts.vue')
@@ -152,3 +205,27 @@ const router = createRouter({
 })
 
 export default router
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

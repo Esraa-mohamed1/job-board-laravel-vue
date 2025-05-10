@@ -393,24 +393,61 @@
       }
     }
   ],
-  "jobs": [
-    {
-      "id": "1",
-      "title": "Frontend Developer",
-      "employerId": 2
+  
+  
+  
+  
+    "jobs": [
+      {
+        "id": 1,
+        "title": "Frontend Developer",
+        "jobType": "Fulltime",
+        "company": "Tech Corp",
+        "location": "San Francisco, USA",
+        "category": "Website & Software",
+        "salary": "$80,000 - $100,000",
+        "description": "We're looking for an experienced frontend developer to join our team."
+      },
+      {
+        "id": 2,
+        "title": "UX Designer",
+        "jobType": "Partime",
+        "company": "Design Studio",
+        "location": "New York, USA",
+        "category": "Graphics Design",
+        "salary": "$60,000 - $80,000",
+        "description": "Join our creative team as a UX designer."
+      }
+    ],
+    "candidates": [
+      {
+        "id": 1,
+        "name": "John Smith",
+        "location": "London, UK",
+        "position": "Senior Developer",
+        "description": "Experienced full-stack developer with 5+ years of experience.",
+        "skills": ["JavaScript", "Vue", "Node.js"],
+        "image": "person_1.jpg"
+      }
+    ],
+    "blogPosts": [
+      {
+        "id": 1,
+        "title": "How to ace your next tech interview",
+        "date": "June 15, 2023",
+        "author": "Jane Doe",
+        "comments": 5,
+        "image": "image_1.jpg"
+      }
+    ],
+    "contactInfo": {
+      "address": "123 Main Street, San Francisco, CA",
+      "phone": "+1 234 567 890",
+      "email": "contact@skillhunt.com",
+      "website": "www.skillhunt.com"
     },
-    {
-      "id": "2",
-      "title": "Backend Developer",
-      "employerId": 2
-    },
-    {
-      "id": "8035"
-    },
-    {
-      "id": "8480"
-    }
-  ],
+  
+  
   "applications": [
     {
       "id": "1",
