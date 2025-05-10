@@ -1,7 +1,6 @@
 <template>
   <div class="dashboard-container">
     <!-- Top Navigation Bar -->
-    <navbar />
 
     <!-- Main Content Area with slightly wider sidebar -->
     <div class="container-fluid px-0">

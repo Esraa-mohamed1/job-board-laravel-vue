@@ -1,5 +1,5 @@
 <template>
-    <div class="col-md-2-5 sidebar py-3 border-end">
+    <div class="col-md-2-5 sidebar py-3 border-end bg-light">
       <div class="d-flex align-items-center px-3 mb-3">
         <img src="@/assets/logo.svg" alt="MyJob Logo" width="18" class="me-2" />
         <span class="fw-bold text-primary small">MyJob</span>
@@ -8,19 +8,19 @@
   
       <div class="sidebar-menu px-3">
         <div class="sidebar-menu-item mb-2">
-          <RouterLink to="/dashboard" class="d-flex align-items-center text-decoration-none text-dark py-2 px-2 rounded" exact-active-class="bg-light text-primary">
+          <RouterLink to="/candidate/dashboard" class="d-flex align-items-center text-decoration-none text-dark py-2 px-2 rounded" exact-active-class="bg-light text-primary">
             <i class="fas fa-home me-2 text-muted"></i>
             <span class="small">{{ $t('sidebar.dashboard') }}</span>
           </RouterLink>
         </div>
         <div class="sidebar-menu-item mb-2">
-          <RouterLink to="/dashboard/applications" class="d-flex align-items-center text-decoration-none text-dark py-2 px-2 rounded" active-class="bg-light text-primary">
+          <RouterLink to="/candidate/dashboard/applications" class="d-flex align-items-center text-decoration-none text-dark py-2 px-2 rounded" active-class="bg-light text-primary">
             <i class="fas fa-briefcase me-2 text-muted"></i>
             <span class="small">{{ $t('sidebar.applications') }}</span>
           </RouterLink>
         </div>
         <div class="sidebar-menu-item mb-2">
-          <RouterLink to="/dashboard/profile" class="d-flex align-items-center text-decoration-none text-dark py-2 px-2 rounded" active-class="bg-light text-primary">
+          <RouterLink to="/candidate/dashboard/profile" class="d-flex align-items-center text-decoration-none text-dark py-2 px-2 rounded" active-class="bg-light text-primary">
             <i class="fas fa-user-circle me-2"></i>
             <span class="small">{{ $t('sidebar.profile') }}</span>
           </RouterLink>
@@ -67,7 +67,7 @@
   
   <style scoped>
   .sidebar-menu-item a:hover {
-    background-color: #f0f0f0;
+    background-color: #ffffff;
     color: #0d6efd !important;
   }
   </style>

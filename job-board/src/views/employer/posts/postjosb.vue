@@ -451,9 +451,9 @@ export default {
       alert(`${type.toUpperCase()}: ${message}`);
     }
   },
-  mounted() {
-    this.loadDraft();
-  }
+  // mounted() {
+  //   this.loadDraft();
+  // }
 };
 </script>
 
