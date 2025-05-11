@@ -16,7 +16,7 @@ import candidateHome from '../views/candidate/home.vue'
 import jobDetails from '../views/candidate/jobDetails.vue'
 import jobAlert from '../views/candidate/jobAlert.vue'
 import candidateSupport from '../views/candidate/candidateSupport.vue'
-
+// import Home from '../views/employer/home/home.vue'
 
 
 import JobPosting from '../views/employer/posts/postjosb.vue';
@@ -30,8 +30,9 @@ import BrowseJobs from '../views/home/browsejobs.vue'
 import Candidates from '../views/home/candidate.vue'
 import Blog from '../views/home/blog.vue'
 import Contact from '../views/home/candidate.vue'
-// import JobPost from '../views/home/JobPost.vue'
+import Home from '../views/home/home.vue'
 // import NewPost from '../views/home/NewPost.vue'
+
 
 
 const routes = [
@@ -196,7 +197,11 @@ const routes = [
 
 
 
-
+  {
+    path: '/home',
+    name: 'Home',
+    component: Home
+  },
 
 
 

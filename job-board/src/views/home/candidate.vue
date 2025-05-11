@@ -17,7 +17,7 @@
 
         <div class="collapse navbar-collapse" :class="{ show: navbarOpen }" id="ftco-nav">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item"><router-link to="/" class="nav-link">Home</router-link></li>
+            <li class="nav-item"><router-link to="/home" class="nav-link">Home</router-link></li>
             <li class="nav-item"><router-link to="/browsejobs" class="nav-link">Browse Jobs</router-link></li>
             <li class="nav-item active"><router-link to="/candidates" class="nav-link">Candidates</router-link></li>
             <li class="nav-item"><router-link to="/blog" class="nav-link">Blog</router-link></li>

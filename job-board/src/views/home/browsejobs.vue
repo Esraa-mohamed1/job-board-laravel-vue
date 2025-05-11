@@ -21,9 +21,6 @@
             <li class="nav-item active"><router-link to="/browsejobs" class="nav-link">Browse Jobs</router-link></li>
             <li class="nav-item"><router-link to="/candidates" class="nav-link">Candidates</router-link></li>
             <li class="nav-item"><router-link to="/blog" class="nav-link">Blog</router-link></li>
-            <li class="nav-item"><router-link to="/contact" class="nav-link">Contact</router-link></li>
-            <li class="nav-item cta mr-md-1"><router-link to="/new-post" class="nav-link">Post a Job</router-link></li>
-            <li class="nav-item cta cta-colored"><router-link to="/job-post" class="nav-link">Want a Job</router-link></li>
           </ul>
         </div>
       </div>
@@ -187,13 +184,9 @@
         <div class="row mb-5">
           <div class="col-md">
             <div class="ftco-footer-widget mb-4">
-              <h2 class="ftco-heading-2">Skillhunt Jobboard</h2>
+              <h2 class="ftco-heading-2">Myjob Jobboard</h2>
               <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-              <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-3">
-                <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
-                <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
-                <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
-              </ul>
+              
             </div>
           </div>
           <div class="col-md">
