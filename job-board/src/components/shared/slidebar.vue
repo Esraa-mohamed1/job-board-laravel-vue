@@ -7,12 +7,7 @@
       </div>
   
       <div class="sidebar-menu px-3">
-        <div class="sidebar-menu-item mb-2">
-          <RouterLink to="/candidate/dashboard" class="d-flex align-items-center text-decoration-none text-dark py-2 px-2 rounded" exact-active-class="bg-light text-primary">
-            <i class="fas fa-home me-2 text-muted"></i>
-            <span class="small">{{ $t('sidebar.dashboard') }}</span>
-          </RouterLink>
-        </div>
+       
         <div class="sidebar-menu-item mb-2">
           <RouterLink to="/candidate/dashboard/applications" class="d-flex align-items-center text-decoration-none text-dark py-2 px-2 rounded" active-class="bg-light text-primary">
             <i class="fas fa-briefcase me-2 text-muted"></i>
@@ -22,11 +17,11 @@
         <div class="sidebar-menu-item mb-2">
           <RouterLink to="/candidate/dashboard/profile" class="d-flex align-items-center text-decoration-none text-dark py-2 px-2 rounded" active-class="bg-light text-primary">
             <i class="fas fa-user-circle me-2"></i>
-            <span class="small">{{ $t('sidebar.profile') }}</span>
+            <span class="small">{{ $t('sidebar.settings') }}</span>
           </RouterLink>
         </div>
         <div class="sidebar-menu-item mb-2">
-          <RouterLink to="/dashboard/alerts" class="d-flex align-items-center text-decoration-none text-dark py-2 px-2 rounded" active-class="bg-light text-primary">
+          <RouterLink to="/candidate/dashboard/alerts" class="d-flex align-items-center text-decoration-none text-dark py-2 px-2 rounded" active-class="bg-light text-primary">
             <i class="fas fa-bell me-2 text-muted"></i>
             <span class="small">{{ $t('sidebar.alerts') }}</span>
           </RouterLink>
@@ -37,12 +32,7 @@
             <span class="small">{{ $t('sidebar.saved') }}</span>
           </RouterLink>
         </div>
-        <div class="sidebar-menu-item mb-2">
-          <RouterLink to="/dashboard/resume" class="d-flex align-items-center text-decoration-none text-dark py-2 px-2 rounded" active-class="bg-light text-primary">
-            <i class="fas fa-file-alt me-2 text-muted"></i>
-            <span class="small">{{ $t('sidebar.resume') }}</span>
-          </RouterLink>
-        </div>
+      
       </div>
   
       <!-- Logout Button -->

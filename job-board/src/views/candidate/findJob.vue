@@ -77,7 +77,7 @@
       <ul class="pagination justify-content-center gap-2">
         <li class="page-item">
           <button class="page-link rounded shadow-sm" @click="currentPage--" :disabled="currentPage === 1">
-            <<
+            
           </button>
         </li>
 

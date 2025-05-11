@@ -7,23 +7,7 @@
     
         
 
-            <!-- Enhanced Search Bar above Settings heading -->
-            <div class="enhanced-search-container mb-4">
-              <div class="search-box-enhanced">
-                <div class="input-group">
-                  <span class="input-group-text bg-white border-end-0">
-                    <i class="fas fa-search text-primary"></i>
-                  </span>
-                  <input 
-                    type="text" 
-                    class="form-control border-start-0" 
-                    placeholder="Search settings, profile info, etc..." 
-                    v-model="settingsSearch"
-                    aria-label="Search settings"
-                  >
-                </div>
-              </div>
-            </div>
+        
             
             <h6 class="mb-4">Settings</h6>
             
@@ -381,15 +365,7 @@
             </div>
          
      
-      
-      <!-- Footer -->
-      <footer class="bg-light border-top py-2 mt-auto">
-        <div class="container-fluid">
-          <div class="d-flex justify-content-center align-items-center">
-            <small class="text-muted fs-11">© 2024 MyJob - Job Portal. All Rights Reserved</small>
-          </div>
-        </div>
-      </footer>
+  
     </div>
   </template>
   
