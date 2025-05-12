@@ -194,14 +194,15 @@
       "candidateId": "1746401689981",
       "status": "accepted",
       "appliedDate": "2023-06-15T10:30:00Z",
-      "acceptedDate": "2025-05-09T19:19:15.487Z"
+      "acceptedDate": "2025-05-09T21:49:47.076Z"
     },
     {
       "id": "2",
       "jobId": "d077",
       "candidateId": "2746401689982",
-      "status": "shortlisted",
-      "appliedDate": "2023-06-10T14:45:00Z"
+      "status": "rejected",
+      "appliedDate": "2023-06-10T14:45:00Z",
+      "acceptedDate": "2025-05-09T20:55:40.520Z"
     }
   ],
   "candidates": [
