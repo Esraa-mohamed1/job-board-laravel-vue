@@ -27,15 +27,20 @@ import JobApplications from '@/views/employer/JobApplications.vue'
 
 
 import BrowseJobs from '../views/home/browsejobs.vue'
-import Candidates from '../views/home/candidate.vue'
+// import Candidates from '../views/home/candidate.vue'
 import Blog from '../views/home/blog.vue'
-import Contact from '../views/home/candidate.vue'
+import Contact from '../views/home/contact.vue'
 import Home from '../views/home/home.vue'
 // import NewPost from '../views/home/NewPost.vue'
 
 
 
 const routes = [
+
+
+
+
+
   {
     path: '/register',
     name: 'register',
@@ -176,7 +181,13 @@ const routes = [
     component: Login
   },
 
-,
+
+
+  {
+    path: '/contact',
+    component: Contact
+  },
+
   {
     path: '/forgot-password',
     name: 'forgot-password',
@@ -221,21 +232,13 @@ const routes = [
     name: 'BrowseJobs',
     component: BrowseJobs
   },
-  {
-    path: '/candidates',
-    name: 'Candidates',
-    component: Candidates
-  },
+ 
   {
     path: '/blog',
     name: 'Blog',
     component: Blog
   },
-  {
-    path: '/contact',
-    name: 'Contact',
-    component: Contact
-  },
+ 
   // {
   //   path: '/job-post',
   //   name: 'JobPost',

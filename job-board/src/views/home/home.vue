@@ -17,15 +17,15 @@
 
         <div class="collapse navbar-collapse" :class="{ show: navbarOpen }" id="ftco-nav">
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item active"><router-link to="/" class="nav-link">Home</router-link></li>
+            <li class="nav-item"><router-link to="/" class="nav-link">Home</router-link></li>
             <li class="nav-item"><router-link to="/browsejobs" class="nav-link">Browse Jobs</router-link></li>
-            <li class="nav-item"><router-link to="/candidates" class="nav-link">Candidates</router-link></li>
-            <li class="nav-item"><router-link to="/blog" class="nav-link">Blog</router-link></li>
+            <li class="nav-item active"><router-link to="/blog" class="nav-link">Blog</router-link></li>
+                        <li class="nav-item active"><router-link to="/contact" class="nav-link">Contact</router-link></li>
+
           </ul>
         </div>
       </div>
     </nav>
-
     <!-- Loading State -->
     <div v-if="loading" class="loading-overlay">
       <div class="spinner-border text-primary" role="status"></div>
@@ -355,7 +355,7 @@ $bg-light: #F5F7FA; /* Light Blue-Gray */
 $white: #FFFFFF;
 $border-color: #E6ECF5; /* Light Blue Border */
 $text-color: #333333;
-$footer-bg: #2F4F4F; /* Dark Slate Gray */
+$footer-bg:hsl(221, 91.70%, 9.40%); /* Dark Slate Gray */
 $shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
 /* Base Styles */

@@ -18,9 +18,8 @@
         <div class="collapse navbar-collapse" :class="{ show: navbarOpen }" id="ftco-nav">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item"><router-link to="/" class="nav-link">Home</router-link></li>
-            <li class="nav-item active"><router-link to="/browsejobs" class="nav-link">Browse Jobs</router-link></li>
-            <li class="nav-item"><router-link to="/candidates" class="nav-link">Candidates</router-link></li>
-            <li class="nav-item"><router-link to="/blog" class="nav-link">Blog</router-link></li>
+            <li class="nav-item"><router-link to="/browsejobs" class="nav-link">Browse Jobs</router-link></li>
+            <li class="nav-item active"><router-link to="/blog" class="nav-link">Blog</router-link></li>
           </ul>
         </div>
       </div>
@@ -450,7 +449,7 @@ $tag-color: #28A745; // Green for tags
 $white: #FFFFFF;
 $border-color: #E6ECF5; // Light Blue Border
 $text-color: #333333;
-$footer-bg: #2F4F4F; // Dark Slate Gray
+$footer-bg: hsl(221, 91.70%, 9.40%);// Dark Slate Gray
 $shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 
 // Base Styles

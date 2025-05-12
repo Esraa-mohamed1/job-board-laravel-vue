@@ -19,11 +19,8 @@
           <ul class="navbar-nav ml-auto">
             <li class="nav-item"><router-link to="/" class="nav-link">Home</router-link></li>
             <li class="nav-item"><router-link to="/browsejobs" class="nav-link">Browse Jobs</router-link></li>
-            <li class="nav-item"><router-link to="/candidates" class="nav-link">Candidates</router-link></li>
             <li class="nav-item"><router-link to="/blog" class="nav-link">Blog</router-link></li>
             <li class="nav-item active"><router-link to="/contact" class="nav-link">Contact</router-link></li>
-            <li class="nav-item cta mr-md-1"><router-link to="/new-post" class="nav-link">Post a Job</router-link></li>
-            <li class="nav-item cta cta-colored"><router-link to="/job-post" class="nav-link">Want a Job</router-link></li>
           </ul>
         </div>
       </div>
