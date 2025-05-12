@@ -226,7 +226,47 @@
       "id": "1",
       "jobId": 1,
       "candidateId": "1746401689981",
-      "status": "pending"
+      "status": "accepted",
+      "appliedDate": "2023-06-15T10:30:00Z",
+      "acceptedDate": "2025-05-09T21:49:47.076Z"
+    },
+    {
+      "id": "2",
+      "jobId": "d077",
+      "candidateId": "2746401689982",
+      "status": "rejected",
+      "appliedDate": "2023-06-10T14:45:00Z",
+      "acceptedDate": "2025-05-09T20:55:40.520Z"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "1746401689981",
+      "name": "Esther Howard",
+      "position": "Website Designer (UI/UX)",
+      "bio": "I've been passionate about graphic design and digital art from an early age...",
+      "coverLetter": "Dear Sir,\n\nI am writing to express my interest...",
+      "experience": 7,
+      "education": "Master Degree",
+      "nationality": "Bangladesh",
+      "location": "Beverly Hills, California 90102",
+      "phone": "+1-202-555-0141",
+      "email": "esther.howard@gmail.com",
+      "resumeUrl": "/resumes/esther-howard.pdf"
+    },
+    {
+      "id": "2746401689982",
+      "name": "John Smith",
+      "position": "Product Designer",
+      "bio": "Experienced product designer with 5 years in the field...",
+      "coverLetter": "Dear Hiring Manager,\n\nI'm excited to apply...",
+      "experience": 5,
+      "education": "Bachelor Degree",
+      "nationality": "USA",
+      "location": "New York, NY 10001",
+      "phone": "+1-212-555-1234",
+      "email": "john.smith@example.com",
+      "resumeUrl": "/resumes/john-smith.pdf"
     }
   ]
 }
