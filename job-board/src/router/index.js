@@ -16,8 +16,7 @@ import candidateHome from '../views/candidate/home.vue'
 import jobDetails from '../views/candidate/jobDetails.vue'
 import jobAlert from '../views/candidate/jobAlert.vue'
 import candidateSupport from '../views/candidate/candidateSupport.vue'
-
-
+import overview from '../views/candidate/overview.vue' 
 
 import JobPosting from '../views/employer/posts/postjosb.vue';
 import EmployerJops from '../views/employer/EmployerJops.vue'
@@ -144,6 +143,15 @@ const routes = [
         path: 'alerts',
         component: () => import('@/views/candidate/jobAlert.vue')
       },
+      {
+        path: '',
+        redirect: { name: 'overview' }
+      },
+      {
+        path: 'overview',
+        name: 'overview',
+        component: overview
+      }
       // {
       //   path: 'saved',
       //   component: () => import('@/views/candidate/saved.vue')

@@ -7,7 +7,12 @@
       </div>
   
       <div class="sidebar-menu px-3">
-       
+        <div class="sidebar-menu-item mb-2">
+          <RouterLink to="/candidate/dashboard/overview" class="d-flex align-items-center text-decoration-none text-dark py-2 px-2 rounded" active-class="bg-light text-primary">
+            <i class="fas fa-briefcase me-2 text-muted"></i>
+            <span class="small">{{ $t('Overview') }}</span>
+          </RouterLink>
+        </div>
         <div class="sidebar-menu-item mb-2">
           <RouterLink to="/candidate/dashboard/applications" class="d-flex align-items-center text-decoration-none text-dark py-2 px-2 rounded" active-class="bg-light text-primary">
             <i class="fas fa-briefcase me-2 text-muted"></i>
