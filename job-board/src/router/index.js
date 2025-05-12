@@ -140,10 +140,10 @@ const routes = [
         component: () => import('@/views/candidate/applications.vue')
       },
      
-      // {
-      //   path: 'alerts',
-      //   component: () => import('@/views/candidate/alerts.vue')
-      // },
+      {
+        path: 'alerts',
+        component: () => import('@/views/candidate/jobAlert.vue')
+      },
       // {
       //   path: 'saved',
       //   component: () => import('@/views/candidate/saved.vue')
