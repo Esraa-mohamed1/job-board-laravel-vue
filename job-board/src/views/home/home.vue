@@ -1,905 +1,776 @@
 <template>
   <div class="home-page">
-    <!-- Hero Section -->
-    <section class="hero-section">
-      <div class="overlay"></div>
-      <div class="container">
-        <div class="row align-items-center">
-          <div class="col-lg-7">
-            <h1 class="hero-title">Find Your Dream Job with Skillhunt</h1>
-            <p class="hero-subtitle">Browse over 15,000 jobs from top companies and make your next career move</p>
-            
-            <div class="job-search-form">
-              <form class="form-inline">
-                <div class="form-group">
-                  <span class="icon icon-search"></span>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    placeholder="Job title, keywords, or company"
-                  >
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+      <div class="container-fluid px-md-4">
+        <router-link class="navbar-brand" to="/">Skillhunt</router-link>
+        <button
+          class="navbar-toggler"
+          type="button"
+          @click="toggleNavbar"
+          aria-controls="ftco-nav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="oi oi-menu"></span> Menu
+        </button>
+
+        <div class="collapse navbar-collapse" :class="{ show: navbarOpen }" id="ftco-nav">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item active"><router-link to="/" class="nav-link">Home</router-link></li>
+            <li class="nav-item"><router-link to="/browsejobs" class="nav-link">Browse Jobs</router-link></li>
+            <li class="nav-item"><router-link to="/candidates" class="nav-link">Candidates</router-link></li>
+            <li class="nav-item"><router-link to="/blog" class="nav-link">Blog</router-link></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Loading State -->
+    <div v-if="loading" class="loading-overlay">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p>Loading data...</p>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="error-message">
+      <p>{{ error }}</p>
+      <button @click="fetchData" class="btn btn-primary">Retry</button>
+    </div>
+
+    <!-- Content -->
+    <div v-else>
+      <!-- Hero Section -->
+      <section class="hero-section d-flex align-items-center text-white">
+        <div class="overlay"></div>
+        <div class="container">
+          <div class="row align-items-center">
+            <div class="col-lg-7">
+              <h1 class="hero-title display-4">Find Your Dream Job</h1>
+              <p class="hero-subtitle lead mb-4">Browse thousands of jobs from top companies</p>
+              
+              <div class="job-search-form mb-5">
+                <form class="row g-2 align-items-center">
+                  <div class="col-md-5">
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-search"></i></span>
+                      <input 
+                        type="text" 
+                        class="form-control search-input" 
+                        placeholder="Job title, keywords"
+                        v-model="searchQuery"
+                      >
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                      <input 
+                        type="text" 
+                        class="form-control search-input" 
+                        placeholder="Location"
+                        v-model="locationQuery"
+                      >
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100 apply-btn" @click.prevent="searchJobs">
+                      Search Jobs
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              <div class="stats-grid d-flex justify-content-between gap-4">
+                <div class="stat-item text-center">
+                  <h3 class="display-5 fw-bold">{{ stats.jobs }}</h3>
+                  <p class="text-uppercase small">Live Jobs</p>
                 </div>
-                <div class="form-group">
-                  <span class="icon icon-map-marker"></span>
-                  <input 
-                    type="text" 
-                    class="form-control" 
-                    placeholder="City or postcode"
-                  >
+                <div class="stat-item text-center">
+                  <h3 class="display-5 fw-bold">{{ stats.companies }}</h3>
+                  <p class="text-uppercase small">Companies</p>
                 </div>
-                <button type="submit" class="btn btn-primary">
-                  <span class="icon icon-search"></span> Search Jobs
-                </button>
-              </form>
-            </div>
-          </div>
-          <div class="col-lg-5">
-            <div class="hero-image">
-              <img src="https://th.bing.com/th/id/R.251842516da311af902688e675ef39ac?rik=iyc1AQ7AncXyeg&riu=http%3a%2f%2fsloanreview.mit.edu%2fcontent%2fuploads%2f2016%2f04%2fTechSavvy-20160414-1200-1200x627.jpg&ehk=WKjn1QZNNPYk7DSGpWZHg2p3P%2bne9mNzl8FoItlRTHc%3d&risl=&pid=ImgRaw&r=0" alt="Job seekers" class="img-fluid">
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Categories Section -->
-    <section class="categories-section">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-md-8 text-center">
-            <h2 class="section-title">Popular Job Categories</h2>
-            <p class="section-subtitle">Browse jobs by your preferred category</p>
-          </div>
-        </div>
-        
-        <div class="row">
-          <div class="col-md-3 col-sm-6" v-for="(category, index) in categories" :key="index">
-            <div class="category-card">
-              <div class="category-icon" :class="'icon-' + (index + 1)">
-                <span :class="category.icon"></span>
-              </div>
-              <h3>{{ category.name }}</h3>
-              <p>{{ category.jobs }} Open Positions</p>
-              <router-link to="/browsejobs" class="btn-link">Browse Jobs <span class="icon-arrow-right"></span></router-link>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Featured Jobs Section -->
-    <section class="featured-jobs-section bg-light">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-md-8 text-center">
-            <h2 class="section-title">Featured Jobs</h2>
-            <p class="section-subtitle">Find your next career opportunity from these featured jobs</p>
-          </div>
-        </div>
-        
-        <div class="row">
-          <div class="col-md-6" v-for="(job, index) in featuredJobs" :key="index">
-            <div class="job-card">
-              <div class="job-logo">
-                <img :src="job.logo" :alt="job.company" class="img-fluid">
-              </div>
-              <div class="job-details">
-                <span class="job-type" :class="job.type === 'Full Time' ? 'full-time' : 'part-time'">{{ job.type }}</span>
-                <h3><router-link :to="'/job/' + job.id">{{ job.title }}</router-link></h3>
-                <p class="company">{{ job.company }}</p>
-                <div class="job-meta">
-                  <span class="location"><span class="icon-map-marker"></span> {{ job.location }}</span>
-                  <span class="salary"><span class="icon-money"></span> ${{ job.salary }}/yr</span>
+                <div class="stat-item text-center">
+                  <h3 class="display-5 fw-bold">{{ stats.candidates }}</h3>
+                  <p class="text-uppercase small">Candidates</p>
                 </div>
               </div>
-              <div class="job-actions">
-                <button class="btn btn-save" @click="saveJob(job)">
-                  <span class="icon-bookmark"></span>
-                </button>
-                <router-link :to="'/job/' + job.id" class="btn btn-apply">Apply Now</router-link>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block">
+              <div class="hero-image">
+                <img src="https://themewagon.github.io/skillhunt/assets/img/hero-img.png" alt="Job seekers" class="img-fluid">
               </div>
             </div>
           </div>
         </div>
-        
-        <div class="text-center mt-5">
-          <router-link to="/browsejobs" class="btn btn-primary btn-lg">Browse All Jobs</router-link>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- How It Works Section -->
-    <section class="how-it-works-section">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-md-8 text-center">
-            <h2 class="section-title">How It Works</h2>
-            <p class="section-subtitle">Get your dream job in 4 simple steps</p>
-          </div>
-        </div>
-        
-        <div class="row">
-          <div class="col-md-3" v-for="(step, index) in steps" :key="index">
-            <div class="step-card">
-              <div class="step-number">{{ index + 1 }}</div>
-              <div class="step-icon">
-                <span :class="step.icon"></span>
-              </div>
-              <h3>{{ step.title }}</h3>
-              <p>{{ step.description }}</p>
+      <!-- Featured Jobs Section -->
+      <section class="featured-jobs-section py-5 bg-light">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+              <h2 class="section-title h3 fw-bold position-relative">Featured Jobs</h2>
+              <p class="section-subtitle text-muted">Find your next career opportunity</p>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Testimonials Section -->
-    <section class="testimonials-section bg-light">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-md-8 text-center">
-            <h2 class="section-title">What Our Candidates Say</h2>
-            <p class="section-subtitle">Success stories from people who found their dream jobs through Skillhunt</p>
-          </div>
-        </div>
-        
-        <div class="row">
-          <div class="col-md-4" v-for="(testimonial, index) in testimonials" :key="index">
-            <div class="testimonial-card">
-              <div class="testimonial-content">
-                <p>"{{ testimonial.quote }}"</p>
-              </div>
-              <div class="testimonial-author">
-                <img :src="testimonial.image" :alt="testimonial.name" class="author-img">
-                <div class="author-info">
-                  <h4>{{ testimonial.name }}</h4>
-                  <span>{{ testimonial.position }}</span>
+          
+          <div class="row g-4 mt-4">
+            <div class="col-md-6" v-for="job in featuredJobs" :key="job.id">
+              <div class="job-card job-post-item p-4 d-flex">
+                <div class="job-details">
+                  <div class="job-post-item-header align-items-center">
+                    <span class="subadge">{{ job.jobType }}</span>
+                    <h2 class="mr-3 text-black h5">
+                      <router-link :to="'/job/' + job.id">{{ job.title }}</router-link>
+                    </h2>
+                  </div>
+                  <div class="job-post-item-body d-block d-md-flex">
+                    <div class="mr-3"><span class="icon-layers"></span> <a href="#">{{ job.company }}</a></div>
+                    <div><span class="icon-my_location"></span> <span>{{ job.location }}</span></div>
+                  </div>
+                  <div class="job-tags mt-2">
+                    <span
+                      v-for="tag in job.tags || [job.category]"
+                      :key="tag"
+                      class="tag-badge"
+                    >{{ tag }}</span>
+                  </div>
+                </div>
+                <div class="job-actions ml-auto d-flex flex-column align-items-end">
+                  <a href="#" class="icon text-center d-flex justify-content-center align-items-center icon mr-2 bookmark-btn" @click.prevent="saveJob(job)">
+                    <span class="icon-heart"></span>
+                  </a>
+                  <router-link :to="'/job/' + job.id" class="btn btn-primary py-2 apply-btn">Apply Job</router-link>
                 </div>
               </div>
             </div>
           </div>
+          
+          <div class="text-center mt-5">
+            <router-link to="/browsejobs" class="btn btn-primary btn-lg apply-btn">
+              Browse All Jobs
+            </router-link>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Call to Action Section -->
-    <section class="cta-section">
-      <div class="container">
-        <div class="row align-items-center">
-          <div class="col-lg-8">
-            <h2>Ready to take the next step in your career?</h2>
-            <p>Join thousands of professionals who found their dream jobs through Skillhunt</p>
+      <!-- Recent Blog Posts -->
+      <section class="blog-section py-5">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+              <h2 class="section-title h3 fw-bold position-relative">Recent Blog Posts</h2>
+              <p class="section-subtitle text-muted">Career tips and industry insights</p>
+            </div>
           </div>
-          <div class="col-lg-4 text-lg-right">
-            <router-link to="/register" class="btn btn-primary btn-lg">Create Free Account</router-link>
+          
+          <div class="row g-4 mt-4">
+            <div class="col-md-4" v-for="blog in recentBlogs" :key="blog.id">
+              <div class="blog-card job-post-item p-4">
+                <router-link :to="'/blog/' + blog.id" class="blog-image">
+                  <img :src="blog.image" :alt="blog.title" class="img-fluid">
+                </router-link>
+                <div class="blog-content">
+                  <div class="meta d-flex justify-content-between text-muted small mb-2">
+                    <span>{{ blog.date }}</span>
+                    <span>{{ blog.author }}</span>
+                  </div>
+                  <h3 class="h5 fw-bold">
+                    <router-link :to="'/blog/' + blog.id">{{ blog.title }}</router-link>
+                  </h3>
+                  <router-link :to="'/blog/' + blog.id" class="read-more text-primary text-decoration-none">
+                    Read More <i class="fas fa-arrow-right ms-1"></i>
+                  </router-link>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <!-- Footer -->
+      <footer class="ftco-footer ftco-bg-dark ftco-section">
+        <div class="container">
+          <div class="row mb-5">
+            <div class="col-md">
+              <div class="ftco-footer-widget mb-4">
+                <h2 class="ftco-heading-2">Myjob Jobboard</h2>
+                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="ftco-footer-widget mb-4">
+                <h2 class="ftco-heading-2">Employers</h2>
+                <ul class="list-unstyled">
+                  <li><a href="#" class="pb-1 d-block">Browse Candidates</a></li>
+                  <li><a href="#" class="pb-1 d-block">Post a Job</a></li>
+                  <li><a href="#" class="pb-1 d-block">Employer Listing</a></li>
+                  <li><a href="#" class="pb-1 d-block">Resume Page</a></li>
+                  <li><a href="#" class="pb-1 d-block">Dashboard</a></li>
+                  <li><a href="#" class="pb-1 d-block">Job Packages</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="ftco-footer-widget mb-4 ml-md-4">
+                <h2 class="ftco-heading-2">Candidate</h2>
+                <ul class="list-unstyled">
+                  <li><a href="#" class="pb-1 d-block">Browse Jobs</a></li>
+                  <li><a href="#" class="pb-1 d-block">Submit Resume</a></li>
+                  <li><a href="#" class="pb-1 d-block">Dashboard</a></li>
+                  <li><a href="#" class="pb-1 d-block">Browse Categories</a></li>
+                  <li><a href="#" class="pb-1 d-block">My Bookmarks</a></li>
+                  <li><a href="#" class="pb-1 d-block">Candidate Listing</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="ftco-footer-widget mb-4 ml-md-4">
+                <h2 class="ftco-heading-2">Account</h2>
+                <ul class="list-unstyled">
+                  <li><a href="#" class="pb-1 d-block">My Account</a></li>
+                  <li><a href="#" class="pb-1 d-block">Sign In</a></li>
+                  <li><a href="#" class="pb-1 d-block">Create Account</a></li>
+                  <li><a href="#" class="pb-1 d-block">Checkout</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="ftco-footer-widget mb-4">
+                <h2 class="ftco-heading-2">Have a Questions?</h2>
+                <div class="block-23 mb-3">
+                  <ul>
+                    <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
+                    <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
+                    <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yoursite.com</span></a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 text-center">
+              <p>
+                Copyright © {{ new Date().getFullYear() }} All rights reserved | This template is made with
+                <i class="icon-heart text-danger" aria-hidden="true"></i> by
+                <a href="https://colorlib.com" target="_blank">Colorlib</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'Home',
-  data() {
-    return {
-      categories: [
-        { name: 'Web Development', jobs: 1243, icon: 'icon-code' },
-        { name: 'Graphic Design', jobs: 845, icon: 'icon-paint-brush' },
-        { name: 'Marketing', jobs: 1120, icon: 'icon-bullhorn' },
-        { name: 'Data Science', jobs: 932, icon: 'icon-chart-bar' },
-        { name: 'Customer Support', jobs: 756, icon: 'icon-headset' },
-        { name: 'Project Management', jobs: 689, icon: 'icon-briefcase' },
-        { name: 'Healthcare', jobs: 1024, icon: 'icon-heartbeat' },
-        { name: 'Education', jobs: 587, icon: 'icon-graduation-cap' }
-      ],
-      featuredJobs: [
-        {
-          id: 1,
-          title: 'Senior Frontend Developer',
-          company: 'TechCorp',
-          location: 'San Francisco, CA',
-          type: 'Full Time',
-          salary: '120,000',
-          logo: '/images/company-logo-1.png'
-        },
-        {
-          id: 2,
-          title: 'UX/UI Designer',
-          company: 'DesignHub',
-          location: 'New York, NY',
-          type: 'Full Time',
-          salary: '95,000',
-          logo: '/images/company-logo-2.png'
-        },
-        {
-          id: 3,
-          title: 'Digital Marketing Specialist',
-          company: 'MarketMasters',
-          location: 'Remote',
-          type: 'Part Time',
-          salary: '65,000',
-          logo: '/images/company-logo-3.png'
-        },
-        {
-          id: 4,
-          title: 'Data Analyst',
-          company: 'DataSystems',
-          location: 'Boston, MA',
-          type: 'Full Time',
-          salary: '85,000',
-          logo: '/images/company-logo-4.png'
-        }
-      ],
-      steps: [
-        {
-          title: 'Create Account',
-          description: 'Sign up and create your professional profile',
-          icon: 'icon-user-plus'
-        },
-        {
-          title: 'Search Jobs',
-          description: 'Browse thousands of job listings',
-          icon: 'icon-search'
-        },
-        {
-          title: 'Apply for Jobs',
-          description: 'Submit applications to companies',
-          icon: 'icon-paper-plane'
-        },
-        {
-          title: 'Get Hired',
-          description: 'Start your new career journey',
-          icon: 'icon-trophy'
-        }
-      ],
-      testimonials: [
-        {
-          quote: 'Skillhunt helped me find my dream job in just two weeks! The platform is so easy to use and the job recommendations were spot on.',
-          name: 'Sarah Johnson',
-          position: 'Product Designer at Google',
-          image: '/images/testimonial-1.jpg'
-        },
-        {
-          quote: 'After months of searching, I finally found the perfect job through Skillhunt. The application process was seamless and the support team was amazing.',
-          name: 'Michael Chen',
-          position: 'Senior Developer at Amazon',
-          image: '/images/testimonial-2.jpg'
-        },
-        {
-          quote: 'As a recent graduate, I was struggling to find entry-level positions. Skillhunt connected me with companies looking for fresh talent.',
-          name: 'Jessica Williams',
-          position: 'Marketing Associate at Facebook',
-          image: '/images/testimonial-3.jpg'
-        }
-      ]
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/employer/auth'
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+const stats = ref({
+  jobs: 0,
+  companies: 0,
+  candidates: 0
+})
+const featuredJobs = ref([])
+const recentBlogs = ref([])
+const searchQuery = ref('')
+const locationQuery = ref('')
+const loading = ref(true)
+const error = ref(null)
+const navbarOpen = ref(false)
+
+const toggleNavbar = () => {
+  navbarOpen.value = !navbarOpen.value
+}
+
+const fetchData = async () => {
+  loading.value = true
+  error.value = null
+  
+  try {
+    const response = await fetch('/db.json')
+    if (!response.ok) {
+      throw new Error('Failed to fetch data')
     }
-  },
-  methods: {
-    saveJob(job) {
-      // Placeholder for save job functionality
-      console.log('Job saved:', job);
-      alert(`Job "${job.title}" has been saved to your bookmarks!`);
+    const data = await response.json()
+    
+    // Calculate stats
+    stats.value = {
+      jobs: data.jobs?.length || 0,
+      companies: data.employers?.length || 0,
+      candidates: data.users?.filter(u => u.role === 'candidate')?.length || 0
     }
+    
+    // Get featured jobs (first 4 jobs)
+    featuredJobs.value = data.jobs?.slice(0, 4) || []
+    
+    // Get recent blogs (first 3 blogs)
+    recentBlogs.value = data.blogs?.slice(0, 3) || []
+    
+  } catch (err) {
+    console.error('Error fetching data:', err)
+    error.value = 'Failed to load data. Please try again later.'
+  } finally {
+    loading.value = false
   }
 }
+
+const searchJobs = () => {
+  if (searchQuery.value || locationQuery.value) {
+    router.push({
+      path: '/browsejobs',
+      query: {
+        search: searchQuery.value,
+        location: locationQuery.value
+      }
+    })
+  }
+}
+
+const saveJob = (job) => {
+  console.log('Job saved:', job)
+  alert(`Job "${job.title}" has been saved to your bookmarks!`)
+}
+
+// Fetch data on mount
+fetchData()
 </script>
 
 <style scoped lang="scss">
-// Color Variables
-$primary-color: #2c98f0; // Blue
-$secondary-color: #4CAF50; // Green
-$accent-color: #f9bf3f; // Yellow
-$dark-color: #1e2a3a; // Dark Blue
-$light-color: #f8f9fa; // Light Gray
-$text-color: #555555;
-$border-color: #eaeaea;
+@use "sass:color"; /* Import Sass color module */
 
-// Base Styles
+/* SCSS Variables */
+$primary-color: #1E90FF; /* Dodger Blue */
+$secondary-color: #87CEFA; /* Light Sky Blue */
+$accent-color: #FF69B4; /* Hot Pink */
+$light-accent: #FFB6C1; /* Light Pink */
+$tag-color: #28A745; /* Green for tags */
+$bg-light: #F5F7FA; /* Light Blue-Gray */
+$white: #FFFFFF;
+$border-color: #E6ECF5; /* Light Blue Border */
+$text-color: #333333;
+$footer-bg: #2F4F4F; /* Dark Slate Gray */
+$shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+/* Base Styles */
 .home-page {
-  font-family: 'Poppins', sans-serif;
-  color: $text-color;
-  line-height: 1.6;
+  font-family: 'Roboto', sans-serif;
+  background-color: $bg-light;
 }
 
-// Hero Section
+/* Navbar */
+.ftco-navbar-light {
+  background: $footer-bg !important;
+  padding: 1rem 0;
+}
+
+.navbar-brand {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: $white !important;
+}
+
+.nav-link {
+  color: $white !important;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-item.active .nav-link {
+  color: $light-accent !important;
+}
+
+.navbar-toggler {
+  border: none;
+  color: $white;
+}
+
+.oi-menu {
+  margin-right: 0.5rem;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: $bg-light;
+}
+
+.loading-overlay p {
+  margin-top: 1rem;
+  color: $text-color;
+}
+
+/* Error Message */
+.error-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: $bg-light;
+}
+
+.error-message p {
+  color: $accent-color;
+  margin-bottom: 1rem;
+}
+
+.btn-primary {
+  background: $primary-color;
+  border-color: $primary-color;
+  border-radius: 6px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: color.adjust($primary-color, $lightness: -10%);
+  border-color: color.adjust($primary-color, $lightness: -10%);
+}
+
+/* Hero Section */
 .hero-section {
   position: relative;
-  padding: 120px 0;
-  background: linear-gradient(135deg, rgba($primary-color, 0.9), rgba($secondary-color, 0.9)), 
-              url('/images/hero-bg.jpg') no-repeat center center;
+  background-image: url('https://blog.people-cloud.com/hs-fs/hub/1817347/file-3972374098-jpg/blog-files/por-que-incluir-tecnologia-en-la-gestion-de-recursos-humanos.jpg?width=1024&name=por-que-incluir-tecnologia-en-la-gestion-de-recursos-humanos.jpg');
   background-size: cover;
-  color: white;
-  
-  .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba($dark-color, 0.7);
-    z-index: 1;
-  }
-  
-  .container {
-    position: relative;
-    z-index: 2;
+  background-position: center;
+  min-height: 600px;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.hero-title {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: $bg-light; /* Changed to lighter color */
+  font-weight: 600; /* Slightly lighter weight */
+}
+
+.hero-subtitle {
+  opacity: 0.9;
+}
+
+.job-search-form .input-group-text {
+  background: $white;
+  border: 1px solid $border-color;
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+}
+
+.job-search-form .search-input {
+  border: 1px solid $border-color;
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  height: 50px;
+  padding-left: 0.5rem;
+}
+
+.job-search-form .search-input:focus {
+  border-color: $primary-color;
+  box-shadow: 0 0 0 0.2rem rgba($primary-color, 0.2);
+}
+
+.job-search-form .apply-btn {
+  height: 50px;
+  font-weight: 500;
+}
+
+.stats-grid {
+  margin-top: 2rem;
+}
+
+.stat-item h3 {
+  color: $white;
+  margin-bottom: 0.25rem;
+}
+
+.stat-item p {
+  opacity: 0.8;
+}
+
+/* Section Titles */
+.section-title {
+  margin-bottom: 1rem;
+}
+
+.section-title:after {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 3px;
+  background: $primary-color;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Featured Jobs Section */
+.featured-jobs-section {
+  padding: 3rem 0;
+}
+
+.job-card {
+  background: $white;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  box-shadow: $shadow;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.job-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: $primary-color;
+}
+
+.job-details {
+  flex: 1;
+}
+
+.subadge {
+  background: $secondary-color;
+  color: $white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.job-details h2 {
+  font-size: 1.4rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.job-details h2 a {
+  color: $text-color;
+  text-decoration: none;
+}
+
+.job-details h2 a:hover {
+  color: $primary-color;
+}
+
+.job-post-item-body {
+  color: $text-color;
+  font-size: 0.9rem;
+}
+
+.job-post-item-body .icon-layers,
+.job-post-item-body .icon-my_location {
+  margin-right: 0.5rem;
+  color: $primary-color;
+}
+
+.job-post-item-body a {
+  color: $text-color;
+}
+
+.job-post-item-body a:hover {
+  color: $primary-color;
+}
+
+.job-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag-badge {
+  background: $tag-color;
+  color: $white;
+  padding: 0.3rem 0.7rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.job-actions {
+  flex-shrink: 0;
+  gap: 0.5rem;
+}
+
+.bookmark-btn {
+  background: $border-color;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  transition: background 0.3s ease;
+}
+
+.bookmark-btn:hover {
+  background: $accent-color;
+}
+
+.bookmark-btn .icon-heart {
+  color: $text-color;
+}
+
+.bookmark-btn:hover .icon-heart {
+  color: $white;
+}
+
+.apply-btn {
+  background: $primary-color;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  color: $white;
+  transition: background 0.3s ease;
+}
+
+.apply-btn:hover {
+  background: color.adjust($primary-color, $lightness: -10%);
+}
+
+/* Blog Section */
+.blog-section {
+  padding: 3rem 0;
+}
+
+.blog-card {
+  background: $white;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+  box-shadow: $shadow;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.blog-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: $primary-color;
+}
+
+.blog-image {
+  display: block;
+  overflow: hidden;
+  border-radius: 10px 10px 0 0;
+}
+
+.blog-image img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.blog-image:hover img {
+  transform: scale(1.05);
+}
+
+.blog-content {
+  padding: 1rem 0;
+}
+
+.blog-content a {
+  color: $text-color;
+  text-decoration: none;
+}
+
+.blog-content a:hover {
+  color: $primary-color;
+}
+
+.read-more {
+  font-weight: 500;
+}
+
+/* Footer */
+.ftco-footer {
+  background: $footer-bg;
+  padding: 3rem 0;
+}
+
+.ftco-heading-2 {
+  font-size: 1.4rem;
+  color: $white;
+}
+
+.ftco-footer p,
+.ftco-footer a,
+.ftco-footer .text {
+  color: rgba($white, 0.85);
+  font-size: 0.9rem;
+}
+
+.ftco-footer a:hover {
+  color: $light-accent;
+}
+
+.icon-heart.text-danger {
+  color: $accent-color !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+  .hero-section {
+    min-height: 500px;
   }
   
   .hero-title {
-    font-size: 2.8rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    line-height: 1.2;
+    font-size: 2.5rem;
   }
   
-  .hero-subtitle {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
-    opacity: 0.9;
-  }
-  
-  .job-search-form {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    
-    .form-inline {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      
-      .form-group {
-        flex: 1;
-        min-width: 200px;
-        position: relative;
-        
-        .icon {
-          position: absolute;
-          left: 15px;
-          top: 50%;
-          transform: translateY(-50%);
-          color: $primary-color;
-        }
-        
-        .form-control {
-          width: 100%;
-          padding: 12px 15px 12px 45px;
-          border: 1px solid $border-color;
-          border-radius: 6px;
-          font-size: 0.95rem;
-          
-          &:focus {
-            border-color: $primary-color;
-            box-shadow: 0 0 0 3px rgba($primary-color, 0.2);
-          }
-        }
-      }
-      
-      .btn {
-        background: $primary-color;
-        color: white;
-        border: none;
-        padding: 12px 25px;
-        border-radius: 6px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        
-        &:hover {
-          background: darken($primary-color, 10%);
-          transform: translateY(-2px);
-        }
-      }
-    }
-  }
-  
-  .hero-image {
-    img {
-      border-radius: 8px;
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-      animation: float 6s ease-in-out infinite;
-    }
-    
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-15px); }
-    }
-  }
-}
-
-// Section Common Styles
-.section-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: $dark-color;
-  margin-bottom: 1rem;
-  position: relative;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 3px;
-    background: $primary-color;
-  }
-}
-
-.section-subtitle {
-  font-size: 1.1rem;
-  color: lighten($text-color, 20%);
-  margin-bottom: 3rem;
-}
-
-// Categories Section
-.categories-section {
-  padding: 80px 0;
-  
-  .category-card {
-    background: white;
-    border-radius: 8px;
-    padding: 30px 20px;
-    margin-bottom: 30px;
-    text-align: center;
-    transition: all 0.3s ease;
-    border: 1px solid $border-color;
-    
-    &:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-      border-color: $primary-color;
-    }
-    
-    .category-icon {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 20px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      color: white;
-      
-      span {
-        transition: all 0.3s ease;
-      }
-      
-      &.icon-1 { background: $primary-color; }
-      &.icon-2 { background: $secondary-color; }
-      &.icon-3 { background: #9c27b0; }
-      &.icon-4 { background: #ff5722; }
-      &.icon-5 { background: #607d8b; }
-      &.icon-6 { background: #ff9800; }
-      &.icon-7 { background: #e91e63; }
-      &.icon-8 { background: #00bcd4; }
-    }
-    
-    h3 {
-      font-size: 1.2rem;
-      margin-bottom: 10px;
-      color: $dark-color;
-    }
-    
-    p {
-      color: $text-color;
-      margin-bottom: 15px;
-    }
-    
-    .btn-link {
-      color: $primary-color;
-      text-decoration: none;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      
-      &:hover {
-        color: darken($primary-color, 10%);
-        
-        .icon-arrow-right {
-          transform: translateX(5px);
-        }
-      }
-      
-      .icon-arrow-right {
-        margin-left: 5px;
-        transition: all 0.3s ease;
-      }
-    }
-  }
-}
-
-// Featured Jobs Section
-.featured-jobs-section {
-  padding: 80px 0;
-  
-  .job-card {
-    background: white;
-    border-radius: 8px;
-    padding: 25px;
-    margin-bottom: 30px;
-    display: flex;
+  .stats-grid {
+    flex-direction: column;
+    gap: 1.5rem;
     align-items: center;
-    border: 1px solid $border-color;
-    transition: all 0.3s ease;
-    
-    &:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-      border-color: $primary-color;
-    }
-    
-    .job-logo {
-      width: 80px;
-      height: 80px;
-      margin-right: 20px;
-      flex-shrink: 0;
-      
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
-    }
-    
-    .job-details {
-      flex: 1;
-      
-      .job-type {
-        display: inline-block;
-        padding: 3px 10px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        margin-bottom: 10px;
-        
-        &.full-time {
-          background: rgba($secondary-color, 0.1);
-          color: $secondary-color;
-        }
-        
-        &.part-time {
-          background: rgba($accent-color, 0.1);
-          color: darken($accent-color, 20%);
-        }
-      }
-      
-      h3 {
-        font-size: 1.2rem;
-        margin-bottom: 5px;
-        
-        a {
-          color: $dark-color;
-          text-decoration: none;
-          
-          &:hover {
-            color: $primary-color;
-          }
-        }
-      }
-      
-      .company {
-        color: $text-color;
-        margin-bottom: 10px;
-        font-size: 0.9rem;
-      }
-      
-      .job-meta {
-        display: flex;
-        gap: 15px;
-        font-size: 0.85rem;
-        
-        .location, .salary {
-          display: flex;
-          align-items: center;
-          
-          .icon {
-            margin-right: 5px;
-            color: $primary-color;
-          }
-        }
-      }
-    }
-    
-    .job-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-left: 20px;
-      
-      .btn-save {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba($dark-color, 0.05);
-        color: $dark-color;
-        border: none;
-        transition: all 0.3s ease;
-        
-        &:hover {
-          background: $primary-color;
-          color: white;
-        }
-      }
-      
-      .btn-apply {
-        background: $primary-color;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        padding: 8px 15px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        
-        &:hover {
-          background: darken($primary-color, 10%);
-          transform: translateY(-2px);
-        }
-      }
-    }
-  }
-  
-  .btn-primary {
-    background: $primary-color;
-    border: none;
-    padding: 12px 30px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    
-    &:hover {
-      background: darken($primary-color, 10%);
-      transform: translateY(-2px);
-    }
   }
 }
 
-// How It Works Section
-.how-it-works-section {
-  padding: 80px 0;
-  
-  .step-card {
-    text-align: center;
-    padding: 30px 20px;
-    position: relative;
-    z-index: 1;
-    
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: white;
-      border-radius: 8px;
-      z-index: -1;
-      opacity: 0.7;
-      transition: all 0.3s ease;
-    }
-    
-    &:hover::before {
-      opacity: 1;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }
-    
-    .step-number {
-      width: 40px;
-      height: 40px;
-      background: $primary-color;
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      margin: 0 auto 20px;
-    }
-    
-    .step-icon {
-      width: 70px;
-      height: 70px;
-      background: rgba($primary-color, 0.1);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-      font-size: 1.8rem;
-      color: $primary-color;
-      transition: all 0.3s ease;
-    }
-    
-    h3 {
-      font-size: 1.2rem;
-      margin-bottom: 15px;
-      color: $dark-color;
-    }
-    
-    p {
-      color: $text-color;
-      font-size: 0.95rem;
-    }
-    
-    &:hover {
-      .step-icon {
-        background: $primary-color;
-        color: white;
-        transform: scale(1.1);
-      }
-    }
-  }
-}
-
-// Testimonials Section
-.testimonials-section {
-  padding: 80px 0;
-  
-  .testimonial-card {
-    background: white;
-    border-radius: 8px;
-    padding: 30px;
-    margin-bottom: 30px;
-    position: relative;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-    
-    &::before {
-      content: '"';
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 4rem;
-      color: rgba($primary-color, 0.1);
-      font-family: Georgia, serif;
-      line-height: 1;
-    }
-    
-    .testimonial-content {
-      position: relative;
-      z-index: 1;
-      margin-bottom: 20px;
-      font-style: italic;
-      color: $text-color;
-    }
-    
-    .testimonial-author {
-      display: flex;
-      align-items: center;
-      
-      .author-img {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-right: 15px;
-        border: 3px solid $primary-color;
-      }
-      
-      .author-info {
-        h4 {
-          font-size: 1.1rem;
-          margin-bottom: 5px;
-          color: $dark-color;
-        }
-        
-        span {
-          font-size: 0.85rem;
-          color: lighten($text-color, 20%);
-        }
-      }
-    }
-  }
-}
-
-// Call to Action Section
-.cta-section {
-  padding: 60px 0;
-  background: linear-gradient(135deg, $primary-color, $secondary-color);
-  color: white;
-  
-  h2 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 15px;
+@media (max-width: 768px) {
+  .job-search-form form {
+    flex-direction: column;
+    gap: 1rem;
   }
   
-  p {
-    font-size: 1.1rem;
-    opacity: 0.9;
-    margin-bottom: 0;
-  }
-  
-  .btn {
-    background: white;
-    color: $primary-color;
-    border: none;
-    padding: 12px 30px;
-    font-weight: 600;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-    
-    &:hover {
-      background: rgba(white, 0.9);
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-  }
-}
-
-// Responsive Adjustments
-@media (max-width: 991.98px) {
-  .hero-section {
-    padding: 80px 0;
-    
-    .hero-title {
-      font-size: 2.2rem;
-    }
-    
-    .hero-image {
-      margin-top: 40px;
-    }
-  }
-  
-  .section-title {
-    font-size: 1.8rem;
+  .job-search-form .col-md-5,
+  .job-search-form .col-md-4,
+  .job-search-form .col-md-3 {
+    width: 100%;
   }
   
   .job-card {
     flex-direction: column;
-    text-align: center;
-    
-    .job-logo {
-      margin-right: 0;
-      margin-bottom: 20px;
-    }
-    
-    .job-actions {
-      margin-left: 0;
-      margin-top: 20px;
-      flex-direction: row;
-      justify-content: center;
-    }
+    align-items: flex-start;
+  }
+  
+  .job-actions {
+    flex-direction: row !important;
+    gap: 1rem;
+    margin-top: 1rem;
   }
 }
 
-@media (max-width: 767.98px) {
-  .hero-section {
-    padding: 60px 0;
-    
-    .hero-title {
-      font-size: 1.8rem;
-    }
-    
-    .hero-subtitle {
-      font-size: 1rem;
-    }
-    
-    .job-search-form .form-inline .form-group {
-      min-width: 100%;
-    }
+@media (max-width: 576px) {
+  .hero-title {
+    font-size: 2rem;
   }
   
-  .section-title {
-    font-size: 1.6rem;
-  }
-  
-  .category-card, .testimonial-card {
-    padding: 20px;
-  }
-  
-  .cta-section {
-    text-align: center;
-    
-    .btn {
-      margin-top: 20px;
-    }
+  .blog-image {
+    height: 150px;
   }
 }
 </style>

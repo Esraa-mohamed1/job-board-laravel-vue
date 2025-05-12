@@ -55,6 +55,13 @@
       "password": "aliaaalihesh@gmail.com",
       "role": "employer",
       "createdAt": "2025-05-08T12:08:53.204Z"
+    },
+    {
+      "id": "1747001093438",
+      "email": "esraa101@gmail.com",
+      "password": "1234567",
+      "role": "candidate",
+      "createdAt": "2025-05-11T22:04:53.438Z"
     }
   ],
   "employers": [
@@ -162,43 +169,67 @@
     }
   ],
   "jobs": [
-  
     {
       "id": 1,
-      "title": "Frontend Development",
-      "jobType": "Partime",
-      "company": "Facebook, Inc.",
-      "location": "Western City, UK",
-      "category": "Website & Software",
-      "tags": ["React", "JavaScript", "Remote"]
+      "title": "Frontend Developer",
+      "company": "TechCorp",
+      "location": "San Francisco, CA",
+      "jobType": "Full Time",
+      "salary": "$120,000/yr",
+      "description": "We're looking for an experienced frontend developer to join our team.",
+      "requirements": [
+        "3+ years experience",
+        "React proficiency",
+        "CSS expertise"
+      ],
+      "logo": "/images/company-logos/techcorp.png"
     },
     {
       "id": 2,
-      "title": "backend Development",
-      "jobType": "Partime",
-      "company": "Facebook, Inc.",
-      "location": "Western City, UK",
-      "category": "Website & Software",
-      "tags": ["React", "JavaScript", "Remote"]
+      "title": "UX Designer",
+      "company": "DesignHub",
+      "location": "New York, NY",
+      "jobType": "Full Time",
+      "salary": "$95,000/yr",
+      "description": "Join our design team to create beautiful user experiences.",
+      "requirements": [
+        "Portfolio required",
+        "Figma skills",
+        "User research experience"
+      ],
+      "logo": "/images/company-logos/designhub.png"
     },
     {
-      "location": "Mountain View, CA",
-      "salary": "$120,000 - $150,000",
-      "type": "Full-Time",
-      "postedDate": "2025-05-01T14:00:00Z",
-      "description": "We are looking for a skilled Frontend Developer to join our team.",
-      "responsibilities": ["Develop and maintain front-end features."],
-      "skills": ["HTML", "CSS", "JavaScript", "React.js"],
-      "contact": {
-        "email": "jobs@google.com",
-        "phone": "+1 800-555-0199"
-      }
+      "id": 3,
+      "title": "Backend Engineer",
+      "company": "DataSystems",
+      "location": "Remote",
+      "jobType": "Full Time",
+      "salary": "$130,000/yr",
+      "description": "Build scalable backend systems for our growing platform.",
+      "requirements": [
+        "Node.js",
+        "Database design",
+        "API development"
+      ],
+      "logo": "/images/company-logos/datasystems.png"
+    },
+    {
+      "id": 4,
+      "title": "Product Manager",
+      "company": "InnovateCo",
+      "location": "Boston, MA",
+      "jobType": "Full Time",
+      "salary": "$110,000/yr",
+      "description": "Lead product development from conception to launch.",
+      "requirements": [
+        "Agile experience",
+        "Market analysis",
+        "Team leadership"
+      ],
+      "logo": "/images/company-logos/innovateco.png"
     }
   ],
-
-
-
-
   "posts": [
     {
       "id": 1,
@@ -208,9 +239,12 @@
       "comments": 3,
       "image": "https://images.pexels.com/photos/2251799/pexels-photo-2251799.jpeg?auto=compress&cs=tinysrgb&w=600",
       "category": "Career Tips",
-      "tags": ["Career", "Jobs", "Tips"]
+      "tags": [
+        "Career",
+        "Jobs",
+        "Tips"
+      ]
     },
-
     {
       "id": 1,
       "title": "Blog Post Title",
@@ -219,7 +253,11 @@
       "comments": 3,
       "image": "https://images.pexels.com/photos/2251799/pexels-photo-2251799.jpeg?auto=compress&cs=tinysrgb&w=600",
       "category": "Career Tips",
-      "tags": ["Career", "Jobs", "Tips"]
+      "tags": [
+        "Career",
+        "Jobs",
+        "Tips"
+      ]
     },
     {
       "id": 1,
@@ -229,94 +267,115 @@
       "comments": 3,
       "image": "/images/blog_1.jpg",
       "category": "Career Tips",
-      "tags": ["Career", "Jobs", "Tips"]
+      "tags": [
+        "Career",
+        "Jobs",
+        "Tips"
+      ]
     }
-    
   ],
-"blogs": [
+  "blogs": [
     {
       "id": 1,
-      "title": "How to Ace Your Next Job Interview",
-      "date": "August 28, 2019",
-      "author": "Admin",
-      "comments": 3,
-      "image": "/images/blog_1.jpg",
-      "category": "Career Tips",
-      "tags": ["Interview", "Career", "Tips"]
+      "title": "How to Ace Your Job Interview",
+      "date": "August 28, 2023",
+      "author": "Career Expert",
+      "image": "https://images.pexels.com/photos/2251799/pexels-photo-2251799.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "excerpt": "Learn the best strategies to impress your interviewers."
     },
     {
       "id": 2,
-      "title": "Top 10 Remote Jobs in 2023",
-      "date": "September 15, 2019",
-      "author": "Admin",
-      "comments": 5,
-      "image": "/images/blog_2.jpg",
-      "category": "Remote Work",
-      "tags": ["Remote", "Jobs", "Trends"]
+      "title": "Top Tech Skills in Demand for 2023",
+      "date": "September 15, 2023",
+      "author": "Tech Analyst",
+      "image": "https://images.pexels.com/photos/2251799/pexels-photo-2251799.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "excerpt": "Discover which skills will make you most employable this year."
     },
     {
       "id": 3,
-      "title": "Building a Strong Resume",
-      "date": "October 10, 2019",
-      "author": "Admin",
-      "comments": 2,
-      "image": "/images/blog_3.jpg",
-      "category": "Career Tips",
-      "tags": ["Resume", "Career"]
+      "title": "Remote Work Best Practices",
+      "date": "October 5, 2023",
+      "author": "Remote Work Advocate",
+      "image": "https://images.pexels.com/photos/2251799/pexels-photo-2251799.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "excerpt": "How to stay productive while working from home."
+    }
+  ],
+  "hero": {
+    "title": "Find Your Dream Job",
+    "subtitle": "Browse thousands of jobs from top companies",
+    "image": "/images/hero-img.png"
+  },
+  "stats": {
+    "jobs": 10000,
+    "companies": 5000,
+    "candidates": 50000
+  },
+  "testimonials": [
+    {
+      "id": 1,
+      "name": "Sarah Johnson",
+      "position": "Product Designer",
+      "company": "Google",
+      "quote": "This platform helped me find my dream job in just two weeks!",
+      "image": "/images/testimonials/sarah.jpg"
+    },
+    {
+      "id": 2,
+      "name": "Michael Chen",
+      "position": "Senior Developer",
+      "company": "Amazon",
+      "quote": "The application process was seamless and the support team was amazing.",
+      "image": "/images/testimonials/michael.jpg"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Web Development",
+      "icon": "icon-code",
+      "jobs": 1243
+    },
+    {
+      "id": 2,
+      "name": "Graphic Design",
+      "icon": "icon-paint-brush",
+      "jobs": 845
+    },
+    {
+      "id": 3,
+      "name": "Marketing",
+      "icon": "icon-bullhorn",
+      "jobs": 1120
     },
     {
       "id": 4,
-      "title": "The Future of Work: AI and Automation",
-      "date": "November 5, 2019",
-      "author": "Admin",
-      "comments": 4,
-      "image": "/images/blog_4.jpg",
-      "category": "Technology",
-      "tags": ["AI", "Automation", "Tech"]
-    },
-    {
-      "id": 5,
-      "title": "Networking Tips for Job Seekers",
-      "date": "December 1, 2019",
-      "author": "Admin",
-      "comments": 6,
-      "image": "https://th.bing.com/th/id/OIP.Ntl5EasKLRtdyCnCDthtEgHaDt?w=324&h=174&c=7&r=0&o=5&dpr=1.1&pid=1.7",
-      "category": "Career Tips",
-      "tags": ["Networking", "Career"]
-    },
-    {
-      "id": 6,
-      "title": "Why Soft Skills Matter",
-      "date": "January 20, 2020",
-      "author": "Admin",
-      "comments": 3,
-      "image": "https://th.bing.com/th/id/OIP.Ntl5EasKLRtdyCnCDthtEgHaDt?w=324&h=174&c=7&r=0&o=5&dpr=1.1&pid=1.7",
-      "category": "Career Tips",
-      "tags": ["Soft Skills", "Career"]
-    },
-    {
-      "id": 7,
-      "title": "Freelancing vs Full-Time: Which is Right for You?",
-      "date": "February 15, 2020",
-      "author": "Admin",
-      "comments": 7,
-      "image": "https://th.bing.com/th/id/OIP.Ntl5EasKLRtdyCnCDthtEgHaDt?w=324&h=174&c=7&r=0&o=5&dpr=1.1&pid=1.7",
-      "category": "Freelancing",
-      "tags": ["Freelance", "Career"]
-    },
-    {
-      "id": 8,
-      "title": "Navigating Career Changes",
-      "date": "March 10, 2020",
-      "author": "Admin",
-      "comments": 4,
-      "image": "/images/blog_8.jpg",
-      "category": "Career Tips",
-      "tags": ["Career Change", "Tips"]
+      "name": "Data Science",
+      "icon": "icon-chart-bar",
+      "jobs": 932
     }
   ],
-
-
+  "howItWorks": [
+    {
+      "title": "Create Account",
+      "description": "Sign up and create your professional profile",
+      "icon": "icon-user-plus"
+    },
+    {
+      "title": "Search Jobs",
+      "description": "Browse thousands of job listings",
+      "icon": "icon-search"
+    },
+    {
+      "title": "Apply for Jobs",
+      "description": "Submit applications to companies",
+      "icon": "icon-paper-plane"
+    },
+    {
+      "title": "Get Hired",
+      "description": "Start your new career journey",
+      "icon": "icon-trophy"
+    }
+  ],
   "applications": [
     {
       "id": "1",
@@ -325,7 +384,4 @@
       "status": "pending"
     }
   ]
-
-
-  
 }
