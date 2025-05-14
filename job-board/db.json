@@ -220,6 +220,7 @@
       "company": "InnovateCo",
       "location": "Boston, MA",
       "jobType": "Full Time",
+      "category":"Career Tips",
       "salary": "$110,000/yr",
       "description": "Lead product development from conception to launch.",
       "requirements": [
@@ -228,6 +229,28 @@
         "Team leadership"
       ],
       "logo": "/images/company-logos/innovateco.png"
+    },
+    {
+      "id": 6,
+      "title": "Product Manager",
+      "category": "Product Management",
+      "location": "Boston, MA",
+      "jobType": "Full Time",
+      "company": "NextGen Products",
+      "postedDate": "2025-05-09",
+      "salary": "110k - 140k",
+      "tags": ["Agile", "Scrum", "Leadership", "Onsite", "SaaS"]
+    },
+    {
+      "id": 7,
+      "title": "Backend Developer",
+      "category": "Engineering",
+      "location": "Denver, CO",
+      "jobType": "Contract",
+      "company": "Cloud Systems",
+      "postedDate": "2025-05-08",
+      "salary": "95k - 115k",
+      "tags": ["Node.js", "MongoDB", "Mid-Level", "Remote", "API Design"]
     }
   ],
   "posts": [
@@ -275,6 +298,35 @@
     }
   ],
   "blogs": [
+    {
+      "id": 6,
+      "title": "How to Ace Your Job Interview",
+      "date": "August 28, 2023",
+      "author": "Career Expert",
+      "image": "https://images.pexels.com/photos/2251799/pexels-photo-2251799.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "excerpt": "Learn the best strategies to impress your interviewers."
+    },{
+      "id": 5,
+      "title": "How to Ace Your Job Interview",
+      "date": "August 28, 2023",
+      "author": "Career Expert",
+      "image": "https://images.pexels.com/photos/2251799/pexels-photo-2251799.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "excerpt": "Learn the best strategies to impress your interviewers."
+    },{
+      "id": 4,
+      "title": "How to Ace Your Job Interview",
+      "date": "August 28, 2023",
+      "author": "Career Expert",
+      "image": "https://images.pexels.com/photos/2251799/pexels-photo-2251799.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "excerpt": "Learn the best strategies to impress your interviewers."
+    },
+
+
+
+
+
+
+
     {
       "id": 1,
       "title": "How to Ace Your Job Interview",
@@ -385,3 +437,21 @@
     }
   ]
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
