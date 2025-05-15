@@ -1,9 +1,10 @@
 <template>
   <div>
     <!-- Navigation - Enhanced with shadow and smoother transition -->
-    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar" style="box-shadow: 0 2px 15px rgba(0,0,0,0.1);">
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-light
+     ftco-navbar-light" id="ftco-navbar" style="box-shadow: 0 2px 15px rgba(0,0,0,0.1);">
       <div class="container-fluid px-md-4">
-        <router-link class="navbar-brand" to="/" style="font-weight: 700; letter-spacing: 1px;">Skillhunt</router-link>
+        <router-link class="navbar-brand" to="/" style="font-weight: 700; color:rgb(1, 4, 7); letter-spacing: 1px;">Skillhunt</router-link>
         <button
           class="navbar-toggler"
           type="button"
@@ -319,6 +320,7 @@ export default {
 /* Smooth transitions for interactive elements */
 .nav-link, .card, .btn, .ftco-footer-social a {
   transition: all 0.3s ease;
+  color:rgb(1, 4, 7);
 }
 
 /* Hover effects */

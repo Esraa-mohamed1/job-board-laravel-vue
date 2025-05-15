@@ -20,6 +20,8 @@
             <li class="nav-item"><router-link to="/" class="nav-link">Home</router-link></li>
             <li class="nav-item active"><router-link to="/browsejobs" class="nav-link">Browse Jobs</router-link></li>
             <li class="nav-item"><router-link to="/blog" class="nav-link">Blog</router-link></li>
+                        <li class="nav-item"><router-link to="/contact" class="nav-link">Contact us</router-link></li>
+
           </ul>
         </div>
       </div>

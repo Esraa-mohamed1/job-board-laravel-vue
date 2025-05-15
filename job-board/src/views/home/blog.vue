@@ -1,7 +1,7 @@
 <template>
   <div class="blog-page">
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
       <div class="container-fluid px-4">
         <router-link class="navbar-brand fw-bold" to="/">Skillhunt</router-link>
         <button
@@ -15,7 +15,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" :class="{ show: navbarOpen }" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
               <router-link class="nav-link" to="/">Home</router-link>
             </li>
@@ -29,6 +29,27 @@
               <router-link class="nav-link" to="/contact">Contact</router-link>
             </li>
           </ul>
+          <div class="d-flex align-items-center">
+            <div class="dropdown">
+              <button
+                class="btn btn-outline-primary d-flex align-items-center"
+                type="button"
+                id="userDropdown"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="bi bi-person-circle me-2"></i>
+                <span>Profile</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><router-link class="dropdown-item" to="/login">Login</router-link></li>
+                <li><router-link class="dropdown-item" to="/register">Register</router-link></li>
+                <li><router-link class="dropdown-item" to="/dashboard">Dashboard</router-link></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li><a class="dropdown-item" href="#" @click="logout">Logout</a></li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </nav>
@@ -38,7 +59,7 @@
       <div class="hero-overlay"></div>
       <div class="container text-center py-5">
         <nav aria-label="breadcrumb">
-         
+          <!-- Breadcrumb content can be added here if needed -->
         </nav>
         <h1 class="display-4 fw-bold mb-0">Our Blog</h1>
         <p class="lead mt-3">Discover career tips, industry insights, and more.</p>
@@ -225,7 +246,7 @@ export default {
       blogs: [],
       newsletterEmail: '',
       currentPage: 1,
-      blogsPerPage: 12, // Increased from 9 to 12 to show more posts
+      blogsPerPage: 12,
       loading: false,
       error: null,
     };
@@ -275,6 +296,11 @@ export default {
       alert('Subscribed to newsletter! (This is a demo)');
       this.newsletterEmail = '';
     },
+    logout() {
+      console.log('User logged out');
+      alert('Logged out! (This is a demo)');
+      this.$router.push('/login');
+    },
   },
 };
 </script>
@@ -282,12 +308,12 @@ export default {
 <style scoped lang="scss">
 @use "sass:color";
 
-$primary-color: #007bff; // Bootstrap primary
-$accent-color: #ff69b4; // Hot Pink
-$dark-bg: #1a252f; // Dark Slate
-$light-bg: #f8f9fa; // Light Gray
-$text-color: #212529; // Dark Gray
-$muted-color: #6c757d; // Muted Gray
+$primary-color: #007bff;
+$accent-color: #ff69b4;
+$dark-bg: #1a252f;
+$light-bg: #f8f9fa;
+$text-color: #212529;
+$muted-color: #6c757d;
 $shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 $shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
 
@@ -300,24 +326,57 @@ $shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
 // Navigation
 .navbar {
   transition: background-color 0.3s ease;
+  background-color: #fff !important;
   .navbar-brand {
     font-size: 1.5rem;
     font-weight: 700;
     letter-spacing: 0.5px;
+    color: $text-color;
+    &:hover {
+      color: $primary-color;
+    }
   }
   .nav-link {
     font-weight: 500;
     padding: 0.5rem 1rem;
     transition: color 0.3s ease;
+    color:  #1a252f;;
     &:hover,
     &.active {
-      color: $accent-color !important;
+      color: $primary-color !important;
     }
   }
   .navbar-toggler {
     border: none;
     &:focus {
       box-shadow: none;
+    }
+  }
+  .dropdown {
+    .btn {
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      &:hover {
+        background-color: $primary-color;
+        border-color: $primary-color;
+        color: #fff;
+      }
+    }
+    .dropdown-menu {
+      border-radius: 8px;
+      box-shadow: $shadow;
+      .dropdown-item {
+        font-size: 0.9rem;
+        transition: background-color 0.3s ease;
+        &:hover {
+          background-color: $light-bg;
+          color: $primary-color;
+        }
+      }
+      .dropdown-divider {
+        border-color: $muted-color;
+      }
     }
   }
 }
@@ -375,7 +434,7 @@ $shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
     }
     .blog-image {
       height: 200px;
-      width:380px;
+      width: 380px;
       object-fit: cover;
       transition: transform 0.5s ease;
     }
@@ -447,25 +506,6 @@ $shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
   }
 }
 
-// Newsletter Section
-.newsletter-section {
-  background: linear-gradient(135deg, $dark-bg, color.adjust($dark-bg, $lightness: 10%));
-  .form-control {
-    border-radius: 8px 0 0 8px;
-    &:focus {
-      border-color: $primary-color;
-      box-shadow: 0 0 0 0.2rem rgba($primary-color, 0.2);
-    }
-  }
-  .btn {
-    border-radius: 0 8px 8px 0;
-    font-weight: 500;
-    &:hover {
-      background-color: color.adjust($primary-color, $lightness: -10%);
-    }
-  }
-}
-
 // Footer
 footer {
   background: $dark-bg;
@@ -500,8 +540,13 @@ footer {
 
 // Responsive Adjustments
 @media (max-width: 991.98px) {
-  .blog-section .row {
-    row-gap: 2rem;
+  .navbar {
+    .dropdown {
+      margin-right: 1rem;
+    }
+    .blog-section .row {
+      row-gap: 2rem;
+    }
   }
 }
 
@@ -525,22 +570,20 @@ footer {
       font-size: 0.9rem;
     }
   }
+  .navbar {
+    .dropdown {
+      width: 100%;
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
 }
 
 @media (max-width: 575.98px) {
   .navbar-brand {
     font-size: 1.25rem;
-  }
-  .newsletter-section .row {
-    flex-direction: column;
-    gap: 1rem;
-    .col-auto {
-      width: 100%;
-      .form-control,
-      .btn {
-        border-radius: 8px;
-      }
-    }
   }
 }
 </style>
