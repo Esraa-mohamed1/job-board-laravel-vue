@@ -23,7 +23,23 @@ import EmployerJops from '../views/employer/EmployerJops.vue'
 import JobApplications from '@/views/employer/JobApplications.vue'
 
 
+
+
+import BrowseJobs from '../views/home/browsejobs.vue'
+// import Candidates from '../views/home/candidate.vue'
+import Blog from '../views/home/blog.vue'
+import Contact from '../views/home/contact.vue'
+import Home from '../views/home/home.vue'
+// import NewPost from '../views/home/NewPost.vue'
+
+
+
 const routes = [
+
+
+
+
+
   {
     path: '/register',
     name: 'register',
@@ -138,6 +154,7 @@ const routes = [
         path: 'applications',
         component: () => import('@/views/candidate/applications.vue')
       },
+      
      
       {
         path: 'alerts',
@@ -172,7 +189,13 @@ const routes = [
     component: Login
   },
 
-,
+
+
+  {
+    path: '/contact',
+    component: Contact
+  },
+
   {
     path: '/forgot-password',
     name: 'forgot-password',
@@ -185,6 +208,57 @@ const routes = [
     component: admindashboard,
   },
 
+
+
+
+
+
+
+
+
+  {
+    path: '/',
+    name: 'Home',
+    component: Home
+  },
+
+
+
+
+
+
+
+
+
+  // {
+  //   path: '/home',
+  //   name: 'Home',
+  //   component: Home
+  // },
+  {
+    path: '/browsejobs',
+    name: 'BrowseJobs',
+    component: BrowseJobs
+  },
+ 
+  {
+    path: '/blog',
+    name: 'Blog',
+    component: Blog
+  },
+ 
+  // {
+  //   path: '/job-post',
+  //   name: 'JobPost',
+  //   component: JobPost
+  // },
+  // {
+  //   path: '/new-post',
+  //   name: 'NewPost',
+  //   component: NewPost
+  // },
+
+
   
  
 ]
@@ -195,3 +269,27 @@ const router = createRouter({
 })
 
 export default router
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
