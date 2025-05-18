@@ -1,5 +1,5 @@
 <template>
-    <header class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+<header class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
   <div class="container">
     <div class="d-flex w-100 align-items-center">
 
@@ -34,18 +34,117 @@
             1
           </span>
         </button>   
-        <img src="../../assets/candidate2.jpg" alt="User" 
-             class="rounded-circle" width="50" height="50">
+        
+        <div class="dropdown">
+          <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="../../assets/candidate2.jpg" alt="User" 
+                 class="rounded-circle" width="50" height="50">
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <router-link class="dropdown-item" to="candidate/dashboard/profile">
+                <i class="fas fa-user me-2"></i> My Profile
+              </router-link>
+            </li>
+            
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item text-danger" href="#" @click.prevent="logout">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 </header>
   </template>
-  
   <script setup>
-  </script>
+import { useRouter } from 'vue-router'
+import axios from 'axios'
+
+const router = useRouter()
+
+const logout = async () => {
+  try {
+    const token = localStorage.getItem('authToken')
+    
+    await axios.post('/api/logout', null, {
+      baseURL: 'http://127.0.0.1:8000',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    
+    clearAuthData()
+    
+    await router.push('/login')
+    
+  } catch (error) {
+    console.error('Logout error:', error)
+    clearAuthData()
+    await router.push('/login')
+  }
+}
+
+const clearAuthData = () => {
+  localStorage.removeItem('authToken')
+  localStorage.removeItem('userData')
+   localStorage.removeItem('userRole')
+
+  
+  delete axios.defaults.headers.common['Authorization']
+}
+</script>
+  
   
   <style scoped>
+  .logout-btn {
+  background: none;
+  border: none;
+  color: #dc3545;
+  cursor: pointer;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logout-btn:hover {
+  text-decoration: underline;
+}
+  .dropdown-toggle {
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.dropdown-toggle::after {
+  display: none; /* Hide default dropdown arrow */
+}
+
+.dropdown-menu {
+  margin-top: 10px;
+  border: none;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  min-width: 200px;
+}
+
+.dropdown-item {
+  padding: 8px 16px;
+  font-size: 0.9rem;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item i {
+  width: 20px;
+  text-align: center;
+}
   header {
     border-bottom: 1px solid #e9ecef;
   }
