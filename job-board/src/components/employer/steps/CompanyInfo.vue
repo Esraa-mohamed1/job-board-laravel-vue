@@ -182,20 +182,32 @@ const submitForm = async () => {
   if (!validateForm()) return
 
   try {
+    const formData = new FormData();
+    formData.append('company_name', localData.value.name);
+    formData.append('about', localData.value.about);
+    
     if (logoFile.value) {
-      const logoUrl = await store.uploadImage(logoFile.value)
-      localData.value.logo = logoUrl
+      formData.append('logo', logoFile.value);
     }
     
     if (bannerFile.value) {
-      const bannerUrl = await store.uploadImage(bannerFile.value)
-      localData.value.banner = bannerUrl
+      formData.append('banner', bannerFile.value);
     }
 
-    emit('next', localData.value)
+    const response = await employerApi.post('/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    emit('next', {
+      ...localData.value,
+      logo: response.data.logo_url,
+      banner: response.data.banner_url
+    });
   } catch (error) {
-    console.error('Error uploading images:', error)
-    alert('Failed to upload images. Please try again.')
+    console.error('Error saving company info:', error);
+    alert('Failed to save data. Please try again.');
   }
 }
 </script>

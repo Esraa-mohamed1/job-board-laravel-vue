@@ -71,10 +71,9 @@
   // Load existing data
   const loadProfileData = async () => {
     try {
-      // Get employerId from route params or user data
-      const employerId = route.params.id || JSON.parse(localStorage.getItem('userData')).id
+      const employerId = route.params.id || JSON.parse(localStorage.getItem('userData')).id;
+      const response = await employerApi.get(`/${employerId}`);
       
-      const response = await fetch(`http://localhost:3000/employers/${employerId}`)
       if (!response.ok) throw new Error('Failed to fetch profile data')
       
       const data = await response.json()

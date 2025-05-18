@@ -87,17 +87,41 @@
   })
   
   const initializeEmployer = async () => {
-    try {
-      const response = await fetch(`http://localhost:3000/employers/${employerId.value}`)
-      if (response.ok) {
-        const data = await response.json()
-        Object.assign(formData, data)
-      }
-    } catch (error) {
-      console.error('Error fetching employer:', error)
+  try {
+    const response = await employerApi.get('/');
+    const companies = response.data;
+    const userCompany = companies.find(c => c.user_id === employerId.value);
+    if (userCompany) {
+      Object.assign(formData, {
+        companyInfo: {
+          name: userCompany.company_name,
+          about: userCompany.about,
+          logo: userCompany.logo ? `http://127.0.1.8:8000/storage/images/${userCompany.logo}` : '',
+          banner: userCompany.banner ? `http://127.0.1.8:8000/storage/images/${userCompany.banner}` : ''
+        },
+        foundingInfo: {
+          organizationType: userCompany.organization_type,
+          establishmentYear: userCompany.establishment_year,
+          companyVision: userCompany.company_vision,
+          industryType: userCompany.industry_type,
+          teamSize: userCompany.team_size,
+          companyWebsite: userCompany.company_website
+        },
+        contactInfo: {
+          email: userCompany.email,
+          phone: userCompany.phone,
+          address: {
+            street: userCompany.company_address,
+            city: userCompany.city,
+            country: userCompany.country
+          }
+        }
+      });
     }
+  } catch (error) {
+    console.error('Error fetching company data:', error);
   }
-  
+};
   const goToStep = (index) => {
     if (index < currentStep.value || index === steps.length - 1) {
       currentStep.value = index
@@ -105,38 +129,51 @@
   }
   
   const goToNextStep = async (stepData) => {
-    try {
-      let sectionName
-      switch(currentStep.value) {
-        case 0: sectionName = 'companyInfo'; break
-        case 1: sectionName = 'foundingInfo'; break
-        case 2: sectionName = 'socialMedia'; break
-        case 3: sectionName = 'contactInfo'; break
+  try {
+    let apiData = {};
+    
+    switch(currentStep.value) {
+      case 0: 
+        apiData = {
+          company_name: stepData.name,
+          about: stepData.about,
+          logo: stepData.logoFile,
+          banner: stepData.bannerFile
+        };
+        break;
+      case 1: 
+        apiData = {
+          organization_type: stepData.organizationType,
+          establishment_year: stepData.establishmentYear,
+          company_vision: stepData.companyVision,
+          industry_type: stepData.industryType,
+          team_size: stepData.teamSize,
+          company_website: stepData.companyWebsite
+        };
+        break;
+      case 3: 
+        apiData = {
+          company_address: stepData.address.street,
+          city: stepData.address.city,
+          country: stepData.address.country,
+          phone: stepData.phone,
+          email: stepData.email
+        };
+        break;
+    
       }
-      
-      if (sectionName) {
-        formData[sectionName] = { ...formData[sectionName], ...stepData }
-      }
-  
-      const response = await fetch(`http://localhost:3000/employers/${employerId.value}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ [sectionName]: stepData })
-      })
-  
-      if (!response.ok) throw new Error('Failed to save')
-  
+      const response = await employerApi.post('/', apiData);
+    
       if (stepData.isComplete) {
-        currentStep.value = steps.length - 1
+        currentStep.value = steps.length - 1;
       } else if (currentStep.value < steps.length - 2) {
-        currentStep.value++
+        currentStep.value++;
       }
     } catch (error) {
-      console.error('Save error:', error)
-      alert('Failed to save data. Please try again.')
+      console.error('Save error:', error);
+      alert('Failed to save data. Please try again.');
     }
   }
-  
   const goToPrevStep = () => {
     if (currentStep.value > 0) {
       currentStep.value--

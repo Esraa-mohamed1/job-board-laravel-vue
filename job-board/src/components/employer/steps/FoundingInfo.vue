@@ -198,17 +198,31 @@ const goToPrevious = () => {
   emit('prev')
 }
 
-const saveAndContinue = () => {
+const saveAndContinue = async () => {
   if (!validateForm()) return
   
-  emit('next', {
-    organizationType: organizationType.value,
-    establishmentYear: establishmentYear.value,
-    companyVision: companyVision.value,
-    industryType: industryType.value,
-    teamSize: teamSize.value,
-    companyWebsite: companyWebsite.value
-  })
+  try {
+    const response = await employerApi.post('/', {
+      organization_type: organizationType.value,
+      establishment_year: establishmentYear.value,
+      company_vision: companyVision.value,
+      industry_type: industryType.value,
+      team_size: teamSize.value,
+      company_website: companyWebsite.value
+    });
+
+    emit('next', {
+      organizationType: organizationType.value,
+      establishmentYear: establishmentYear.value,
+      companyVision: companyVision.value,
+      industryType: industryType.value,
+      teamSize: teamSize.value,
+      companyWebsite: companyWebsite.value
+    });
+  } catch (error) {
+    console.error('Error saving founding info:', error);
+    alert('Failed to save data. Please try again.');
+  }
 }
 </script>
 

@@ -206,23 +206,34 @@ const goToPreviousStep = () => {
   emit('prev')
 }
 
-const submitContactInfo = () => {
+const submitContactInfo = async () => {
   if (!validateForm()) return
   
-  const contactData = {
-    phone: countryCode.value + phoneNumber.value,
-    email: email.value,
-    address: {
-      street: companyAddress.value,
+  try {
+    const response = await employerApi.post('/', {
+      company_address: companyAddress.value,
       city: city.value,
-      country: country.value
-    }
+      country: country.value,
+      phone: countryCode.value + phoneNumber.value,
+      email: email.value
+    });
+
+    emit('next', {
+      contactInfo: {
+        phone: countryCode.value + phoneNumber.value,
+        email: email.value,
+        address: {
+          street: companyAddress.value,
+          city: city.value,
+          country: country.value
+        }
+      },
+      isComplete: true
+    });
+  } catch (error) {
+    console.error('Error saving contact info:', error);
+    alert('Failed to save data. Please try again.');
   }
-  
-  emit('next', {
-    contactInfo: contactData,
-    isComplete: true
-  })
 }
 </script>
 
