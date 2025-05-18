@@ -10,48 +10,37 @@
         <h1>Create account</h1>
         <p class="login-prompt">Already have account? <router-link to="/login">Log In</router-link></p>
         
-        <!-- Profile Photo Upload -->
-        <div class="profile-upload">
-          <div class="upload-preview" @click="triggerFileInput">
-            <img v-if="form.profilePhoto" :src="form.profilePhoto" alt="Profile Preview" class="preview-image" />
-            <div v-else class="upload-placeholder">
-              <i class="fas fa-user-circle  upload-icon"></i>
-              <span> Upload Image</span>
-            </div>
-          </div>
-          <input 
-            type="file" 
-            ref="fileInput" 
-            accept="image/*" 
-            @change="handleFileUpload" 
-            class="file-input"
-          >
-        </div>
-        
+
         <form @submit.prevent="handleRegister">
           <div class="form-group">
             <label>Full Name</label>
             <input v-model="form.fullName" type="text" placeholder="Enter your full name" required>
+            <p v-if="errors.fullName" class="text-danger small">{{ errors.fullName[0] }}</p>
+
           </div>
-          
+
           <div class="form-group">
             <label>Email address</label>
             <input v-model="form.email" type="email" placeholder="Enter your email" required>
+            <p v-if="errors.email" class="text-danger small">{{ errors.email[0] }}</p>
           </div>
-          
+
           <div class="form-group password-group">
             <label>Password</label>
             <input v-model="form.password" :type="showPassword ? 'text' : 'password'" placeholder="Create password" required>
             <button type="button" class="toggle-password" @click="showPassword = !showPassword">
               <i class="fas" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+             <p v-if="errors.password" class="text-danger small">{{ errors.password[0] }}</p>
             </button>
           </div>
-          
+
           <div class="form-group password-group">
             <label>Confirm Password</label>
             <input v-model="form.confirmPassword" :type="showConfirmPassword ? 'text' : 'password'" placeholder="Confirm password" required>
             <button type="button" class="toggle-password" @click="showConfirmPassword = !showConfirmPassword">
               <i class="fas" :class="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+              <p v-if="errors.confirmPassword" class="text-danger small">{{ errors.confirmPassword[0] }}</p>
+  
             </button>
           </div>
 
@@ -78,22 +67,19 @@
               </button>
             </div>
           </div>
-          
-          <!-- Conditional fields for employer -->
-          <div v-if="form.role === 'employer'" class="form-group">
-            <label>Company Name</label>
-            <input v-model="form.companyName" type="text" placeholder="Enter company name" required>
-          </div>
-          
           <div class="terms-agreement">
             <input type="checkbox" id="terms" v-model="form.agreeTerms" required>
             <label for="terms">I've read and agree with your <router-link to="/terms">Terms of Services</router-link></label>
           </div>
-          
-          <button type="submit" class="btn-register" :disabled="!isFormValid || loading">
-            <span v-if="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            {{ loading ? 'Processing...' : 'Create Account' }}
-          </button>
+      <button 
+  type="submit" 
+  class="btn-register" 
+  :disabled="!isFormValid || loading"
+  :class="{ 'loading-state': loading }"
+>
+  <span v-if="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+  <span v-else>Create Account</span>
+</button>
           
           <div class="divider">or</div>
           
@@ -134,119 +120,88 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/employer/auth'
-import { useUserStore } from '@/stores/employer/user'
+import axios from 'axios'
+import Swal from 'sweetalert2' 
 
 const router = useRouter()
-const authStore = useAuthStore()
-const userStore = useUserStore()
 
 const form = ref({
-  fullName: '',
+  fullName: '',  
   email: '',
   password: '',
-  confirmPassword: '',
+  confirmPassword: '',  
   role: 'candidate',
-  companyName: '',
-  profilePhoto: null,
   agreeTerms: false
 })
 
-const fileInput = ref(null)
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 const loading = ref(false)
-
+const errors = ref({})
+const successMessage = ref('')
 const isFormValid = computed(() => {
   const basicValidation = form.value.fullName && 
                         form.value.email && 
                         form.value.password && 
                         form.value.password === form.value.confirmPassword && 
                         form.value.agreeTerms
-  
-  if (form.value.role === 'employer') {
-    return basicValidation && form.value.companyName
-  }
   return basicValidation
 })
 
-const triggerFileInput = () => {
-  fileInput.value.click()
-}
-
-const handleFileUpload = (event) => {
-  const file = event.target.files[0]
-  if (file) {
-    if (file.size > 2 * 1024 * 1024) {
-      alert('File size exceeds 2MB limit')
-      return
-    }
-    
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      form.value.profilePhoto = e.target.result
-    }
-    reader.readAsDataURL(file)
-  }
-}
-
 const handleRegister = async () => {
   if (!isFormValid.value) {
-    alert('Please fill all required fields correctly')
+    Swal.fire({ // <-- Use SweetAlert2
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Please fill all required fields correctly'
+    })
     return
   }
 
   try {
     loading.value = true
-    
-    // 1. Register user
-    const user = await authStore.register({
+    errors.value = {}
+
+    const payload = {
+      name: form.value.fullName,
       email: form.value.email,
       password: form.value.password,
-      role: form.value.role
-    })
-    
-    // 2. Prepare profile data
-    const profileData = {
-      userId: user.uid,
-      fullName: form.value.fullName,
-      email: form.value.email,
+      password_confirmation: form.value.confirmPassword,
       role: form.value.role,
-      ...(form.value.profilePhoto && { profilePhoto: form.value.profilePhoto }),
-      ...(form.value.role === 'employer' && { 
-        companyName: form.value.companyName 
+    }
+
+    const response = await axios.post('http://localhost:8000/api/register', payload)
+    successMessage.value = response.data.message
+
+    if (response.status === 200) {
+      await Swal.fire({ 
+        icon: 'success',
+        title: 'Success',
+        text: successMessage.value,
+        showConfirmButton: false
+      })
+      const redirectPath =  '/login'
+      router.push(redirectPath)
+    }
+
+  } catch (error) {
+    if (error.response && error.response.status === 422) {
+      errors.value = error.response.data.errors
+      Swal.fire({ 
+        icon: 'error',
+        title: 'Registration Failed',
+        text: Object.values(errors.value).flat()[0] 
+      })
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Something went wrong',
+        text: 'Please try again later.'
       })
     }
-    
-    // 3. Create profile
-    await userStore.createProfile(profileData)
-    
-    // 4. Redirect based on role
-    const redirectPath = form.value.role === 'employer' 
-      ? '/login' 
-      : '/candidate-dashboard'
-    
-    router.push(redirectPath)
-    
-  } catch (error) {
-    console.error('Registration error:', error)
-    alert(authStore.error || userStore.error || 'Registration failed. Please try again.')
-  } finally {
-    loading.value = false
-  }
-}
-
-const signInWithGoogle = async () => {
-  try {
-    loading.value = true
-    await authStore.signInWithGoogle()
-    await router.push('/dashboard')
-  } catch (error) {
-    alert(error.message || 'Google sign-in failed')
   } finally {
     loading.value = false
   }

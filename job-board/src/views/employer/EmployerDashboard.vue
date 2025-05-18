@@ -24,9 +24,32 @@
               <router-link class="nav-link small px-2" to="/support">Customer Support</router-link>
             </div>
           </div>
+          
+        
           <div class="d-flex align-items-center">
+             <div class="dropdown px-3">
+          <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="../../assets/candidate2.jpg" alt="User" 
+                 class="rounded-circle" width="50" height="50">
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <router-link class="dropdown-item" to="employer/dashboard/profile">
+                <i class="fas fa-user me-2"></i> My Profile
+              </router-link>
+            </li>
+            
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item text-danger" href="#" @click.prevent="logout">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout
+              </a>
+            </li>
+          </ul>
+        </div>
             <span class="me-3 small d-none d-md-block"><i class="fas fa-phone-alt me-1"></i> +1 202-555-0156</span>
             <div class="dropdown">
+              
               <button class="btn btn-sm dropdown-toggle d-flex align-items-center py-1" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 <img src="https://flagcdn.com/w20/us.png" width="16" alt="English" class="me-1" />
                 <span class="small">English</span>
@@ -40,6 +63,7 @@
           </div>
         </div>
       </nav>
+      
     
       <div class="container-fluid px-0">
         <div class="row g-0">
@@ -157,6 +181,7 @@
   import { ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { onMounted, onUnmounted  } from 'vue'
+  import axios from 'axios'
    
 
   const sidebarVisible = ref(false);
@@ -190,22 +215,37 @@ onUnmounted(() => {
   const isSidebarVisible = ref(false)
 
 
-
-    const logout = () => {
-    localStorage.removeItem('authToken')
-    localStorage.removeItem('userData')
+const logout = async () => {
+  try {
+    const token = localStorage.getItem('authToken')
     
-    router.push('/login')
+    await axios.post('/api/logout', null, {
+      baseURL: 'http://127.0.0.1:8000',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    
+    clearAuthData()
+    
+    await router.push('/login')
+    
+  } catch (error) {
+    console.error('Logout error:', error)
+    clearAuthData()
+    await router.push('/login')
   }
+}
+
+const clearAuthData = () => {
+  localStorage.removeItem('authToken')
+  localStorage.removeItem('userData')
+   localStorage.removeItem('userRole')
+
   
-  const performSearch = () => {
-    if (searchQuery.value.trim()) {
-      router.push({
-        path: '/employer/dashboard/search',
-        query: { q: searchQuery.value.trim() }
-      })
-    }
-  }
+  delete axios.defaults.headers.common['Authorization']
+}
+
   </script>
   
   <style scoped>

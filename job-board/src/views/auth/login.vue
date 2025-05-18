@@ -93,40 +93,57 @@ const handleLogin = async () => {
   try {
     loading.value = true
     error.value = ''
-    const emailResponse = await fetch('http://localhost:3000/users?email=' + form.value.email)
-    const users = await emailResponse.json()
-    if (users.length === 0) {
-      throw new Error('User not found')
-    }
-    
-    const user = users[0]
 
-    if (user.password !== form.value.password) {
-      throw new Error('Incorrect password')
+    const response = await fetch('http://localhost:8000/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        email: form.value.email,
+        password: form.value.password
+      })
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Login failed')
     }
-    
-    const token = 'mock-jwt-token-' + Math.random().toString(36).substring(2)
-    
+
+    const token = data.access_token
+    const user = data.user
+
+    // Save to localStorage
     localStorage.setItem('authToken', token)
+    localStorage.setItem('userData', JSON.stringify(user))
     localStorage.setItem('userRole', user.role)
-    localStorage.setItem('userData', JSON.stringify(user)) 
 
     showWelcomeAlert(user.role)
 
-    if (user.role === 'employer') {
-      router.push('/employer/steps')
-    } else if (user.role === 'candidate') {
-      router.push('/candidate/findjob')
+      switch (data.user.role) {
+      case 'admin':
+        router.push('/admin')
+        break
+      case 'employer':
+        router.push('/employer/steps')
+        break
+      case 'candidate':
+        router.push('/candidate/dashboard')
+        break
+      default:
+        router.push('/')
     }
-    
   } catch (err) {
-    showErrorAlert(err.message || 'Login failed. Please check your credentials.')
+    showErrorAlert(err.message || 'Login failed')
     error.value = err.message || 'Login failed'
     console.error('Login error:', err)
   } finally {
     loading.value = false
   }
 }
+
 const showWelcomeAlert = (role) => {
   const title = role === 'employer' ? 'Welcome Employer!' : 'Welcome Candidate!'
   const message = role === 'employer' 
