@@ -1,59 +1,73 @@
 <template>
   <div class="admin-dashboard">
+    <!-- Loading overlay -->
+    <div v-if="jobStore.loading" class="loading-overlay">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    
+    <!-- Error message -->
+    <div v-if="jobStore.error" class="alert alert-danger mx-3 mt-3">
+      {{ jobStore.error }}
+      <button @click="jobStore.fetchDashboardData" class="btn btn-sm btn-outline-danger ms-2">
+        Retry
+      </button>
+    </div>
+    
     <div class="row g-0">
-     
+      <!-- Sidebar -->
       <div class="col-md-3 col-lg-2 sidebar">
         <div class="p-3 text-center border-bottom">
           <h5 class="fw-bold">ADMIN DASHBOARD</h5>
         </div>
         <ul class="nav flex-column mt-2">
           <li class="nav-item">
-            <a href="#" class="nav-link active">
+            <router-link to="/admin" class="nav-link" :class="{ active: $route.path === '/admin' }">
               <i class="fas fa-tachometer-alt me-2"></i> Overview
-            </a>
+            </router-link>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <router-link to="/admin/pending" class="nav-link" :class="{ active: $route.path === '/admin/pending' }">
               <i class="fas fa-clipboard-list me-2"></i> Pending Jobs
-            </a>
+            </router-link>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <router-link to="/admin/approved" class="nav-link" :class="{ active: $route.path === '/admin/approved' }">
               <i class="fas fa-check-circle me-2"></i> Approved Jobs
-            </a>
+            </router-link>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <router-link to="/admin/rejected" class="nav-link" :class="{ active: $route.path === '/admin/rejected' }">
               <i class="fas fa-times-circle me-2"></i> Rejected Jobs
-            </a>
+            </router-link>
           </li>
-        
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <router-link to="/admin/settings" class="nav-link" :class="{ active: $route.path === '/admin/settings' }">
               <i class="fas fa-cog me-2"></i> Settings
-            </a>
+            </router-link>
           </li>
         </ul>
         <div class="mt-auto p-3 border-top log-out-section">
-          <a href="#" class="nav-link text-secondary">
+          <a href="#" class="nav-link text-secondary" @click.prevent="logout">
             <i class="fas fa-sign-out-alt me-2"></i> Log-out
           </a>
         </div>
       </div>
 
-      
+      <!-- Main content -->
       <div class="col-md-9 col-lg-10 ms-auto main-content">
         <div class="container-fluid py-4">
           <h3 class="mb-3">Hello, Admin User</h3>
           <p class="text-secondary mb-4">Here is your job moderation dashboard</p>
 
-          
+          <!-- Stats cards -->
           <div class="row mb-4">
             <div class="col-md-4">
               <div class="card stat-card">
                 <div class="card-body d-flex justify-content-between align-items-center">
                   <div>
-                    <h2 class="mb-0">{{ pendingCount }}</h2>
+                    <h2 class="mb-0">{{ jobStore.pendingCount }}</h2>
                     <div class="text-secondary">Pending Jobs</div>
                   </div>
                   <div class="stat-icon pending-icon">
@@ -66,7 +80,7 @@
               <div class="card stat-card">
                 <div class="card-body d-flex justify-content-between align-items-center">
                   <div>
-                    <h2 class="mb-0">{{ approvedCount }}</h2>
+                    <h2 class="mb-0">{{ jobStore.approvedCount }}</h2>
                     <div class="text-secondary">Approved Jobs</div>
                   </div>
                   <div class="stat-icon approved-icon">
@@ -79,7 +93,7 @@
               <div class="card stat-card">
                 <div class="card-body d-flex justify-content-between align-items-center">
                   <div>
-                    <h2 class="mb-0">{{ rejectedCount }}</h2>
+                    <h2 class="mb-0">{{ jobStore.rejectedCount }}</h2>
                     <div class="text-secondary">Rejected Jobs</div>
                   </div>
                   <div class="stat-icon rejected-icon">
@@ -90,12 +104,14 @@
             </div>
           </div>
 
-          
+          <!-- Pending jobs table -->
           <div class="card mb-4">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
               <h5 class="mb-0">Jobs Pending Review</h5>
               <div class="view-all">
-                <a href="#" class="text-primary">View all <i class="fas fa-arrow-right ms-1"></i></a>
+                <router-link to="/admin/pending" class="text-primary">
+                  View all <i class="fas fa-arrow-right ms-1"></i>
+                </router-link>
               </div>
             </div>
             <div class="card-body p-0">
@@ -113,7 +129,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="job in pendingJobs" :key="job.id">
+                    <tr v-for="job in jobStore.pendingJobs.slice(0, 5)" :key="job.id">
                       <td>
                         <div class="d-flex align-items-center">
                           <div class="company-logo me-3" :style="{ backgroundColor: job.logoBackground }">
@@ -150,18 +166,25 @@
                         </div>
                       </td>
                     </tr>
+                    <tr v-if="jobStore.pendingJobs.length === 0">
+                      <td colspan="7" class="text-center py-4 text-muted">
+                        No pending jobs to review
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
             </div>
           </div>
 
-          
+          <!-- Approved jobs table -->
           <div class="card">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
               <h5 class="mb-0">Recently Approved Jobs</h5>
               <div class="view-all">
-                <a href="#" class="text-primary">View all <i class="fas fa-arrow-right ms-1"></i></a>
+                <router-link to="/admin/approved" class="text-primary">
+                  View all <i class="fas fa-arrow-right ms-1"></i>
+                </router-link>
               </div>
             </div>
             <div class="card-body p-0">
@@ -179,7 +202,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="job in approvedJobs" :key="job.id">
+                    <tr v-for="job in jobStore.approvedJobs" :key="job.id">
                       <td>
                         <div class="d-flex align-items-center">
                           <div class="company-logo me-3" :style="{ backgroundColor: job.logoBackground }">
@@ -208,6 +231,11 @@
                         </button>
                       </td>
                     </tr>
+                    <tr v-if="jobStore.approvedJobs.length === 0">
+                      <td colspan="7" class="text-center py-4 text-muted">
+                        No approved jobs yet
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -216,123 +244,112 @@
         </div>
       </div>
     </div>
+
+    <!-- Job Details Modal -->
+    <div class="modal fade" id="jobDetailsModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">{{ jobStore.currentJob?.title }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div v-if="jobStore.currentJob">
+              <div class="row mb-4">
+                <div class="col-md-4">
+                  <div class="company-logo-lg mb-3" :style="{ backgroundColor: jobStore.currentJob.logoBackground }">
+                    <img :src="jobStore.currentJob.logo" v-if="jobStore.currentJob.logo">
+                    <span v-else>{{ jobStore.currentJob.companyInitial }}</span>
+                  </div>
+                  <h4>{{ jobStore.currentJob.company }}</h4>
+                  <div class="text-muted mb-2">
+                    <i class="fas fa-map-marker-alt me-1"></i>
+                    {{ jobStore.currentJob.location }}
+                  </div>
+                  <div class="text-muted mb-2">
+                    <i class="fas fa-dollar-sign me-1"></i>
+                    {{ jobStore.currentJob.salary }}
+                  </div>
+                  <div class="text-muted">
+                    <i class="fas fa-calendar-alt me-1"></i>
+                    Posted: {{ jobStore.currentJob.datePosted }}
+                  </div>
+                  <div v-if="jobStore.currentJob.dateApproved" class="text-muted">
+                    <i class="fas fa-check-circle me-1"></i>
+                    Approved: {{ jobStore.currentJob.dateApproved }}
+                  </div>
+                </div>
+                <div class="col-md-8">
+                  <h5>Job Description</h5>
+                  <div class="job-description" v-html="jobStore.currentJob.description"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
-<script>
-export default {
-  name: 'AdminDashboard',
-  data() {
-    return {
-      pendingCount: 42,
-      approvedCount: 235,
-      rejectedCount: 18,
-      pendingJobs: [
-        {
-          id: 1,
-          title: 'Senior Frontend Developer',
-          company: 'TechCorp Inc.',
-          companyInitial: 'T',
-          logoBackground: '#3498db',
-          location: 'San Francisco',
-          salary: '$120-150k/year',
-          datePosted: 'Feb 3, 2025 15:45'
-        },
-        {
-          id: 2,
-          title: 'UX Designer',
-          company: 'Design Studio',
-          companyInitial: 'D',
-          logoBackground: '#e74c3c',
-          location: 'Remote',
-          salary: '$80-100k/year',
-          datePosted: 'Feb 3, 2025 12:30'
-        },
-        {
-          id: 3,
-          title: 'DevOps Engineer',
-          company: 'Cloud Systems',
-          companyInitial: 'C',
-          logoBackground: '#2ecc71',
-          location: 'Seattle',
-          salary: '$110-130k/year',
-          datePosted: 'Feb 2, 2025 09:15'
-        },
-        {
-          id: 4,
-          title: 'Marketing Specialist',
-          company: 'Growth Hackers',
-          companyInitial: 'G',
-          logoBackground: '#f39c12',
-          location: 'New York',
-          salary: '$70-90k/year',
-          datePosted: 'Feb 1, 2025 14:20'
-        }
-      ],
-      approvedJobs: [
-        {
-          id: 101,
-          title: 'Backend Developer',
-          company: 'ServerTech',
-          companyInitial: 'S',
-          logoBackground: '#9b59b6',
-          location: 'Chicago',
-          salary: '$100-120k/year',
-          dateApproved: 'Feb 2, 2025 16:30'
-        },
-        {
-          id: 102,
-          title: 'Data Scientist',
-          company: 'DataMind',
-          companyInitial: 'D',
-          logoBackground: '#1abc9c',
-          location: 'Boston',
-          salary: '$130-150k/year',
-          dateApproved: 'Feb 2, 2025 14:45'
-        },
-        {
-          id: 103,
-          title: 'Product Manager',
-          company: 'ProductLabs',
-          companyInitial: 'P',
-          logoBackground: '#f1c40f',
-          location: 'Austin',
-          salary: '$110-140k/year',
-          dateApproved: 'Feb 1, 2025 17:20'
-        }
-      ]
-    }
-  },
-  methods: {
-    viewJobDetails(jobId) {
-      console.log('Viewing job details for job ID:', jobId);
-      
-    },
-    approveJob(jobId) {
-      console.log('Approving job ID:', jobId);
-     
-      const jobIndex = this.pendingJobs.findIndex(job => job.id === jobId);
-      if (jobIndex !== -1) {
-        const approvedJob = {...this.pendingJobs[jobIndex]};
-        approvedJob.dateApproved = new Date().toLocaleString();
-        this.pendingJobs.splice(jobIndex, 1);
-        this.approvedJobs.unshift(approvedJob);
-        this.pendingCount--;
-        this.approvedCount++;
-      }
-    },
-    rejectJob(jobId) {
-      console.log('Rejecting job ID:', jobId);
-      
-      const jobIndex = this.pendingJobs.findIndex(job => job.id === jobId);
-      if (jobIndex !== -1) {
-        this.pendingJobs.splice(jobIndex, 1);
-        this.pendingCount--;
-        this.rejectedCount++;
-      }
-    }
+
+<script setup>
+import { onMounted, ref } from 'vue';
+import { useJobStore } from '@/stores/jobStore';
+import { Modal } from 'bootstrap';
+import { useRouter } from 'vue-router';
+import { useToast } from 'vue-toast-notification';
+import 'vue-toast-notification/dist/theme-sugar.css';
+
+const jobStore = useJobStore();
+const router = useRouter();
+const toast = useToast();
+const jobDetailsModal = ref(null);
+
+onMounted(() => {
+  // Initialize modal
+  jobDetailsModal.value = new Modal(document.getElementById('jobDetailsModal'));
+  
+  // Fetch initial data
+  jobStore.fetchDashboardData();
+});
+
+const viewJobDetails = async (jobId) => {
+  try {
+    await jobStore.fetchJobDetails(jobId);
+    jobDetailsModal.value.show();
+  } catch (error) {
+    toast.error('Failed to load job details');
   }
-}
+};
+
+const approveJob = async (jobId) => {
+  try {
+    await jobStore.approveJob(jobId);
+    toast.success('Job approved successfully');
+  } catch (error) {
+    toast.error('Failed to approve job');
+  }
+};
+
+const rejectJob = async (jobId) => {
+  try {
+    await jobStore.rejectJob(jobId);
+    toast.success('Job rejected successfully');
+  } catch (error) {
+    toast.error('Failed to reject job');
+  }
+};
+
+const logout = () => {
+  // Clear auth token and redirect to login
+  localStorage.removeItem('authToken');
+  router.push('/login');
+};
 </script>
+
 <style scoped>
 .admin-dashboard {
   min-height: 100vh;
@@ -416,6 +433,24 @@ export default {
   font-size: 16px;
 }
 
+.company-logo-lg {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 36px;
+}
+
+.company-logo-lg img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 8px;
+}
+
 .table th {
   font-weight: 500;
   color: #555;
@@ -437,7 +472,21 @@ export default {
 .log-out-section {
   margin-top: auto;
 }
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.job-description {
+  white-space: pre-line;
+}
 </style>
-
-
-
