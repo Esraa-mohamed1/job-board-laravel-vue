@@ -78,7 +78,7 @@
             </td>
             
             <td class="job-actions">
-             <button class="detail-btn" @click="openModal('details', job)">Details</button>
+              <button class="detail-btn" @click="openModal('details', job)">Details</button>
             </td>
             
             <td class="job-actions">
@@ -86,172 +86,178 @@
             </td>
             
             <td class="job-actions">
-              <button class="expire-btn" @click="openModal('expire', job)">Expire</button>
+              <button 
+                class="expire-btn" 
+                @click="openModal('expire', job)"
+                :disabled="job.status === 'Expired'"
+              >
+                {{ job.status === 'Expired' ? 'Expired' : 'Expire' }}
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+    <div v-if="modal.show" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
         <button class="close-modal" @click="closeModal">&times;</button>
         
+        <h2>{{ modal.title }}</h2>
         
-        <h2>{{ modalTitle }}</h2>
-        
-        <div v-if="modalType  === 'details'">
-          <h3>{{ currentJob.title }}</h3>
-          <p><strong>Type:</strong> {{ formatJobType(currentJob.type) }}</p>
-          <p><strong>Status:</strong> <span :class="currentJob.status">{{ currentJob.status }}</span></p>
-          <p><strong>Location:</strong> {{ currentJob.location || 'Not specified' }}</p>
-          <p><strong>Education:</strong> {{ currentJob.education || 'N/A' }}</p>
-          <p><strong>Experience:</strong> {{ currentJob.experience || 'N/A' }}</p>
-          <p><strong>Level:</strong> {{ currentJob.level || 'N/A' }}</p>
-          <p><strong>Description:</strong> {{ currentJob.description || 'N/A' }}</p>
-          <p><strong>Responsibilities:</strong> {{ currentJob.responsibilities || 'N/A' }}</p>
-          <p><strong>Keywords:</strong> {{ currentJob.keywords || 'None' }}</p>
-          <p><strong>Skills:</strong> {{ currentJob.skills || [] }}</p>
-          <div v-if="currentJob.salaryType === 'fixed'">
-            <p><strong>Fixed Salary:</strong> ${{ currentJob.fixedSalary }}</p>
+        <div v-if="modal.type === 'details'">
+          <h3>{{ modal.job.title }}</h3>
+          <p><strong>Type:</strong> {{ formatJobType(modal.job.type) }}</p>
+          <p><strong>Status:</strong> <span :class="modal.job.status">{{ modal.job.status }}</span></p>
+          <p><strong>Location:</strong> {{ modal.job.location || 'Not specified' }}</p>
+          <p><strong>Education:</strong> {{ modal.job.education || 'N/A' }}</p>
+          <p><strong>Experience:</strong> {{ modal.job.experience || 'N/A' }}</p>
+          <p><strong>Level:</strong> {{ modal.job.level || 'N/A' }}</p>
+          <p><strong>Description:</strong> {{ modal.job.description || 'N/A' }}</p>
+          <p><strong>Responsibilities:</strong> {{ modal.job.responsibilities || 'N/A' }}</p>
+          <p><strong>Keywords:</strong> {{ modal.job.keywords || 'None' }}</p>
+          <p><strong>Skills:</strong> {{ Array.isArray(modal.job.skills) ? modal.job.skills.join(', ') : modal.job.skills }}</p>
+          <div v-if="modal.job.salaryType === 'fixed'">
+            <p><strong>Fixed Salary:</strong> ${{ modal.job.fixedSalary }}</p>
           </div>
           <div v-else>
-            <p><strong>Min Salary:</strong> ${{ currentJob.minSalary }}</p>
-            <p><strong>Max Salary:</strong> ${{ currentJob.maxSalary }}</p>
+            <p><strong>Min Salary:</strong> ${{ modal.job.minSalary }}</p>
+            <p><strong>Max Salary:</strong> ${{ modal.job.maxSalary }}</p>
           </div>
         </div>
-        <div v-else-if="modalType === 'edit'">
-        <form @submit.prevent="saveJob">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Job Title:</label>
-              <input v-model="currentJob.title" type="text" class="form-control" required>
-            </div>
-            
-            <div class="form-group">
-              <label>Job Type:</label>
-              <select v-model="currentJob.type" class="form-control" required>
-                <option value="full-time">Full Time</option>
-                <option value="part-time">Part Time</option>
-                <option value="internship">Internship</option>
-                <option value="contract">Contract</option>
-                <option value="temporary">Temporary</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Category:</label>
-              <input v-model="currentJob.category" type="text" class="form-control">
-            </div>
-            
-            <div class="form-group">
-              <label>Location:</label>
-              <input v-model="currentJob.location" type="text" class="form-control">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Salary Type:</label>
-              <select v-model="currentJob.salaryType" class="form-control">
-                <option value="fixed">Fixed</option>
-                <option value="range">Range</option>
-              </select>
-            </div>
-            
-            <template v-if="currentJob.salaryType === 'fixed'">
-              <div class="form-group">
-                <label>Fixed Salary:</label>
-                <input v-model.number="currentJob.fixedSalary" type="number" class="form-control">
-              </div>
-            </template>
-
-            <template v-else>
-              <div class="form-group">
-                <label>Min Salary:</label>
-                <input v-model.number="currentJob.minSalary" type="number" class="form-control">
-              </div>
-              <div class="form-group">
-                <label>Max Salary:</label>
-                <input v-model.number="currentJob.maxSalary" type="number" class="form-control">
-              </div>
-            </template>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Education:</label>
-              <select v-model="currentJob.education" class="form-control">
-                <option value="high-school">High School</option>
-                <option value="diploma">Diploma</option>
-                <option value="bachelor">Bachelor</option>
-                <option value="master">Master</option>
-                <option value="phd">PhD</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label>Experience:</label>
-              <select v-model="currentJob.experience" class="form-control">
-                <option value="entry">Entry Level</option>
-                <option value="mid">Mid Level</option>
-                <option value="senior">Senior Level</option>
-              </select>
-            </div>
-            
-            <div class="form-group">
-              <label>Job Level:</label>
-              <select v-model="currentJob.level" class="form-control">
-                <option value="intern">Intern</option>
-                <option value="junior">Junior</option>
-                <option value="mid">Mid</option>
-                <option value="senior">Senior</option>
-                <option value="lead">Lead</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Description:</label>
-            <textarea v-model="currentJob.description" class="form-control" rows="3"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label>Responsibilities:</label>
-            <textarea v-model="currentJob.responsibilities" class="form-control" rows="3"></textarea>
-          </div>
-
-          <div class="form-group">
-            <label>Skills (comma separated):</label>
-            <input 
-              v-model="skillsInput" 
-              type="text" 
-              class="form-control" 
-              placeholder="e.g. JavaScript, HTML, CSS"
-            >
-          </div>
-
-          <div class="form-group">
-            <label>Keywords:</label>
-            <input v-model="currentJob.keywords" type="text" class="form-control">
-          </div>
-
-          <div v-if="editing" class="form-group">
-            <label for="status">Status:</label>
-            <select v-model="currentJob.status" id="status" class="form-control">
-              <option value="Active">Active</option>
-              <option value="Expired">Expired</option>
-            </select>
-          </div>
-
-          <button type="submit" class="btn btn-primary">Save Job</button>
-        </form>
-      </div>
         
-        <div v-else-if="modalType === 'expire'">
-          <h3>Expire {{ currentJob.title }}?</h3>
+        <div v-else-if="modal.type === 'edit'">
+          <form @submit.prevent="saveJob">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Job Title:</label>
+                <input v-model="modal.job.title" type="text" class="form-control" required>
+              </div>
+              
+              <div class="form-group">
+                <label>Job Type:</label>
+                <select v-model="modal.job.type" class="form-control" required>
+                  <option value="full-time">Full Time</option>
+                  <option value="part-time">Part Time</option>
+                  <option value="internship">Internship</option>
+                  <option value="contract">Contract</option>
+                  <option value="temporary">Temporary</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Category:</label>
+                <input v-model="modal.job.category" type="text" class="form-control">
+              </div>
+              
+              <div class="form-group">
+                <label>Location:</label>
+                <input v-model="modal.job.location" type="text" class="form-control">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Salary Type:</label>
+                <select v-model="modal.job.salaryType" class="form-control">
+                  <option value="fixed">Fixed</option>
+                  <option value="range">Range</option>
+                </select>
+              </div>
+              
+              <template v-if="modal.job.salaryType === 'fixed'">
+                <div class="form-group">
+                  <label>Fixed Salary:</label>
+                  <input v-model.number="modal.job.fixedSalary" type="number" class="form-control">
+                </div>
+              </template>
+
+              <template v-else>
+                <div class="form-group">
+                  <label>Min Salary:</label>
+                  <input v-model.number="modal.job.minSalary" type="number" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label>Max Salary:</label>
+                  <input v-model.number="modal.job.maxSalary" type="number" class="form-control">
+                </div>
+              </template>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Education:</label>
+                <select v-model="modal.job.education" class="form-control">
+                  <option value="high-school">High School</option>
+                  <option value="diploma">Diploma</option>
+                  <option value="bachelor">Bachelor</option>
+                  <option value="master">Master</option>
+                  <option value="phd">PhD</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label>Experience:</label>
+                <select v-model="modal.job.experience" class="form-control">
+                  <option value="entry">Entry Level</option>
+                  <option value="mid">Mid Level</option>
+                  <option value="senior">Senior Level</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label>Job Level:</label>
+                <select v-model="modal.job.level" class="form-control">
+                  <option value="intern">Intern</option>
+                  <option value="junior">Junior</option>
+                  <option value="mid">Mid</option>
+                  <option value="senior">Senior</option>
+                  <option value="lead">Lead</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Description:</label>
+              <textarea v-model="modal.job.description" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Responsibilities:</label>
+              <textarea v-model="modal.job.responsibilities" class="form-control" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Skills (comma separated):</label>
+              <input 
+                v-model="skillsInput" 
+                type="text" 
+                class="form-control" 
+                placeholder="e.g. JavaScript, HTML, CSS"
+              >
+            </div>
+
+            <div class="form-group">
+              <label>Keywords:</label>
+              <input v-model="modal.job.keywords" type="text" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label>Status:</label>
+              <select v-model="modal.job.status" class="form-control">
+                <option value="Active">Active</option>
+                <option value="Expired">Expired</option>
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Job</button>
+          </form>
+        </div>
+        
+        <div v-else-if="modal.type === 'expire'">
+          <h3>Expire {{ modal.job.title }}?</h3>
           <p>This action cannot be undone.</p>
           
           <div class="modal-actions">
@@ -265,7 +271,7 @@
     <div class="pagination">
       <button 
         @click="prevPage" 
-        :disabled="currentPage === 1"
+        :disabled="pagination.currentPage === 1"
         class="page-btn"
       >
         &lt;
@@ -274,8 +280,8 @@
       <button
         v-for="page in visiblePages"
         :key="page"
-        @click="currentPage = page"
-        :class="{ active: currentPage === page }"
+        @click="pagination.currentPage = page"
+        :class="{ active: pagination.currentPage === page }"
         class="page-btn"
       >
         {{ page }}
@@ -283,7 +289,7 @@
       
       <button 
         @click="nextPage" 
-        :disabled="currentPage === totalPages"
+        :disabled="pagination.currentPage === totalPages"
         class="page-btn"
       >
         &gt;
@@ -293,57 +299,55 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
       jobs: [],
       loading: true,
-      currentPage: 1,
-      itemsPerPage: 5,
       filters: {
         status: 'all',
         type: 'all',
         search: ''
       },
-      showModal: false,
-      modalType: '',
-      currentJob: null,
-      modalTitle: ''
+      pagination: {
+        currentPage: 1,
+        itemsPerPage: 5
+      },
+      modal: {
+        show: false,
+        type: '',
+        title: '',
+        job: null
+      },
+      skillsInput: '',
+      errorMessage: ''
     };
   },
   computed: {
     filteredJobs() {
       return this.jobs.filter(job => {
-        if (this.filters.status !== 'all' && job.status !== this.filters.status) {
-          return false;
-        }
+        const statusMatch = this.filters.status === 'all' || job.status === this.filters.status;
+        const typeMatch = this.filters.type === 'all' || job.type === this.filters.type;
+        const searchMatch = !this.filters.search || 
+          job.title.toLowerCase().includes(this.filters.search.toLowerCase()) ||
+          this.formatJobType(job.type).toLowerCase().includes(this.filters.search.toLowerCase());
         
-        if (this.filters.type !== 'all' && job.type !== this.filters.type) {
-          return false;
-        }
-        
-        if (this.filters.search) {
-          const searchTerm = this.filters.search.toLowerCase();
-          const titleMatch = job.title.toLowerCase().includes(searchTerm);
-          const typeMatch = this.formatJobType(job.type).toLowerCase().includes(searchTerm);
-          return titleMatch || typeMatch;
-        }
-        
-        return true;
+        return statusMatch && typeMatch && searchMatch;
       });
     },
     paginatedJobs() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      return this.filteredJobs.slice(start, end);
+      const start = (this.pagination.currentPage - 1) * this.pagination.itemsPerPage;
+      return this.filteredJobs.slice(start, start + this.pagination.itemsPerPage);
     },
     totalPages() {
-      return Math.ceil(this.filteredJobs.length / this.itemsPerPage);
+      return Math.ceil(this.filteredJobs.length / this.pagination.itemsPerPage);
     },
     visiblePages() {
       const range = 2;
-      const start = Math.max(1, this.currentPage - range);
-      const end = Math.min(this.totalPages, this.currentPage + range);
+      const start = Math.max(1, this.pagination.currentPage - range);
+      const end = Math.min(this.totalPages, this.pagination.currentPage + range);
       
       const pages = [];
       for (let i = start; i <= end; i++) {
@@ -354,197 +358,199 @@ export default {
   },
   methods: {
     async fetchJobs() {
-    try {
-      const response = await fetch('http://localhost:3000/jobs');
-      const data = await response.json();
-
-      this.jobs = data.map(job => ({
-        ...job,
-        title: job.title || 'Untitled Position',
-        type: job.type || 'full-time',
-        status: this.calculateStatus(job),
-        applications: 0, 
-        endDate: job.endDate || this.generateEndDate()
-          }));
-        } catch (error) {
-          console.error('Error fetching jobs:', error);
-        } finally {
-          this.loading = false;
-        }
-      }
-    ,
-    async fetchApplicationsCount() {
+      this.loading = true;
       try {
-        const response = await fetch('http://localhost:3000/applications');
-        const data = await response.json();
+        const token = localStorage.getItem('authToken');
+        
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
 
-        const countMap = {};
-        data.forEach(app => {
-          if (!countMap[app.jobId]) countMap[app.jobId] = 0;
-          countMap[app.jobId]++;
+        const response = await axios.get('http://localhost:8000/api/jobs', {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+          }
         });
-
-        this.jobs = this.jobs.map(job => ({
+        
+        this.jobs = response.data.data.map(job => ({
           ...job,
-          applications: countMap[job.id] || 0
+          applications: job.applications_count || 0,
+          endDate: job.endDate || this.formatDate(job.created_at),
+          status: this.calculateStatus(job)
         }));
+        
       } catch (error) {
-        console.error('Error fetching applications:', error);
+        console.error('Error fetching jobs:', error);
+        
+        if (error.response?.status === 401) {
+          this.errorMessage = 'Session expired. Please log in again.';
+          this.$router.push('/login');
+        } else {
+          this.errorMessage = 'Failed to load jobs. Please try again later.';
+        }
+        
+      } finally {
+        this.loading = false;
       }
-    }
-    ,
+    },
+    showNotification(type, message) {
+  ElMessage({
+    message: message,
+    type: type,
+    duration: 3000
+  });
+},
+    
     calculateStatus(job) {
-      return Math.random() > 0.3 ? 'Active' : 'Expired';
+      if (job.status === 'Expired') return 'Expired';
+      if (job.endDate && new Date(job.endDate) < new Date()) return 'Expired';
+      return 'Active';
     },
-    getRandomApplications() {
-      return Math.floor(Math.random() * 1000) + 50;
-    },
-    generateEndDate() {
-      const days = Math.floor(Math.random() * 30) + 1;
-      return days > 15 ? `${days} days remaining` : 
-             this.randomPastDate();
-    },
-    randomPastDate() {
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
-                     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const month = months[Math.floor(Math.random() * 12)];
-      const day = Math.floor(Math.random() * 28) + 1;
-      const year = 2025 + Math.floor(Math.random() * 3);
-      return `${month} ${day}, ${year}`;
-    },
+    
     formatJobType(type) {
-      const types = {
+      const typeMap = {
         'full-time': 'Full Time',
         'part-time': 'Part Time',
         'internship': 'Internship',
         'contract': 'Contract',
         'temporary': 'Temporary'
       };
-      return types[type] || type;
+      return typeMap[type] || type;
     },
-    formatDate(date) {
-      return date;
-    },
-    prevPage() {
-      if (this.currentPage > 1) this.currentPage--;
-    },
-    nextPage() {
-      if (this.currentPage < this.totalPages) this.currentPage++;
-    },
-    async openModal(type, job) {
-    this.modalType = type;
-    this.currentJob = JSON.parse(JSON.stringify(job));
-
-    const titles = {
-      'details': 'Job Details',
-      'edit': 'Edit Job',
-      'expire': 'Confirm Expire'
-    };
-    this.modalTitle = titles[type];
-    this.showModal = true;
-    if (type === 'edit') {
-      this.editing = true;
-      this.currentJob = JSON.parse(JSON.stringify(job));
-      this.currentJob.startDate = this.formatDate(this.currentJob.startDate);
-      this.skillsInput = this.currentJob.skills?.join(', ') || '';
-      this.statusInput = this.currentJob.status || 'Active'; 
-    }
     
-    this.showModal = true;
-  }
-    ,closeModal() {
-      this.showModal = false;
-      this.modalType = '';
-      this.currentJob = null;
-    },
-    async saveJob() {
-     try {
-      this.currentJob.skills = this.skillsInput
-      .split(',')
-      .map(skill => skill.trim())
-      .filter(skill => skill);
-
-     const response = await fetch(`http://localhost:3000/jobs/${this.currentJob.id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+    formatDate(dateString) {
+      if (!dateString) return 'N/A';
       
-      body: JSON.stringify({
-        title: this.currentJob.title,
-        type: this.currentJob.type,
-        category: this.currentJob.category,
-        location: this.currentJob.location,
-        salaryType: this.currentJob.salaryType,
-        fixedSalary: this.currentJob.fixedSalary,
-        minSalary: this.currentJob.minSalary,
-        maxSalary: this.currentJob.maxSalary,
-        education: this.currentJob.education,
-        experience: this.currentJob.experience,
-        level: this.currentJob.level,
-        description: this.currentJob.description,
-        responsibilities: this.currentJob.responsibilities,
-        skills: this.currentJob.skills,
-        keywords: this.currentJob.keywords,
-        status: this.currentJob.status 
-      })
-    });
-
-    if (!response.ok) throw new Error('Failed to update job');
-
-    const updatedJob = await response.json();
-
-    const index = this.jobs.findIndex(j => j.id === updatedJob.id);
-    if (index !== -1) {
-      this.jobs[index] = updatedJob;
-    }
-
-    this.closeModal();
-  } catch (error) {
-    console.error('Error saving job:', error);
-  }
+      // If it's already formatted (like "5 days remaining")
+      if (typeof dateString === 'string' && isNaN(new Date(dateString))) {
+        return dateString;
+      }
+      
+      const date = new Date(dateString);
+      return date.toLocaleDateString();
     },
-    async confirmExpire() {
-      try {
-        const response = await fetch(`http://localhost:3000/jobs/${this.currentJob.id}`, {
-          method: 'PATCH',
+    
+    openModal(type, job) {
+      this.modal = {
+        show: true,
+        type,
+        title: type === 'edit' ? 'Edit Job' : 
+              type === 'details' ? 'Job Details' : 'Confirm Expiration',
+        job: { ...job }
+      };
+      
+      if (type === 'edit') {
+        this.skillsInput = Array.isArray(job.skills) ? job.skills.join(', ') : job.skills || '';
+      }
+    },
+    
+    closeModal() {
+      this.modal.show = false;
+      this.modal.type = '';
+      this.modal.job = null;
+      this.skillsInput = '';
+    },
+    
+    async saveJob() {
+    try {
+      this.loading = true;
+      const token = localStorage.getItem('authToken');
+      
+      if (!token) {
+        throw new Error('Please login to update jobs');
+      }
+
+      // Prepare data for backend
+      const jobData = {
+        title: this.modal.job.title,
+        job_type: this.formatBackendJobType(this.modal.job.type),
+        description: this.modal.job.description,
+        responsibilities: this.modal.job.responsibilities,
+        education_level: this.modal.job.education,
+        experience_level: this.modal.job.experience,
+        job_level: this.modal.job.level,
+        location: this.modal.job.location,
+        keywords: this.modal.job.keywords,
+        status: this.modal.job.status,
+        skills: this.skillsInput.split(',').map(s => s.trim()).filter(s => s),
+        salary_type: this.modal.job.salaryType,
+        category_id: this.modal.job.category_id || 1
+      };
+
+      // Handle salary data
+      if (this.modal.job.salaryType === 'fixed') {
+        jobData.fixed_salary = this.modal.job.fixedSalary;
+      } else {
+        jobData.min_salary = this.modal.job.minSalary;
+        jobData.max_salary = this.modal.job.maxSalary;
+      }
+
+      const response = await axios.patch(
+        `http://localhost:8000/api/jobs/${this.modal.job.id}`,
+        jobData,
+        {
           headers: {
+            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            status: 'Expired',
-            endDate: 'Expired'
-          })
-        });
-
-        if (!response.ok) throw new Error('Failed to expire job');
-
-        const updatedJob = await response.json();
-        const index = this.jobs.findIndex(j => j.id === updatedJob.id);
-        if (index !== -1) {
-          this.jobs[index] = updatedJob;
+          }
         }
+      );
 
-        this.closeModal();
-      } catch (error) {
-        console.error('Error expiring job:', error);
+      // Update local jobs list
+      const index = this.jobs.findIndex(j => j.id === this.modal.job.id);
+      if (index !== -1) {
+        this.jobs[index] = {
+          ...response.data.data,
+          applications: this.jobs[index].applications // Keep existing apps count
+        };
+      }
+
+      this.showNotification('success', 'Job updated successfully');
+      this.closeModal();
+
+    } catch (error) {
+      let errorMessage = 'Failed to update job';
+      
+      if (error.response) {
+        // Server responded with error
+        errorMessage = error.response.data?.message || 
+                     `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        // No response received
+        errorMessage = 'No response from server';
+      }
+      
+      this.showNotification('error', errorMessage);
+      console.error('Job update error:', error);
+    } finally {
+      this.loading = false;
+    }
+  },
+    
+    prevPage() {
+      if (this.pagination.currentPage > 1) {
+        this.pagination.currentPage--;
+      }
+    },
+    
+    nextPage() {
+      if (this.pagination.currentPage < this.totalPages) {
+        this.pagination.currentPage++;
       }
     }
-
+  },
+  created() {
+    this.fetchJobs();
   },
   watch: {
     filters: {
       handler() {
-        this.currentPage = 1;
+        this.pagination.currentPage = 1;
       },
       deep: true
     }
-  },
-  async mounted() {
-  await this.fetchJobs();
-  await this.fetchApplicationsCount();
-}
-
+  }
 };
 </script>
 
