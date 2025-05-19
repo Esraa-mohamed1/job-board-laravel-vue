@@ -8,21 +8,21 @@
       <div class="form-group full-width">
         <label>Company Address</label>
         <input
-          v-model="companyAddress"
+          v-model="localData.company_address"
           type="text"
           placeholder="Enter full company address"
           required
-          :class="{'is-invalid': errors.companyAddress}"
+          :class="{'is-invalid': errors.company_address}"
           class="form-control"
         >
-        <div v-if="errors.companyAddress" class="invalid-feedback">{{ errors.companyAddress }}</div>
+        <div v-if="errors.company_address" class="invalid-feedback">{{ errors.company_address }}</div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
           <label>City</label>
           <input
-            v-model="city"
+            v-model="localData.city"
             type="text"
             placeholder="City"
             required
@@ -35,7 +35,7 @@
         <div class="form-group">
           <label>Country</label>
           <input
-            v-model="country"
+            v-model="localData.country"
             type="text"
             placeholder="Country"
             required
@@ -51,32 +51,32 @@
           <label>Phone</label>
           <div class="phone-input">
             <input
-              v-model="countryCode"
+              v-model="localData.country_code"
               type="text"
               placeholder="+20"
               required
-              :class="{'is-invalid': errors.countryCode}"
+              :class="{'is-invalid': errors.country_code}"
               class="form-control country-code-input"
               @input="formatCountryCode"
             >
             <input
-              v-model="phoneNumber"
+              v-model="localData.phone"
               type="tel"
               placeholder="Phone number..."
               required
-              :class="{'is-invalid': errors.phoneNumber}"
+              :class="{'is-invalid': errors.phone}"
               class="form-control"
             >
           </div>
           <div class="hint">Example: +20 for Egypt, +1 for USA</div>
-          <div v-if="errors.countryCode" class="invalid-feedback">{{ errors.countryCode }}</div>
-          <div v-if="errors.phoneNumber" class="invalid-feedback">{{ errors.phoneNumber }}</div>
+          <div v-if="errors.country_code" class="invalid-feedback">{{ errors.country_code }}</div>
+          <div v-if="errors.phone" class="invalid-feedback">{{ errors.phone }}</div>
         </div>
 
         <div class="form-group">
           <label>Email</label>
           <input
-            v-model="email"
+            v-model="localData.email"
             type="email"
             placeholder="Email address"
             required
@@ -98,103 +98,104 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-const currentStepIndex = ref(3)
-const countryCode = ref('+20')
-const phoneNumber = ref('')
-const email = ref('')
-const companyAddress = ref('')
-const city = ref('')
-const country = ref('Egypt')
+const emit = defineEmits(['prev', 'next', 'complete'])
+const props = defineProps({
+  formData: {
+    type: Object,
+    default: () => ({})
+  }
+})
+
+const localData = ref({
+  company_address: props.formData.company_address || '',
+  city: props.formData.city || '',
+  country: props.formData.country || 'Egypt',
+  country_code: props.formData.country_code || '+20',
+  phone: props.formData.phone || '',
+  email: props.formData.email || ''
+})
+
 const errors = ref({
-  companyAddress: '',
+  company_address: '',
   city: '',
   country: '',
-  countryCode: '',
-  phoneNumber: '',
+  country_code: '',
+  phone: '',
   email: ''
 })
 
-const emit = defineEmits(['prev', 'next'])
-
 const isFormValid = computed(() => {
-  return companyAddress.value.trim() !== '' &&
-         city.value.trim() !== '' &&
-         country.value.trim() !== '' &&
-         countryCode.value.trim() !== '' &&
-         phoneNumber.value.trim() !== '' &&
-         email.value.trim() !== ''
+  return localData.value.company_address.trim() !== '' &&
+         localData.value.city.trim() !== '' &&
+         localData.value.country.trim() !== '' &&
+         localData.value.country_code.trim() !== '' &&
+         localData.value.phone.trim() !== '' &&
+         localData.value.email.trim() !== ''
 })
 
 const formatCountryCode = () => {
-  // Ensure the country code starts with +
-  if (!countryCode.value.startsWith('+')) {
-    countryCode.value = '+' + countryCode.value.replace(/[^0-9]/g, '')
+  if (!localData.value.country_code.startsWith('+')) {
+    localData.value.country_code = '+' + localData.value.country_code.replace(/[^0-9]/g, '')
   } else {
-    countryCode.value = '+' + countryCode.value.slice(1).replace(/[^0-9]/g, '')
+    localData.value.country_code = '+' + localData.value.country_code.slice(1).replace(/[^0-9]/g, '')
   }
 }
 
 const validateForm = () => {
   let valid = true
   errors.value = {
-    companyAddress: '',
+    company_address: '',
     city: '',
     country: '',
-    countryCode: '',
-    phoneNumber: '',
+    country_code: '',
+    phone: '',
     email: ''
   }
 
-  // Address validation
-  if (companyAddress.value.trim() === '') {
-    errors.value.companyAddress = 'Company address is required'
+  if (localData.value.company_address.trim() === '') {
+    errors.value.company_address = 'Company address is required'
     valid = false
   }
 
-  // City validation (only letters and spaces)
-  if (city.value.trim() === '') {
+  if (localData.value.city.trim() === '') {
     errors.value.city = 'City is required'
     valid = false
-  } else if (!/^[a-zA-Z\s]+$/.test(city.value)) {
+  } else if (!/^[a-zA-Z\s]+$/.test(localData.value.city)) {
     errors.value.city = 'City should only contain letters'
     valid = false
   }
 
-  // Country validation (only letters and spaces)
-  if (country.value.trim() === '') {
+  if (localData.value.country.trim() === '') {
     errors.value.country = 'Country is required'
     valid = false
-  } else if (!/^[a-zA-Z\s]+$/.test(country.value)) {
+  } else if (!/^[a-zA-Z\s]+$/.test(localData.value.country)) {
     errors.value.country = 'Country should only contain letters'
     valid = false
   }
 
-  // Country code validation
-  if (countryCode.value.trim() === '') {
-    errors.value.countryCode = 'Country code is required'
+  if (localData.value.country_code.trim() === '') {
+    errors.value.country_code = 'Country code is required'
     valid = false
-  } else if (!/^\+[0-9]{1,4}$/.test(countryCode.value)) {
-    errors.value.countryCode = 'Please enter a valid country code (e.g. +20, +1)'
-    valid = false
-  }
-
-  // Phone number validation (only numbers)
-  if (phoneNumber.value.trim() === '') {
-    errors.value.phoneNumber = 'Phone number is required'
-    valid = false
-  } else if (!/^[0-9]+$/.test(phoneNumber.value)) {
-    errors.value.phoneNumber = 'Phone number should only contain numbers'
-    valid = false
-  } else if (phoneNumber.value.length < 7) {
-    errors.value.phoneNumber = 'Phone number should be at least 7 digits'
+  } else if (!/^\+[0-9]{1,4}$/.test(localData.value.country_code)) {
+    errors.value.country_code = 'Please enter a valid country code (e.g. +20, +1)'
     valid = false
   }
 
-  // Email validation
-  if (email.value.trim() === '') {
+  if (localData.value.phone.trim() === '') {
+    errors.value.phone = 'Phone number is required'
+    valid = false
+  } else if (!/^[0-9]+$/.test(localData.value.phone)) {
+    errors.value.phone = 'Phone number should only contain numbers'
+    valid = false
+  } else if (localData.value.phone.length < 7) {
+    errors.value.phone = 'Phone number should be at least 7 digits'
+    valid = false
+  }
+
+  if (localData.value.email.trim() === '') {
     errors.value.email = 'Email is required'
     valid = false
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(localData.value.email)) {
     errors.value.email = 'Please enter a valid email address'
     valid = false
   }
@@ -207,35 +208,27 @@ const goToPreviousStep = () => {
 }
 
 const submitContactInfo = async () => {
-  if (!validateForm()) return
+  if (!validateForm()) return;
   
   try {
-    const response = await employerApi.post('/', {
-      company_address: companyAddress.value,
-      city: city.value,
-      country: country.value,
-      phone: countryCode.value + phoneNumber.value,
-      email: email.value
-    });
-
-    emit('next', {
-      contactInfo: {
-        phone: countryCode.value + phoneNumber.value,
-        email: email.value,
-        address: {
-          street: companyAddress.value,
-          city: city.value,
-          country: country.value
-        }
-      },
+    const contactData = {
+      company_address: localData.value.company_address,
+      city: localData.value.city,
+      country: localData.value.country,
+      phone: `${localData.value.country_code}${localData.value.phone}`,
+      email: localData.value.email,
       isComplete: true
-    });
+    };
+    
+    emit('next', contactData);
+    emit('complete'); // إرسال حدث الإكتمال
   } catch (error) {
-    console.error('Error saving contact info:', error);
-    alert('Failed to save data. Please try again.');
+    console.error('Error submitting contact info:', error);
+    alert('Failed to save contact information. Please try again.');
   }
 }
 </script>
+
 
 <style scoped>
 .contact-info-container {

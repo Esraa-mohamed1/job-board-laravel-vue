@@ -20,6 +20,17 @@
         <div class="review-item">
           <strong>Team Size:</strong> {{ formData.foundingInfo.teamSize }}
         </div>
+        <div class="review-item">
+          <strong>Website:</strong> {{ formData.foundingInfo.website || 'Not provided' }}
+        </div>
+        <div class="review-item">
+          <strong>Social Media:</strong>
+          <ul>
+            <li v-if="formData.socialMedia.linkedin">LinkedIn: {{ formData.socialMedia.linkedin }}</li>
+            <li v-if="formData.socialMedia.facebook">Facebook: {{ formData.socialMedia.facebook }}</li>
+            <li v-if="formData.socialMedia.twitter">Twitter: {{ formData.socialMedia.twitter }}</li>
+          </ul>
+        </div>
         <!-- Add more review items for each section -->
       </div>
       

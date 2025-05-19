@@ -1,43 +1,42 @@
 <template>
-  <div class="step-container">
-    <h2>Social Media Profile</h2>
-    <p class="subtitle">Contact</p>
+  <div class="social-media-step">
+    <h2>Social Media Links</h2>
+    <p class="subtitle">Add your company's social media profiles</p>
     
     <div class="social-links">
-      <div class="social-link" v-for="(link, index) in links" :key="index">
+      <div class="social-link" v-for="(link, index) in localData.social_links" :key="index">
         <div class="link-header">
           <span>Social Link {{ index + 1 }}</span>
-          <input
-            v-model="link.platform"
-            placeholder="Platform name (e.g. Facebook, Twitter)..."
-            required
-            :class="{'is-invalid': linkErrors[index] && linkErrors[index].platform}"
-            class="form-control"
-            @input="clearError(index, 'platform')"
-          >
+          <button v-if="localData.social_links.length > 1" class="remove-link" @click="removeLink(index)">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
         <input
-          v-model="link.url"
-          placeholder="Profile link/url..."
+          v-model="link.platform"
+          placeholder="Platform (e.g. Facebook, Twitter)"
           required
-          :class="{'is-invalid': linkErrors[index] && linkErrors[index].url}"
+          :class="{'is-invalid': errors[index] && errors[index].platform}"
           class="form-control"
-          @input="clearError(index, 'url')"
         >
-        <div v-if="linkErrors[index] && linkErrors[index].platform" class="invalid-feedback">
-          {{ linkErrors[index].platform }}
-        </div>
-        <div v-if="linkErrors[index] && linkErrors[index].url" class="invalid-feedback">
-          {{ linkErrors[index].url }}
-        </div>
+        <input
+          v-model="link.url"
+          placeholder="Profile URL"
+          required
+          :class="{'is-invalid': errors[index] && errors[index].url}"
+          class="form-control"
+        >
+        <div v-if="getPlatformError(index)" class="invalid-feedback">{{ getPlatformError(index) }}</div>
+        <div v-if="getErrorUrl(index)" class="invalid-feedback">{{ getErrorUrl(index) }}</div>
       </div>
     </div>
-
-    <button class="add-link" @click="addLink">Add New Social Link</button>
     
-    <div class="navigation">
-      <button class="btn-prev" @click="prevStep">Previous</button>
-      <button class="btn-next" :disabled="!isFormValid" @click="nextStep">Save & Next</button>
+    <button class="add-link" @click="addLink">
+      <i class="fas fa-plus"></i> Add Another Link
+    </button>
+    
+    <div class="navigation-buttons">
+      <button class="btn-prev" @click="goToPrevious">Previous</button>
+      <button class="btn-next" :disabled="!isFormValid" @click="submitForm">Save & Next</button>
     </div>
   </div>
 </template>
@@ -46,83 +45,115 @@
 import { ref, computed } from 'vue'
 
 const emit = defineEmits(['prev', 'next'])
-
-const links = ref([
-  { platform: '', url: '' },
-  { platform: '', url: '' },
-  { platform: '', url: '' }
-])
-
-const linkErrors = ref([])
-
-const isFormValid = computed(() => {
-  return links.value.every(link => link.platform && link.url)
+const props = defineProps({
+  formData: {
+    type: Object,
+    default: () => ({})
+  }
 })
 
-const validateForm = () => {
-  let valid = true
-  linkErrors.value = []
-  
-  links.value.forEach((link, index) => {
-    linkErrors.value[index] = { platform: '', url: '' }
-    
-    if (!link.platform) {
-      linkErrors.value[index].platform = 'Platform is required'
-      valid = false
-    }
-    
-    if (!link.url) {
-      linkErrors.value[index].url = 'URL is required'
-      valid = false
-    } else if (!isValidUrl(link.url)) {
-      linkErrors.value[index].url = 'Please enter a valid URL'
-      valid = false
-    }
-  })
-  
-  return valid
-}
+const localData = ref({
+  social_links: props.formData.social_links?.length ? [...props.formData.social_links] : [
+    { platform: '', url: '' }
+  ]
+})
 
+const errors = ref([])
+
+const isFormValid = computed(() => {
+  return localData.value.social_links.every(link => 
+    link.platform.trim() !== '' && 
+    link.url.trim() !== '' && 
+    isValidUrl(link.url)
+  )
+})
 const isValidUrl = (url) => {
   try {
     new URL(url)
     return true
-  } catch (e) {
+  } catch {
     return false
   }
 }
 
-const clearError = (index, field) => {
-  if (linkErrors.value[index]) {
-    linkErrors.value[index][field] = ''
-  }
+const getPlatformError = (index) => {
+  return errors.value[index] && errors.value[index].platform;
+};
+
+const getErrorUrl = (index) => {
+  return errors.value[index] && errors.value[index].url;
+};
+
+const validateForm = () => {
+  let valid = true
+  errors.value = []
+
+  localData.value.social_links.forEach((link, index) => {
+    errors.value[index] = { platform: '', url: '' }
+
+    if (link.platform.trim() === '') {
+      errors.value[index].platform = 'Platform is required'
+      valid = false
+    }
+
+    if (link.url.trim() === '') {
+      errors.value[index].url = 'URL is required'
+      valid = false
+    } else if (!isValidUrl(link.url)) {
+      errors.value[index].url = 'Please enter a valid URL'
+      valid = false
+    }
+  })
+
+  return valid
 }
 
 const addLink = () => {
-  links.value.push({ platform: '', url: '' })
+  localData.value.social_links.push({ platform: '', url: '' })
 }
 
-const prevStep = () => {
+const removeLink = (index) => {
+  localData.value.social_links.splice(index, 1)
+}
+
+const goToPrevious = () => {
   emit('prev')
 }
 
-const nextStep = () => {
-  if (!validateForm()) {
-    console.log('Form validation failed')
-    return
+const submitForm = () => {
+  if (!validateForm()) return
+  
+  const socialData = {
+    linkedIn: '',
+    facebook: '',
+    twitter: ''
   }
   
-  emit('next', {
-    socialLinks: links.value.filter(link => link.platform && link.url)
+  localData.value.social_links.forEach(link => {
+    const platform = link.platform.toLowerCase()
+    if (platform.includes('linkedin')) {
+      socialData.linkedIn = link.url
+    } else if (platform.includes('facebook')) {
+      socialData.facebook = link.url
+    } else if (platform.includes('twitter')) {
+      socialData.twitter = link.url
+    }
   })
+  
+  emit('next', socialData)
 }
 </script>
 
 <style scoped>
-.step-container {
+.social-media-step {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+}
+
+h2 {
+  margin-bottom: 10px;
+  color: #333;
 }
 
 .subtitle {
@@ -135,73 +166,38 @@ const nextStep = () => {
 }
 
 .social-link {
-  margin-bottom: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
 }
 
 .link-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .link-header span {
-  margin-right: 10px;
-  min-width: 100px;
+  font-weight: 500;
+  color: #333;
 }
 
-input {
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  width: 100%;
-  margin-bottom: 8px;
-}
-
-.add-link {
+.remove-link {
   background: none;
-  border: 1px dashed #ddd;
-  padding: 12px;
-  width: 100%;
-  margin-bottom: 30px;
-  cursor: pointer;
-}
-
-.add-link:hover {
-  border-color: #0A65CC;
-  color: #0A65CC;
-}
-
-.navigation {
-  display: flex;
-  justify-content: space-between;
-}
-
-.btn-prev, .btn-next {
-  padding: 12px 24px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.btn-prev {
-  background: white;
-  border: 1px solid #ddd;
-}
-
-.btn-next {
-  background: #0A65CC;
-  color: white;
   border: none;
+  color: #dc3545;
+  cursor: pointer;
+  padding: 5px;
 }
 
-.btn-next:hover {
-  background: #3982d6;
-}
-
-.btn-next:disabled {
-  background: #cccccc;
-  cursor: not-allowed;
+.form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 10px;
 }
 
 .is-invalid {
@@ -211,6 +207,66 @@ input {
 .invalid-feedback {
   color: #dc3545;
   font-size: 0.875rem;
-  margin-top: 0.25rem;
+  margin-top: -5px;
+  margin-bottom: 10px;
+}
+
+.add-link {
+  background: none;
+  border: 1px dashed #ddd;
+  color: #0A65CC;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  width: 100%;
+  transition: all 0.3s;
+}
+
+.add-link:hover {
+  border-color: #0A65CC;
+  background: rgba(10, 101, 204, 0.05);
+}
+
+.add-link i {
+  margin-right: 5px;
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn-prev, .btn-next {
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-prev {
+  background: white;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+.btn-prev:hover {
+  border-color: #0A65CC;
+  color: #0A65CC;
+}
+
+.btn-next {
+  background: #0A65CC;
+  color: white;
+  border: none;
+}
+
+.btn-next:hover {
+  background: #084b99;
+}
+
+.btn-next:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
 }
 </style>
