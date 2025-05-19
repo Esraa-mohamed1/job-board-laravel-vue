@@ -576,7 +576,6 @@ const savePersonalChanges = async () => {
   } catch (error) {
     console.error('Error updating personal information:', error);
     if (error.response) {
-      // Show server validation errors if available
       const errors = error.response.data.errors || error.response.data.message;
       alert(JSON.stringify(errors));
     } else {

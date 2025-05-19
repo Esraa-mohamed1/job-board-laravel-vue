@@ -25,7 +25,7 @@
             </div>
           </div>
           
-        
+          
           <div class="d-flex align-items-center">
              <div class="dropdown px-3">
           <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -34,7 +34,7 @@
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
             <li>
-              <router-link class="dropdown-item" to="employer/dashboard/profile">
+              <router-link class="dropdown-item" to="/employer/dashboard/profile">
                 <i class="fas fa-user me-2"></i> My Profile
               </router-link>
             </li>
@@ -132,11 +132,7 @@
               </div>
             </div>
             
-            <div class="mt-auto px-3 pt-5">
-              <button class="btn btn-outline-danger btn-sm w-100 d-flex align-items-center justify-content-center py-2" @click="logout">
-                <i class="fas fa-sign-out-alt me-2"></i> Logout
-              </button>
-            </div>
+            
           </div>
   
           <div  class="col-lg-9 col-xl-10 p-3 p-md-4 bg-light"

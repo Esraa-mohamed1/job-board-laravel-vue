@@ -1,174 +1,60 @@
 <template>
   <div class="browse-jobs-page">
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-      <div class="container-fluid px-md-4">
-        <router-link class="navbar-brand" to="/">Skillhunt</router-link>
-        <button
-          class="navbar-toggler"
-          type="button"
-          @click="toggleNavbar"
-          aria-controls="ftco-nav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="oi oi-menu"></span> Menu
-        </button>
 
-        <div class="collapse navbar-collapse" :class="{ show: navbarOpen }" id="ftco-nav">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item"><router-link to="/" class="nav-link">Home</router-link></li>
-            <li class="nav-item active"><router-link to="/browsejobs" class="nav-link">Browse Jobs</router-link></li>
-            <li class="nav-item"><router-link to="/blog" class="nav-link">Blog</router-link></li>
-                        <li class="nav-item"><router-link to="/contact" class="nav-link">Contact us</router-link></li>
-
-          </ul>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <div class="hero-wrap hero-wrap-2" data-stellar-background-ratio="0.5">
-      <div class="overlay"></div>
-      <div class="container">
-        <div class="row no-gutters slider-text align-items-end justify-content-start">
-          <div class="col-md-12 text-center mb-5">
-            <p class="breadcrumbs mb-0">
-              <span class="mr-3"><router-link to="/">Home <i class="ion-ios-arrow-forward"></i></router-link></span>
-              <span>Browse Jobs</span>
-            </p>
-            <h1 class="mb-3 bread">Browse Jobs</h1>
-          </div>
-        </div>
+   <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+  <div class="container">
+    <router-link class="navbar-brand me-4 text-dark fw-bold fs-4" to="/">
+      <i class="fas fa-briefcase me-2 text-primary fs-3"></i> MyJob
+    </router-link>
+    <button 
+      class="navbar-toggler" 
+      type="button" 
+      @click="toggleNavbar"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" :class="{ show: navbarOpen }">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <router-link to="/" class="nav-link" active-class="active" exact>Home</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/browsejobs" class="nav-link" active-class="active">Jobs</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/contact" class="nav-link" active-class="active">About Us</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/contact" class="nav-link" active-class="active">Contact Us</router-link>
+        </li>
+      </ul>
+      <div class="d-flex">
+        <template v-if="!isAuthenticated">
+          <router-link to="/login" class="btn btn-outline-primary me-2">Login</router-link>
+          <router-link to="/register" class="btn btn-primary">Register</router-link>
+        </template>
+        <template v-else>
+          <button class="btn btn-danger" @click="logout">Logout</button>
+        </template>
       </div>
     </div>
+  </div>
+</nav>
 
-    <!-- Jobs Section -->
+
     <section class="job-board container py-5">
       <div class="row">
         <section class="col-12">
-          <!-- Filters with Dropdowns -->
-          <div class="filter-row mb-5">
-            <div class="filter-dropdowns d-flex flex-wrap gap-3">
-              <!-- Category Dropdown -->
-              <div class="dropdown">
-                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  {{ selectedCategories.length > 0 ? `${selectedCategories.length} Categories` : 'All Categories' }}
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
-                  <li>
-                    <div class="search-form p-3">
-                      <div class="form-group">
-                        <span class="icon icon-search"></span>
-                        <input
-                          v-model="categorySearch"
-                          type="text"
-                          class="form-control search-input"
-                          placeholder="Search categories..."
-                        />
-                      </div>
-                    </div>
-                  </li>
-                  <li v-for="category in filteredCategories" :key="category.value">
-                    <label class="dropdown-item">
-                      <input
-                        type="checkbox"
-                        :value="category.value"
-                        v-model="selectedCategories"
-                        @change="filterJobs"
-                        class="me-2"
-                      />
-                      {{ category.label }}
-                    </label>
-                  </li>
-                </ul>
-              </div>
-
-              <!-- Location Dropdown -->
-              <div class="dropdown">
-                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="locationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  {{ selectedLocations.length > 0 ? `${selectedLocations.length} Locations` : 'All Locations' }}
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="locationDropdown">
-                  <li>
-                    <div class="search-form p-3">
-                      <div class="form-group">
-                        <span class="icon icon-search"></span>
-                        <input
-                          v-model="locationSearch"
-                          type="text"
-                          class="form-control search-input"
-                          placeholder="Search locations..."
-                        />
-                      </div>
-                    </div>
-                  </li>
-                  <li v-for="location in filteredLocations" :key="location.value">
-                    <label class="dropdown-item">
-                      <input
-                        type="checkbox"
-                        :value="location.value"
-                        v-model="selectedLocations"
-                        @change="filterJobs"
-                        class="me-2"
-                      />
-                      {{ location.label }}
-                    </label>
-                  </li>
-                </ul>
-              </div>
-
-              <!-- Job Type Dropdown -->
-              <div class="dropdown">
-                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="jobTypeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  {{ selectedJobTypes.length > 0 ? `${selectedJobTypes.length} Types` : 'All Job Types' }}
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="jobTypeDropdown">
-                  <li v-for="type in jobTypes" :key="type.label">
-                    <label class="dropdown-item">
-                      <input
-                        type="checkbox"
-                        :value="type.label"
-                        v-model="selectedJobTypes"
-                        @change="filterJobs"
-                        class="me-2"
-                      />
-                      {{ type.label }}
-                    </label>
-                  </li>
-                </ul>
-              </div>
-
-              <!-- Clear Filters Button -->
-              <button 
-                class="btn btn-outline-danger"
-                @click="clearFilters"
-                :disabled="!hasActiveFilters"
-              >
-                Clear Filters
-              </button>
-            </div>
-          </div>
 
           <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="text-muted fw-bold">{{ filteredJobs.length.toLocaleString() }} Jobs found</div>
             <div class="d-flex align-items-center">
-              <label for="sort" class="me-2 text-muted">Sort by</label>
-              <select id="sort" class="form-select w-auto" v-model="sortOption" @change="sortJobs">
-                <option value="none">None</option>
-                <option value="latest">Latest</option>
-                <option value="salaryHigh">Salary High</option>
-              </select>
+             
             </div>
           </div>
 
           <div v-if="loading" class="text-center loading-container">
-            <div id="ftco-loader" class="show">
-              <svg class="circular" width="48px" height="48px">
-                <circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" />
-                <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#007bff" />
-              </svg>
-            </div>
             <p>Loading jobs...</p>
           </div>
           <div v-else-if="error" class="text-center text-danger error-message">
@@ -181,9 +67,20 @@
               class="job-card"
             >
               <div class="job-post-item p-3 d-flex align-items-center">
+                <div class="job-image-container me-3">
+                  <img 
+                    v-if="job.image" 
+                    :src="job.image" 
+                    class="job-image"
+                    alt="Job Image"
+                  />
+                  <div v-else class="job-placeholder-image">
+                    <i class="fas fa-briefcase"></i>
+                  </div>
+                </div>
                 <div class="job-details">
                   <div class="job-post-item-header d-flex align-items-center flex-wrap">
-                    <span class="subadge me-2">{{ job.jobType }}</span>
+                    <span class="subadge me-2">{{ job.job_type }}</span>
                     <h2 class="job-title">
                       <router-link :to="'/job/' + job.id">{{ job.title }}</router-link>
                     </h2>
@@ -191,21 +88,12 @@
                   <div class="job-post-item-body d-flex flex-wrap gap-2">
                     <div class="company"><span class="icon-layers me-1"></span>{{ job.company }}</div>
                     <div class="location"><span class="icon-my_location me-1"></span>{{ job.location }}</div>
-                    <div class="posted-date"><span class="icon-calendar me-1"></span>Posted on {{ formatPostedDate(job.postedDate) }}</div>
+                    <div class="posted-date"><span class="icon-calendar me-1"></span>Posted on {{ formatPostedDate(job.created_at) }}</div>
                   </div>
                   <div class="job-tags mt-2 d-flex flex-wrap gap-2">
                     <span v-for="tag in job.tags || [job.category]" :key="tag" class="tag-badge">{{ tag }}</span>
                   </div>
-                </div>
-                <div class="job-actions ms-auto d-flex flex-column align-items-end gap-2">
-                  <a
-                    href="#"
-                    class="icon d-flex justify-content-center align-items-center bookmark-btn"
-                    @click.prevent="bookmarkJob(job)"
-                  >
-                    <span class="icon-heart"></span>
-                  </a>
-                  <router-link :to="'/job/' + job.id" class="btn btn-primary apply-btn">Apply Job</router-link>
+                 
                 </div>
               </div>
             </div>
@@ -235,94 +123,17 @@
             </ul>
           </nav>
 
-          <button
-            class="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-4"
-            aria-label="Scroll to top"
-            @click="scrollToTop"
-          >
-            <i class="bi bi-arrow-up"></i>
-          </button>
         </section>
       </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="ftco-footer ftco-bg-dark ftco-section">
-      <div class="container">
-        <div class="row mb-5">
-          <div class="col-md">
-            <div class="ftco-footer-widget mb-4">
-              <h2 class="ftco-heading-2">Skillhunt Jobboard</h2>
-              <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-            </div>
-          </div>
-          <div class="col-md">
-            <div class="ftco-footer-widget mb-4">
-              <h2 class="ftco-heading-2">Employers</h2>
-              <ul class="list-unstyled">
-                <li><a href="#" class="pb-1 d-block">Browse Candidates</a></li>
-                <li><a href="#" class="pb-1 d-block">Post a Job</a></li>
-                <li><a href="#" class="pb-1 d-block">Employer Listing</a></li>
-                <li><a href="#" class="pb-1 d-block">Resume Page</a></li>
-                <li><a href="#" class="pb-1 d-block">Dashboard</a></li>
-                <li><a href="#" class="pb-1 d-block">Job Packages</a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md">
-            <div class="ftco-footer-widget mb-4 ml-md-4">
-              <h2 class="ftco-heading-2">Candidate</h2>
-              <ul class="list-unstyled">
-                <li><a href="#" class="pb-1 d-block">Browse Jobs</a></li>
-                <li><a href="#" class="pb-1 d-block">Submit Resume</a></li>
-                <li><a href="#" class="pb-1 d-block">Dashboard</a></li>
-                <li><a href="#" class="pb-1 d-block">Browse Categories</a></li>
-                <li><a href="#" class="pb-1 d-block">My Bookmarks</a></li>
-                <li><a href="#" class="pb-1 d-block">Candidate Listing</a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md">
-            <div class="ftco-footer-widget mb-4 ml-md-4">
-              <h2 class="ftco-heading-2">Account</h2>
-              <ul class="list-unstyled">
-                <li><a href="#" class="pb-1 d-block">My Account</a></li>
-                <li><a href="#" class="pb-1 d-block">Sign In</a></li>
-                <li><a href="#" class="pb-1 d-block">Create Account</a></li>
-                <li><a href="#" class="pb-1 d-block">Checkout</a></li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-md">
-            <div class="ftco-footer-widget mb-4">
-              <h2 class="ftco-heading-2">Have a Questions?</h2>
-              <div class="block-23 mb-3">
-                <ul>
-                  <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
-                  <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
-                  <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yoursite.com</span></a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12 text-center">
-            <p>
-              Copyright © {{ new Date().getFullYear() }} All rights reserved | This template is made with
-              <i class="icon-heart text-danger" aria-hidden="true"></i> by
-              <a href="https://colorlib.com" target="_blank">Colorlib</a>
-            </p>
-          </div>
-        </div>
-      </div>
-    </footer>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 
@@ -346,16 +157,38 @@ const sortOption = ref('none');
 const loading = ref(false);
 const error = ref(null);
 const navbarOpen = ref(false);
+const isAuthenticated = computed(() => !!localStorage.getItem('authToken')) 
+
+const logout = async () => {
+  try {
+    const token = localStorage.getItem('authToken')
+
+    await axios.post('/api/logout', null, {
+      baseURL: 'http://127.0.0.1:8000',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    clearAuthData()
+    await router.push('/login')
+
+  } catch (error) {
+    console.error('Logout error:', error)
+    clearAuthData()
+    await router.push('/login')
+  }
+}
 
 const fetchJobs = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await fetch('/db.json');
+    const response = await fetch('http://localhost:8000/api/jobs');
     if (!response.ok) throw new Error('Failed to fetch jobs data');
     const data = await response.json();
-    jobs.value = data.jobs || [];
-    // Filter out invalid categories, locations, and job types
+    jobs.value = Array.isArray(data) ? data : (data.data || []);
+
     const validCategories = [...new Set(
       jobs.value
         .filter(job => job.category && typeof job.category === 'string')
@@ -365,6 +198,7 @@ const fetchJobs = async () => {
       value,
       label: value
     }));
+
     const validLocations = [...new Set(
       jobs.value
         .filter(job => job.location && typeof job.location === 'string')
@@ -374,16 +208,18 @@ const fetchJobs = async () => {
       value,
       label: value
     }));
+
     const validJobTypes = [...new Set(
       jobs.value
-        .filter(job => job.jobType && typeof job.jobType === 'string')
-        .map(job => job.jobType)
+        .filter(job => job.job_type && typeof job.job_type === 'string')
+        .map(job => job.job_type)
     )];
     jobTypes.value = validJobTypes.map(value => ({
       value,
       label: value,
       checked: false
     }));
+
   } catch (err) {
     console.error('Error fetching jobs:', err);
     error.value = 'Unable to load jobs. Please try again later.';
@@ -410,15 +246,12 @@ const filteredJobs = computed(() => {
   if (selectedCategories.value.length > 0) {
     filtered = filtered.filter(job => job.category && selectedCategories.value.includes(job.category));
   }
-
   if (selectedLocations.value.length > 0) {
     filtered = filtered.filter(job => job.location && selectedLocations.value.includes(job.location));
   }
-
   if (selectedJobTypes.value.length > 0) {
-    filtered = filtered.filter(job => job.jobType && selectedJobTypes.value.includes(job.jobType));
+    filtered = filtered.filter(job => job.job_type && selectedJobTypes.value.includes(job.job_type));
   }
-
   return filtered;
 });
 
@@ -430,7 +263,7 @@ const hasActiveFilters = computed(() => {
 
 const sortedJobs = computed(() => {
   if (sortOption.value === 'latest') {
-    return [...filteredJobs.value].sort((a, b) => new Date(b.postedDate) - new Date(a.postedDate));
+    return [...filteredJobs.value].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   }
   if (sortOption.value === 'salaryHigh') {
     return [...filteredJobs.value].sort((a, b) => {
@@ -492,6 +325,15 @@ const bookmarkJob = (job) => {
   alert(`Job "${job.title}" bookmarked! (This is a demo)`);
 };
 
+const applyJob = () => {
+  Swal.fire({
+    icon: 'warning',
+    title: 'Not Authenticated',
+    text: 'You must be logged in to apply for a job.',
+    confirmButtonColor: '#007bff'
+  });
+};
+
 const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
@@ -501,8 +343,40 @@ onMounted(() => {
 });
 </script>
 
+
 <style scoped lang="scss">
-// Color Variables
+
+.job-image-container {
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #f0f0f0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.job-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+
+.job-placeholder-image {
+  width: 60px;
+  height: 60px;
+  background: #eaeaea;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b0b0b0;
+  font-size: 2rem;
+}
 $primary: #007bff;
 $primary-light: #4dabf7;
 $secondary: #6c757d;
@@ -515,7 +389,6 @@ $border-color: #dee2e6;
 // Font
 $font-family-base: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
-// Base Styles
 .browse-jobs-page {
   font-family: $font-family-base;
   color: $dark;
@@ -524,7 +397,6 @@ $font-family-base: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
   min-height: 100vh;
 }
 
-/* Navbar Styles */
 .navbar {
   padding: 1rem 0;
   background-color: $white !important;

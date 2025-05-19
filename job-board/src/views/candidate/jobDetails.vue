@@ -1,147 +1,143 @@
 <template>
-    <div v-if="jobData" class="job-details-container animate-fade-in">
-      <div class="details-header">
-        <div class="banner-container">
-          <img v-if="jobData.banner" :src="jobData.company.banner" alt="Company Banner" class="banner-img fade-in">
-          <div v-else class="default-banner fade-in"></div>
-          <div class="company-logo-container slide-in-left">
-            <img v-if="jobData.logo" :src="jobData.logo" alt="Company Logo" class="company-logo">
-            <div v-else class="default-logo">{{ getCompanyInitials(jobData.company.name) }}</div>
-          </div>
-        </div>
-  
-        <div class="details-info">
-          <h1 class="slide-in-right">{{ jobData.title }}</h1>
-          <p class="industry fade-in-delay">{{ jobData.company.name }}</p>
-          <div class="meta-info fade-in">
-            <span><i class="fas fa-map-marker-alt"></i> {{ jobData.location }}</span>
-            <span><i class="fas fa-money-bill-wave"></i> {{ jobData.salary }}</span>
-            <span><i class="fas fa-briefcase"></i> {{ jobData.type }}</span>
-            <span><i class="fas fa-calendar-alt"></i> Posted {{ formatDate(jobData.postedDate) }}</span>
-          </div>
+  <div v-if="jobData" class="job-details-container animate-fade-in">
+    <div class="details-header">
+      <div class="banner-container">
+        <img v-if="jobData.company_banner" :src="jobData.company_banner" alt="Company Banner" class="banner-img fade-in">
+        <div v-else class="default-banner fade-in"></div>
+        <div class="company-logo-container slide-in-left">
+          <img v-if="jobData.company_logo" :src="jobData.company_logo" alt="Company Logo" class="company-logo">
+          <div v-else class="default-logo">{{ getCompanyInitials(jobData.company ?? jobData.company_name) }}</div>
         </div>
       </div>
-  
-      <div class="details-content fade-in">
-        <div class="left-column">
-          <section class="fade-in-delay">
-            <h2>Job Description</h2>
-            <p>{{ jobData.description }}</p>
-          </section>
-  
-          <section class="fade-in-delay">
-            <h2>Responsibilities</h2>
-            <ul>
-              <li v-for="(responsibility, index) in jobData.responsibilities" :key="index">{{ responsibility }}</li>
-            </ul>
-          </section>
-  
-          <section class="fade-in-delay">
-            <h2>Required Skills</h2>
-            <ul>
-              <li v-for="(skill, index) in jobData.skills" :key="index">{{ skill }}</li>
-            </ul>
-          </section>
-
-          <section class="hiring-section slide-up">
-            <h2>Hiring Information</h2>
-            <div class="hiring-card">
-                <h2>Ready to Apply?</h2>
-              <router-link to="/post-job" class="post-job-btn bounce-btn">Apply Now</router-link>
-            </div>
-          </section>
-
-
-          
-        </div>
-  
-        <div class="right-column">
-          <section class="details-section fade-in-delay">
-            <h2>Job Details</h2>
-            <div class="detail-item">
-              <h3>Job Type</h3>
-              <p>{{ jobData.type }}</p>
-            </div>
-            <div class="detail-item">
-              <h3>Location</h3>
-              <p>{{ jobData.location }}</p>
-            </div>
-            <div class="detail-item">
-              <h3>Salary</h3>
-              <p>{{ jobData.salary }}</p>
-            </div>
-            <div class="detail-item">
-              <h3>Posted</h3>
-              <p>{{ formatDate(jobData.postedDate) }}</p>
-            </div>
-          </section>
-  
-          <section class="contact-section fade-in-delay">
-            <h2>Contact Information</h2>
-            <div class="contact-item">
-              <i class="fas fa-envelope p-3"></i>
-              <a :href="`mailto:${jobData.contact.email}`">{{ jobData.contact.email }}</a>
-            </div>
-            <div class="contact-item">
-              <i class="fas fa-phone p-3"></i>
-              <a :href="`tel:${jobData.contact.phone}`">{{ jobData.contact.phone }}</a>
-            </div>
-          </section>
+      <div class="details-info">
+        <h1 class="slide-in-right">{{ jobData.title }}</h1>
+        <p class="industry fade-in-delay">{{ jobData.company ?? jobData.company_name }}</p>
+        <div class="meta-info fade-in">
+          <span><i class="fas fa-map-marker-alt"></i> {{ jobData.location }}</span>
+          <span><i class="fas fa-money-bill-wave"></i> {{ jobData.salary }}</span>
+          <span><i class="fas fa-briefcase"></i> {{ jobData.job_type }}</span>
+          <span><i class="fas fa-calendar-alt"></i> Posted {{ formatDate(jobData.created_at) }}</span>
         </div>
       </div>
     </div>
-  
-    <div v-else-if="loading" class="loading">
-      <p>Loading job details...</p>
+
+    <div class="details-content fade-in">
+      <div class="left-column">
+        <section class="fade-in-delay">
+          <h2>Job Description</h2>
+          <p>{{ jobData.description }}</p>
+        </section>
+
+        <section v-if="jobData.responsibilities" class="fade-in-delay">
+          <h2>Responsibilities</h2>
+          <ul>
+            <li v-for="(responsibility, index) in jobData.responsibilities" :key="index">{{ responsibility }}</li>
+          </ul>
+        </section>
+
+        <section v-if="jobData.skills" class="fade-in-delay">
+          <h2>Required Skills</h2>
+          <ul>
+            <li v-for="(skill, index) in jobData.skills" :key="index">{{ skill }}</li>
+          </ul>
+        </section>
+
+        <section class="hiring-section slide-up">
+          <h2>Hiring Information</h2>
+          <div class="hiring-card">
+            <h2>Ready to Apply?</h2>
+            <router-link to="/post-job" class="post-job-btn bounce-btn">Apply Now</router-link>
+          </div>
+        </section>
+      </div>
+
+      <div class="right-column">
+        <section class="details-section fade-in-delay">
+          <h2>Job Details</h2>
+          <div class="detail-item">
+            <h3>Job Type</h3>
+            <p>{{ jobData.job_type }}</p>
+          </div>
+          <div class="detail-item">
+            <h3>Location</h3>
+            <p>{{ jobData.location }}</p>
+          </div>
+          <div class="detail-item">
+            <h3>Salary</h3>
+            <p>{{ jobData.salary }}</p>
+          </div>
+          <div class="detail-item">
+            <h3>Posted</h3>
+            <p>{{ formatDate(jobData.created_at) }}</p>
+          </div>
+        </section>
+
+        <section v-if="jobData.contact_email || jobData.contact_phone" class="contact-section fade-in-delay">
+          <h2>Contact Information</h2>
+          <div class="contact-item" v-if="jobData.contact_email">
+            <i class="fas fa-envelope p-3"></i>
+            <a :href="`mailto:${jobData.contact_email}`">{{ jobData.contact_email }}</a>
+          </div>
+          <div class="contact-item" v-if="jobData.contact_phone">
+            <i class="fas fa-phone p-3"></i>
+            <a :href="`tel:${jobData.contact_phone}`">{{ jobData.contact_phone }}</a>
+          </div>
+        </section>
+      </div>
     </div>
-    <div v-else class="error">
-      <p>Error loading job details.</p>
-    </div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue';
-  import { useRoute } from 'vue-router';
-  
-  const route = useRoute();
-  const jobData = ref(null);
-  const loading = ref(true);
-  
-  const loadJobData = async () => {
-    try {
-      const jobId = route.params.id;
-      const response = await fetch(`http://localhost:3000/jobs/${jobId}`);
-      if (!response.ok) throw new Error('Failed to fetch job details');
-      jobData.value = await response.json();
-    } catch (err) {
-      console.error('Error loading job details:', err.message);
-    } finally {
-      loading.value = false;
-    }
-  };
-  
-  const getCompanyInitials = (name) => {
-    if (!name) return 'CO';
-    return name.split(' ').map((part) => part.charAt(0)).join('').toUpperCase();
-  };
-  
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Not specified';
-    try {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-    } catch {
-      return dateString;
-    }
-  };
-  
-  onMounted(() => {
-    loadJobData();
-  });
-  </script>
+  </div>
+
+  <div v-else-if="loading" class="loading">
+    <p>Loading job details...</p>
+  </div>
+  <div v-else class="error">
+    <p>Error loading job details.</p>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+const jobData = ref(null);
+const loading = ref(true);
+
+const loadJobData = async () => {
+  try {
+    const jobId = route.params.id;
+    const response = await fetch(`http://localhost:8000/api/jobs/${jobId}`);
+    if (!response.ok) throw new Error('Failed to fetch job details');
+    jobData.value = await response.json();
+  } catch (err) {
+    console.error('Error loading job details:', err.message);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const getCompanyInitials = (name) => {
+  if (!name) return 'CO';
+  return name.split(' ').map((part) => part.charAt(0)).join('').toUpperCase();
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'Not specified';
+  try {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  } catch {
+    return dateString;
+  }
+};
+
+onMounted(() => {
+  loadJobData();
+});
+</script>
   
   <style scoped>
   .job-details-container {
