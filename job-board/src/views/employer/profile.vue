@@ -1,13 +1,12 @@
 <template>
   <div v-if="profileData" class="employer-profile-container animate-fade-in">
-    <!-- Header Section with Banner -->
     <div class="profile-header">
       <div class="banner-container">
         <img v-if="profileData.banner" :src="`/storage/images/${profileData.banner}`" alt="Company Banner" class="banner-img fade-in">
         <div v-else class="default-banner fade-in"></div>
-        <button class="edit-profile-btn" @click="editProfile">
+        <router-link to="/employer/dashboard/settings" class="edit-profile-btn">
           <i class="fas fa-pencil-alt"></i> Edit Profile
-        </button>
+        </router-link>
         <div class="company-logo-container slide-in-left">
           <img v-if="profileData.logo" :src="`/storage/images/${profileData.logo}`" alt="Company Logo" class="company-logo">
           <div v-else class="default-logo">{{ getCompanyInitials(profileData.company_name) }}</div>
@@ -27,7 +26,6 @@
 
     <div class="profile-content fade-in">
       <div class="left-column">
-        <!-- About Company -->
         <section class="about-section fade-in-delay">
           <h2>About Our Company</h2>
           <p>{{ profileData.about || 'No description provided' }}</p>
@@ -38,19 +36,17 @@
           <p>{{ profileData.company_vision || 'No vision statement provided' }}</p>
         </section>
 
-        <!-- Hiring Section -->
         <section class="hiring-section slide-up">
           <h2>Hiring Information</h2>
           <div class="hiring-card">
             <h3>We're Hiring!</h3>
             <p>Looking for talented professionals to join our team.</p>
-            <router-link to="/post-job" class="post-job-btn bounce-btn">Post a Job</router-link>
+            <router-link to="/employer/dashboard/post" class="post-job-btn bounce-btn">Post a Job</router-link>
           </div>
         </section>
       </div>
 
       <div class="right-column">
-        <!-- Company Details -->
         <section class="details-section fade-in-delay">
           <h2>Company Details</h2>
           <div class="detail-item">
@@ -71,7 +67,6 @@
           </div>
         </section>
 
-        <!-- Contact Information -->
         <section class="contact-section fade-in-delay">
           <h2>Contact Information</h2>
           <div class="contact-item">
@@ -81,11 +76,17 @@
           </div>
           <div class="contact-item">
             <i class="fas fa-envelope"></i>
-            <a :href="`mailto:${profileData.email}`">{{ profileData.email }}</a>
+            <a v-if="profileData.company_email" :href="`mailto:${profileData.company_email}`">
+              {{ profileData.company_email }}
+            </a>
+            <span v-else>Not provided</span>
           </div>
           <div class="contact-item">
             <i class="fas fa-phone"></i>
-            <a :href="`tel:${profileData.phone}`">{{ profileData.phone }}</a>
+            <a v-if="profileData.company_phone" :href="`tel:${formatPhone(profileData.company_phone)}`">
+              {{ formatPhone(profileData.company_phone) }}
+            </a>
+            <span v-else>Not provided</span>
           </div>
           <div class="contact-item">
             <i class="fas fa-map-marker-alt"></i>
@@ -93,18 +94,17 @@
           </div>
         </section>
 
-        <!-- Social Media -->
         <section class="social-section fade-in">
           <h2>Connect With Us</h2>
           <div class="social-links">
-            <a v-for="(link, index) in uniqueSocialLinks" 
-               :key="index" 
-               :href="link.url" 
-               target="_blank"
-               class="social-icon slide-in-bottom">
+            <a v-for="(link, index) in socialLinks" 
+              :key="index" 
+              :href="link.url" 
+              target="_blank"
+              class="social-icon slide-in-bottom">
               <i :class="getSocialIcon(link.platform)"></i>
             </a>
-            <div v-if="uniqueSocialLinks.length === 0" class="no-social">
+            <div v-if="socialLinks && socialLinks.length === 0" class="no-social">
               No social links provided
             </div>
           </div>
@@ -130,9 +130,53 @@ const router = useRouter()
 const profileData = ref(null)
 const loading = ref(true)
 const error = ref(null)
+const getSocialIcon = (platform) => {
+  const icons = {
+    linkedin: 'fab fa-linkedin',
+    facebook: 'fab fa-facebook-f',
+    twitter: 'fab fa-twitter',
+  }
+  return icons[platform] || 'fas fa-globe'
+}
+const formatPhone = (phone) => {
+  if (!phone) return 'Not specified'
+  return phone.toString().replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3')
+}
+const fetchCompanyProfile = async () => {
+  try {
+    const authToken = localStorage.getItem('authToken')
+    
+    if (!authToken) {
+      router.push('/login')
+      return
+    }
 
-const uniqueSocialLinks = computed(() => {
-  if (!profileData.value?.social_links) return []
+    const response = await axios.get('http://localhost:8000/api/companies/profile', {
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Accept': 'application/json'
+      }
+    })
+    console.log('Profile Data:', response.data.data)
+    if (response.data.success) {
+      profileData.value = response.data.data
+    } else {
+      error.value = response.data.message || 'Failed to load profile'
+    }
+  } catch (err) {
+    console.error('Error fetching company profile:', err)
+    error.value = err.response?.data?.message || 'Failed to load profile'
+    
+    if (err.response?.status === 401) {
+      router.push('/login')
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+const socialLinks = computed(() => {
+  if (!profileData.value) return []
   
   const links = []
   if (profileData.value.linkedIn) links.push({ platform: 'linkedin', url: profileData.value.linkedIn })
@@ -142,48 +186,15 @@ const uniqueSocialLinks = computed(() => {
   return links
 })
 
-const getCompanyInitials = (name) => {
-  if (!name) return 'CO'
-  return name.split(' ').map(part => part.charAt(0)).join('').toUpperCase()
-}
-
-const getSocialIcon = (platform) => {
-  const icons = {
-    facebook: 'fab fa-facebook-f',
-    twitter: 'fab fa-twitter',
-    linkedin: 'fab fa-linkedin-in'
-  }
-  return icons[platform.toLowerCase()] || 'fas fa-link'
-}
-
-const formatIndustryType = (industry) => {
-  if (!industry) return 'Not specified'
-  return industry
-}
-
-const formatOrganizationType = (type) => {
-  if (!type) return 'Not specified'
-  return type
-}
-
 const formatDate = (dateString) => {
   if (!dateString) return 'Not specified'
-  try {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric', month: 'long', day: 'numeric'
-    })
-  } catch {
-    return dateString
-  }
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
-const editProfile = () => {
-  router.push('/employer/profile/edit')
-}
-
-const formatAddress = (address) => {
-  if (!address) return 'Not specified'
-  return `${profileData.value.company_address}, ${profileData.value.city}, ${profileData.value.country}`
+const getCompanyInitials = (name) => {
+  if (!name) return 'CO'
+  return name.split(' ').map(part => part[0]).join('').toUpperCase()
 }
 
 const ensureHttp = (url) => {
@@ -191,32 +202,49 @@ const ensureHttp = (url) => {
   return url.startsWith('http') ? url : `https://${url}`
 }
 
-const loadProfileData = async () => {
-  try {
-    const authToken = localStorage.getItem('authToken')
-    const response = await axios.get('http://localhost:8000/api/companies', {
-      headers: {
-        'Authorization': `Bearer ${authToken}`
-      }
-    })
-    
-    profileData.value = Array.isArray(response.data) ? response.data[0] : response.data
-  } catch (err) {
-    console.error('Error loading profile:', err)
-    error.value = err.message
-  } finally {
-    loading.value = false
+
+const formatIndustryType = (type) => {
+  if (!type) return 'Not specified'
+  const types = {
+    'tech': 'Technology',
+    'finance': 'Finance',
+    'health': 'Healthcare',
   }
+  return types[type] || type
 }
 
-onMounted(async () => {
-  await loadProfileData()
+const formatOrganizationType = (type) => {
+  if (!type) return 'Not specified'
+  const types = {
+    'private': 'Private Company',
+    'public': 'Public Company',
+    'ngo': 'Non-Governmental Organization',
+  }
+  return types[type] || type
+}
+const formatAddress = () => {
+  if (!profileData.value) return 'Not specified';
+  
+  let address = '';
+  if (profileData.value.company_address) {
+    address += profileData.value.company_address;
+  }
+  if (profileData.value.city) {
+    address += (address ? ', ' : '') + profileData.value.city;
+  }
+  if (profileData.value.country) {
+    address += (address ? ', ' : '') + profileData.value.country;
+  }
+  
+  return address || 'Not specified';
+}
+onMounted(() => {
+  fetchCompanyProfile()
 })
 </script>
 
   
   <style scoped>
-  /* Same CSS as in the previous example */
   .employer-profile-container {
     max-width: 1200px;
     margin: 2rem auto;

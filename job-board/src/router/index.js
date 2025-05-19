@@ -67,12 +67,7 @@ const routes = [
       }
     ]
   },
-  {
-    path: '/employer/edit/:id',
-    name: 'EmployerProfile',
-    component: EmployerProfile,
-    props: true
-  },
+
   {
     path: '/employer/dashboard',
     name: 'employer-dashboard',
@@ -110,7 +105,13 @@ const routes = [
         name: 'job-applications',
         component: JobApplications,
         props: true
-      }
+      },
+      {
+        path: 'settings',
+        name: 'EmployerProfileEdit',
+        component: () => import('../views/employer/EditEmployerProfile.vue'),
+        meta: { requiresAuth: true, role: 'employer' }
+      },
     ]
   },
   {
