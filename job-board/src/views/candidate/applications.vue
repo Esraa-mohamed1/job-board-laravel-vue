@@ -11,7 +11,7 @@
             <th>JOB</th>
             <th>DATE APPLIED</th>
             <th>STATUS</th>
-            <th>ACTION</th>
+           
           </tr>
         </thead>
         <tbody>
@@ -31,12 +31,10 @@
                 'rejected': job.status.toLowerCase() === 'rejected' ,
                 'pending': job.status.toLowerCase() === 'pending'
                 }]">
-                <i class="fas fa-check"></i> {{ job.status }}
+                <i class=""></i> {{ job.status }}
               </span>
             </td>
-            <td>
-              <button class="view-details-btn">View Details</button>
-            </td>
+           
           </tr>
         </tbody>
       </table>

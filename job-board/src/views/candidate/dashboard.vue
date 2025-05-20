@@ -14,14 +14,7 @@
       </div>
     </div>
     </div>
-    <!-- Footer -->
-    <footer class="bg-light border-top py-2 mt-auto">
-      <div class="container-fluid">
-        <div class="d-flex justify-content-center align-items-center">
-          <small class="text-muted fs-11">© 2024 MyJob - Job Portal. All Rights Reserved</small>
-        </div>
-      </div>
-    </footer>
+  
   </div>
 </template>
 

@@ -376,7 +376,7 @@ import { ref, onMounted, computed, watch } from 'vue'
 import { useUserStore } from '../../../src/stores/candidate/userStore'
 import axios from 'axios'
 import Swal from 'sweetalert2'
-
+const API_BASE_URL = 'http://127.0.0.1:8000';
 const userStore = useUserStore()
 
 // Active tab state
@@ -385,6 +385,11 @@ const activeTab = ref('personal')
 // Refs for file inputs
 const photoInput = ref(null)
 const resumeInput = ref(null)
+
+
+
+
+
 
 // Form data objects
 const userData = ref({
@@ -418,6 +423,21 @@ const passwordData = ref({
   password: '',
   password_confirmation: ''
 });
+
+
+
+// Computed property for profile photo URL
+const profilePhotoUrl = computed(() => {
+  if (userData.value.profile_photo instanceof File) {
+    return URL.createObjectURL(userData.value.profile_photo)
+  }
+  if (userStore.user?.profile_photo_path) {
+    return userStore.user.profile_photo_path.startsWith('http')
+      ? userStore.user.profile_photo_path
+      : `${API_BASE_URL}/storage/${userStore.user.profile_photo_path}`
+  }
+  return null
+})
 
 const updatePasswordd = async () => {
   if (passwordData.value.password !== passwordData.value.password_confirmation) {
@@ -459,15 +479,15 @@ const updatePasswordd = async () => {
 const newResumes = ref([])
 
 // Computed property for profile photo URL
-const profilePhotoUrl = computed(() => {
-  if (userData.value.profile_photo instanceof File) {
-    return URL.createObjectURL(userData.value.profile_photo)
-  }
-  if (userStore.user?.profile_photo_path) {
-    return `/storage/${userStore.user.profile_photo_path}`
-  }
-  return null
-})
+// const profilePhotoUrl = computed(() => {
+//   if (userData.value.profile_photo instanceof File) {
+//     return URL.createObjectURL(userData.value.profile_photo)
+//   }
+//   if (userStore.user?.profile_photo_path) {
+//     return `/storage/${userStore.user.profile_photo_path}`
+//   }
+//   return null
+// })
 
 // Methods
 const setActiveTab = (tab) => {
@@ -611,6 +631,40 @@ const deleteResume = async (resumeId) => {
     }
   }
 }
+// const savePersonalChanges = async () => {
+//   try {
+//     const dataToUpdate = {
+//       ...userData.value,
+//       _method: 'PUT'
+//     };
+//     await userStore.updateProfile(dataToUpdate);
+//     Swal.fire({
+//       icon: 'success',
+//       title: 'Success!',
+//       text: 'Personal information updated successfully',
+//       confirmButtonColor: '#3085d6',
+//     });
+//   } catch (error) {
+//     console.error('Error updating personal information:', error);
+//     Swal.fire({
+//       icon: 'error',
+//       title: 'Error',
+//       text: error.message || 'Failed to update personal information. Please try again.',
+//       confirmButtonColor: '#3085d6',
+//     });
+//   }
+// };
+// const profilePhotoUrl = computed(() => {
+//   if (userData.value.profile_photo instanceof File) {
+//     return URL.createObjectURL(userData.value.profile_photo);
+//   }
+//   if (userStore.user?.profile_photo_path) {
+//     return userStore.user.profile_photo_path.startsWith('http')
+//       ? userStore.user.profile_photo_path
+//       : `${API_BASE_URL}/storage/${userStore.user.profile_photo_path}`;
+//   }
+//   return null;
+// });
 
 const savePersonalChanges = async () => {
   try {
@@ -712,50 +766,105 @@ const saveSocialChanges = async () => {
 }
 
 // Initialize data when component mounts
+// onMounted(async () => {
+//   try {
+//     await userStore.fetchUser()
+    
+//     // Populate form data from store
+//     if (userStore.user) {
+//       userData.value = {
+//         name: userStore.user.name,
+//         email: userStore.user.email,
+//         phone: userStore.user.phone,
+//         website: userStore.user.website,
+//         professional_title: userStore.user.professional_title,
+//         profile_photo: null
+//       }
+      
+//       if (userStore.user.profile) {
+//         profileData.value = {
+//           nationality: userStore.user.profile.nationality,
+//           date_of_birth: userStore.user.profile.date_of_birth,
+//           gender: userStore.user.profile.gender,
+//           marital_status: userStore.user.profile.marital_status,
+//           education: userStore.user.profile.education,
+//           experience: userStore.user.profile.experience,
+//           biography: userStore.user.profile.biography
+//         }
+//       }
+      
+//       if (userStore.user.social_links) {
+//         socialData.value = {
+//           linkedin: userStore.user.social_links.linkedin,
+//           twitter: userStore.user.social_links.twitter,
+//           github: userStore.user.social_links.github,
+//           facebook: userStore.user.social_links.facebook
+//         }
+//       }
+//     }
+//   } catch (error) {
+//     console.error('Error fetching user data:', error)
+//     Swal.fire({
+//       icon: 'error',
+//       title: 'Error',
+//       text: 'Failed to load user data. Please try again.',
+//       confirmButtonColor: '#3085d6',
+//     });
+//   }
+// })
+
+
+
 onMounted(async () => {
   try {
-    await userStore.fetchUser()
+    // Fetch user data if not already loaded
+    if (!userStore.user || Object.keys(userStore.user).length === 0) {
+      await userStore.fetchUser()
+    }
     
     // Populate form data from store
     if (userStore.user) {
+      // Personal info
       userData.value = {
-        name: userStore.user.name,
-        email: userStore.user.email,
-        phone: userStore.user.phone,
-        website: userStore.user.website,
-        professional_title: userStore.user.professional_title,
-        profile_photo: null
+        name: userStore.user.name || '',
+        email: userStore.user.email || '',
+        phone: userStore.user.phone || '',
+        website: userStore.user.website || '',
+        professional_title: userStore.user.professional_title || '',
+        profile_photo: null // Don't overwrite with existing photo to allow new uploads
       }
       
+      // Profile info
       if (userStore.user.profile) {
         profileData.value = {
-          nationality: userStore.user.profile.nationality,
-          date_of_birth: userStore.user.profile.date_of_birth,
-          gender: userStore.user.profile.gender,
-          marital_status: userStore.user.profile.marital_status,
-          education: userStore.user.profile.education,
-          experience: userStore.user.profile.experience,
-          biography: userStore.user.profile.biography
+          nationality: userStore.user.profile.nationality || '',
+          date_of_birth: userStore.user.profile.date_of_birth || '',
+          gender: userStore.user.profile.gender || '',
+          marital_status: userStore.user.profile.marital_status || '',
+          education: userStore.user.profile.education || '',
+          experience: userStore.user.profile.experience || '',
+          biography: userStore.user.profile.biography || ''
         }
       }
       
+      // Social links
       if (userStore.user.social_links) {
         socialData.value = {
-          linkedin: userStore.user.social_links.linkedin,
-          twitter: userStore.user.social_links.twitter,
-          github: userStore.user.social_links.github,
-          facebook: userStore.user.social_links.facebook
+          linkedin: userStore.user.social_links.linkedin || '',
+          twitter: userStore.user.social_links.twitter || '',
+          github: userStore.user.social_links.github || '',
+          facebook: userStore.user.social_links.facebook || ''
         }
       }
     }
   } catch (error) {
-    console.error('Error fetching user data:', error)
+    console.error('Error initializing user data:', error)
     Swal.fire({
       icon: 'error',
       title: 'Error',
-      text: 'Failed to load user data. Please try again.',
+      text: 'Failed to load user data. Please refresh the page.',
       confirmButtonColor: '#3085d6',
-    });
+    })
   }
 })
 </script>
