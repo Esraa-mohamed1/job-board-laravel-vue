@@ -338,6 +338,12 @@ const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
+const clearAuthData = () => {
+  localStorage.removeItem('authToken')
+  localStorage.removeItem('userData')
+  localStorage.removeItem('userRole')
+  delete axios.defaults.headers.common['Authorization']
+}
 onMounted(() => {
   fetchJobs();
 });

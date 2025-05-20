@@ -42,21 +42,17 @@
   </div>
 </nav>
 
-    <!-- Loading State -->
     <div v-if="loading" class="loading-overlay">
       <div class="spinner-border text-primary" role="status"></div>
       <p>Loading data...</p>
     </div>
 
-    <!-- Error State -->
     <div v-else-if="error" class="error-message">
       <p>{{ error }}</p>
       <button @click="fetchData" class="btn btn-primary">Retry</button>
     </div>
 
-    <!-- Content -->
     <div v-else>
-      <!-- Hero Section -->
       <section class="hero-section d-flex align-items-center text-white">
         <div class="overlay"></div>
         <div class="container">
@@ -121,7 +117,6 @@
         </div>
       </section>
 
-      <!-- Featured Jobs Section -->
       <section class="featured-jobs-section py-5 bg-light">
         <div class="container">
           <div class="row justify-content-center">
@@ -171,7 +166,6 @@
         </div>
       </section>
 
-      <!-- Recent Blog Posts -->
       <section class="blog-section py-5">
         <div class="container">
           <div class="row justify-content-center">
@@ -205,7 +199,6 @@
         </div>
       </section>
 
-      <!-- Footer -->
       <footer class="ftco-footer ftco-bg-dark ftco-section">
         <div class="container">
           <div class="row mb-5">
@@ -319,14 +312,12 @@ const fetchData = async () => {
     }
     const data = await response.json()
     
-    // Calculate stats
     stats.value = {
       jobs: data.jobs?.length || 0,
       companies: data.employers?.length || 0,
       candidates: data.users?.filter(u => u.role === 'candidate')?.length || 0
     }
     
-    // Get featured jobs (first 4 jobs)
     featuredJobs.value = data.jobs?.slice(0, 4) || []
     
     // Get recent blogs (first 3 blogs)
@@ -359,6 +350,13 @@ const logout = async () => {
     clearAuthData()
     await router.push('/login')
   }
+}
+
+const clearAuthData = () => {
+  localStorage.removeItem('authToken')
+  localStorage.removeItem('userData')
+  localStorage.removeItem('userRole')
+  delete axios.defaults.headers.common['Authorization']
 }
 
 
