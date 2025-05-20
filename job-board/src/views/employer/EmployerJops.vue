@@ -9,8 +9,9 @@
         <label>Status:</label>
         <select v-model="filters.status" class="filter-select">
           <option value="all">All</option>
-          <option value="Active">Active</option>
-          <option value="Expired">Expired</option>
+          <option value="active">Active</option>
+          <option value="pending">Pending</option>
+          <option value="closed">Closed</option>
         </select>
       </div>
       <div class="filter-group">
@@ -56,8 +57,11 @@
             <td class="job-info">
               <div class="job-title">{{ job.title }}</div>
               <div class="job-meta">
-                {{ formatJobType(job.type) }} • {{ formatDate(job.endDate) }}
+                <div class="job-meta">
+                  {{ job.type ? formatJobType(job.type) : '' }} • {{ formatDate(job.endDate) }}
+                </div>
               </div>
+
             </td>
             
             <td class="job-status">
@@ -86,14 +90,15 @@
             </td>
             
             <td class="job-actions">
-              <button 
-                class="expire-btn" 
-                @click="openModal('expire', job)"
-                :disabled="job.status === 'Expired'"
+              <button
+                v-if="job.status === 'Active'"
+                @click="expireJob(job)"
+                class="btn btn-warning"
               >
-                {{ job.status === 'Expired' ? 'Expired' : 'Expire' }}
+                Expire Job
               </button>
             </td>
+
           </tr>
         </tbody>
       </table>
@@ -107,7 +112,8 @@
         
         <div v-if="modal.type === 'details'">
           <h3>{{ modal.job.title }}</h3>
-          <p><strong>Type:</strong> {{ formatJobType(modal.job.type) }}</p>
+          <p><strong>job_type:</strong> {{ formatBackendJobType(modal.job.type) }}</p>,
+
           <p><strong>Status:</strong> <span :class="modal.job.status">{{ modal.job.status }}</span></p>
           <p><strong>Location:</strong> {{ modal.job.location || 'Not specified' }}</p>
           <p><strong>Education:</strong> {{ modal.job.education || 'N/A' }}</p>
@@ -247,8 +253,9 @@
             <div class="form-group">
               <label>Status:</label>
               <select v-model="modal.job.status" class="form-control">
-                <option value="Active">Active</option>
-                <option value="Expired">Expired</option>
+                <option value="active">Active</option>
+                <option value="pending">Pending</option>
+                <option value="closed">Closed</option>
               </select>
             </div>
 
@@ -300,7 +307,7 @@
 
 <script>
 import axios from 'axios';
-
+import { ElMessage } from 'element-plus';
 export default {
   data() {
     return {
@@ -337,6 +344,28 @@ export default {
         return statusMatch && typeMatch && searchMatch;
       });
     },
+  //   formatBackendJobType(type) {
+  // // Handle case where type is an object (extract the value you need)
+  //     if (typeof type === 'object' && type !== null) {
+  //       // Adjust this based on your actual object structure
+  //       type = type.value || type.type || type.name;
+  //     }
+
+  //     const typeMap = {
+  //       'Full Time': 'full-time',
+  //       'Part Time': 'part-time',
+  //       'Internship': 'internship',
+  //       'Contract': 'contract',
+  //       'Temporary': 'temporary'
+  //     };
+      
+  //     // If it's already in backend format, return as-is
+  //     if (['full-time', 'part-time', 'internship', 'contract', 'temporary'].includes(type)) {
+  //       return type;
+  //     }
+      
+  //     return typeMap[type] || 'full-time'; // default to full-time if not found
+  //   },
     paginatedJobs() {
       const start = (this.pagination.currentPage - 1) * this.pagination.itemsPerPage;
       return this.filteredJobs.slice(start, start + this.pagination.itemsPerPage);
@@ -357,50 +386,133 @@ export default {
     }
   },
   methods: {
-    async fetchJobs() {
-      this.loading = true;
-      try {
-        const token = localStorage.getItem('authToken');
-        
-        if (!token) {
-          throw new Error('No authentication token found');
-        }
+    getUserIdFromToken() {
+      const token = localStorage.getItem('authToken');
 
-        const response = await axios.get('http://localhost:8000/api/jobs', {
-          headers: { 
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json'
+        axios.get('http://localhost:8000/api/jobs', {
+          headers: {
+            Authorization: `Bearer ${token}`
           }
+        })
+        .then(response => {
+          this.jobs = response.data.jobs;
+        })
+        .catch(error => {
+          console.error('Error fetching jobs:', error);
         });
-        
-        this.jobs = response.data.data.map(job => ({
-          ...job,
-          applications: job.applications_count || 0,
-          endDate: job.endDate || this.formatDate(job.created_at),
-          status: this.calculateStatus(job)
-        }));
-        
-      } catch (error) {
-        console.error('Error fetching jobs:', error);
-        
-        if (error.response?.status === 401) {
-          this.errorMessage = 'Session expired. Please log in again.';
-          this.$router.push('/login');
-        } else {
-          this.errorMessage = 'Failed to load jobs. Please try again later.';
-        }
-        
-      } finally {
-        this.loading = false;
-      }
-    },
+
+      },
     showNotification(type, message) {
-  ElMessage({
-    message: message,
-    type: type,
-    duration: 3000
-  });
+      ElMessage({
+        message: message,
+        type: type,
+        duration: 3000,
+        showClose: true
+      });
+    },
+    async fetchJobs() {
+  this.loading = true;
+  try {
+    const token = localStorage.getItem('authToken');
+    const response = await axios.get('http://localhost:8000/api/jobs', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
+      }
+    });
+
+    this.jobs = response.data.map(job => ({
+      id: job.id,
+      title: job.title,
+      type: this.formatFrontendJobType(job.job_type),
+      status: job.status, // Directly use the backend status: 'pending', 'active', or 'closed'
+      applications: job.applications_count || 0,
+      endDate: job.end_date || job.created_at,
+      location: job.location,
+      education: this.formatEducationLevel(job.education_level),
+      experience: this.formatExperienceLevel(job.experience_level),
+      level: job.job_level,
+      description: job.description,
+      responsibilities: job.responsibilities,
+      keywords: job.keywords,
+      skills: job.skills ? job.skills.map(skill => skill.name) : [],
+      salaryType: job.salary_type,
+      fixedSalary: job.fixed_salary,
+      minSalary: job.min_salary,
+      maxSalary: job.max_salary
+    }));
+
+  } catch (error) {
+    console.error('Error fetching jobs:', error);
+    this.showNotification('error', error.response?.data?.message || 'Failed to load jobs');
+  } finally {
+    this.loading = false;
+  }
 },
+    formatFrontendJobType(backendType) {
+    const typeMap = {
+        'full_time': 'full-time',
+        'part_time': 'part-time',
+        'contract': 'contract',
+        'internship': 'internship',
+        'temporary': 'temporary',
+        'freelance': 'freelance' 
+    };
+    return typeMap[backendType] || backendType;
+},
+    formatJobType(type) {
+        const types = {
+            'full-time': 'Full Time',
+            'part-time': 'Part Time',
+            'contract': 'Contract',
+            'internship': 'Internship',
+            'temporary': 'Temporary',
+            'freelance': 'Freelance' // Add if used in backend
+        };
+        return types[type] || type; // Return the formatted name or the original if not found
+    },
+    async expireJob(job) {
+  try {
+    this.loading = true;
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('Please login to update jobs');
+    }
+
+    const formattedType = this.formatBackendJobType(job.type);
+
+    const requestData = {
+      status: 'closed', // Change to 'closed'
+      job_type: formattedType,
+    };
+
+    const response = await axios.put(
+      `http://localhost:8000/api/jobs/${job.id}`,
+      requestData,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        }
+      }
+    );
+
+    const index = this.jobs.findIndex(j => j.id === job.id);
+    if (index !== -1) {
+      this.jobs[index].status = 'closed'; // Update frontend to 'closed'
+    }
+
+    this.showNotification('success', 'Job expired successfully');
+  } catch (error) {
+    console.error('Expire job error:', error);
+    let errorMsg = error.response?.data?.message || error.message;
+    this.showNotification('error', errorMsg || 'Error expiring job');
+  } finally {
+    this.loading = false;
+  }
+}
+
+,
     
     calculateStatus(job) {
       if (job.status === 'Expired') return 'Expired';
@@ -408,17 +520,35 @@ export default {
       return 'Active';
     },
     
-    formatJobType(type) {
-      const typeMap = {
-        'full-time': 'Full Time',
-        'part-time': 'Part Time',
-        'internship': 'Internship',
-        'contract': 'Contract',
-        'temporary': 'Temporary'
-      };
-      return typeMap[type] || type;
-    },
-    
+    formatBackendJobType(frontendType) {
+  const typeMap = {
+    'full-time': 'full_time',
+    'part-time': 'part_time',
+    'contract': 'contract',
+    'internship': 'internship',
+    'freelance': 'freelance'
+  };
+  return typeMap[frontendType] || frontendType;
+}
+,
+formatEducationLevel(level) {
+    const levels = {
+        'high_school': 'High School',
+        'bachelor': 'Bachelor',
+        'master': 'Master',
+        'phd': 'PhD',
+        'diploma': 'Diploma', // Already present, ensure backend supports it
+    };
+    return levels[level] || level;
+},
+formatExperienceLevel(level) {
+  const levels = {
+    'entry': 'Entry Level',
+    'mid': 'Mid Level',
+    'senior': 'Senior Level'
+  };
+  return levels[level] || level;
+},
     formatDate(dateString) {
       if (!dateString) return 'N/A';
       
@@ -439,7 +569,29 @@ export default {
               type === 'details' ? 'Job Details' : 'Confirm Expiration',
         job: { ...job }
       };
-      
+  let responsibilitiesText = '';
+
+  if (type === 'edit') {
+    if (typeof job.responsibilities === 'string') {
+      responsibilitiesText = job.responsibilities;
+    } else if (Array.isArray(job.responsibilities)) {
+      responsibilitiesText = job.responsibilities.join(', ');
+    } else {
+      responsibilitiesText = JSON.stringify(job.responsibilities);
+    }
+  }
+
+  this.modal = {
+    show: true,
+    type,
+    title: type === 'edit' ? 'Edit Job' : 
+          type === 'details' ? 'Job Details' : 'Confirm Expiration',
+    job: { ...job, responsibilities: responsibilitiesText }
+  };
+
+  if (type === 'edit') {
+    this.skillsInput = Array.isArray(job.skills) ? job.skills.join(', ') : job.skills || '';
+  }
       if (type === 'edit') {
         this.skillsInput = Array.isArray(job.skills) ? job.skills.join(', ') : job.skills || '';
       }
@@ -453,80 +605,60 @@ export default {
     },
     
     async saveJob() {
-    try {
-      this.loading = true;
-      const token = localStorage.getItem('authToken');
-      
-      if (!token) {
-        throw new Error('Please login to update jobs');
-      }
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) throw new Error('Please login to update jobs');
 
-      // Prepare data for backend
-      const jobData = {
-        title: this.modal.job.title,
-        job_type: this.formatBackendJobType(this.modal.job.type),
-        description: this.modal.job.description,
-        responsibilities: this.modal.job.responsibilities,
-        education_level: this.modal.job.education,
-        experience_level: this.modal.job.experience,
-        job_level: this.modal.job.level,
-        location: this.modal.job.location,
-        keywords: this.modal.job.keywords,
-        status: this.modal.job.status,
-        skills: this.skillsInput.split(',').map(s => s.trim()).filter(s => s),
-        salary_type: this.modal.job.salaryType,
-        category_id: this.modal.job.category_id || 1
-      };
+    const jobData = {
+      title: this.modal.job.title,
+      type: this.modal.job.type, 
+      description: this.modal.job.description,
+      responsibilities: this.modal.job.responsibilities,
+      education_level: this.modal.job.education.toLowerCase().replace(' ', '_'),
+      experience_level: this.modal.job.experience.toLowerCase().replace(' ', '_'),
+      job_level: this.modal.job.level,
+      location: this.modal.job.location,
+      keywords: this.modal.job.keywords,
+      status: this.modal.job.status,
+      skills: this.skillsInput.split(',').map(s => s.trim()).filter(s => s),
+      salary_type: this.modal.job.salaryType
+    };
 
-      // Handle salary data
-      if (this.modal.job.salaryType === 'fixed') {
-        jobData.fixed_salary = this.modal.job.fixedSalary;
-      } else {
-        jobData.min_salary = this.modal.job.minSalary;
-        jobData.max_salary = this.modal.job.maxSalary;
-      }
-
-      const response = await axios.patch(
-        `http://localhost:8000/api/jobs/${this.modal.job.id}`,
-        jobData,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      // Update local jobs list
-      const index = this.jobs.findIndex(j => j.id === this.modal.job.id);
-      if (index !== -1) {
-        this.jobs[index] = {
-          ...response.data.data,
-          applications: this.jobs[index].applications // Keep existing apps count
-        };
-      }
-
-      this.showNotification('success', 'Job updated successfully');
-      this.closeModal();
-
-    } catch (error) {
-      let errorMessage = 'Failed to update job';
-      
-      if (error.response) {
-        // Server responded with error
-        errorMessage = error.response.data?.message || 
-                     `Server error: ${error.response.status}`;
-      } else if (error.request) {
-        // No response received
-        errorMessage = 'No response from server';
-      }
-      
-      this.showNotification('error', errorMessage);
-      console.error('Job update error:', error);
-    } finally {
-      this.loading = false;
+    if (this.modal.job.salaryType === 'fixed') {
+        jobData.salary = Number(this.modal.job.fixedSalary); // Change fixed_salary to salary
+    } else {
+        jobData.min_salary = Number(this.modal.job.minSalary);
+        jobData.max_salary = Number(this.modal.job.maxSalary);
     }
-  },
+    console.log('Job Data:', jobData);
+    const response = await axios.put(
+      `http://localhost:8000/api/jobs/${this.modal.job.id}`,
+      jobData,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    const index = this.jobs.findIndex(j => j.id === this.modal.job.id);
+    if (index !== -1) {
+      this.jobs[index] = {
+        ...this.jobs[index],
+        ...response.data.data,
+        skills: response.data.data.skills?.map(skill => skill.name) || []
+      };
+    }
+
+    this.showNotification('success', 'Job updated successfully');
+    this.closeModal();
+  } catch (error) {
+    console.error('Error saving job:', error);
+    this.showNotification('error', error.response?.data?.message || 'Error saving job');
+  }
+}
+,
     
     prevPage() {
       if (this.pagination.currentPage > 1) {
@@ -605,7 +737,20 @@ export default {
   border-radius: 4px;
   font-size: 14px;
 }
+.job-status .active { /* Renamed from .Active to .active */
+  background-color: #e6f7ee;
+  color: #28a745;
+}
 
+.job-status .closed { /* Renamed from .Expired to .closed */
+  background-color: #fce8e8;
+  color: #dc3545;
+}
+
+.job-status .pending { /* New style for pending */
+  background-color: #fff3cd; /* Light yellow background */
+  color: #ffc107; /* Orange/yellow text */
+}
 .view-btn:hover {
   background-color: #0069d9;
 }
