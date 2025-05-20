@@ -89,7 +89,6 @@
     </div>
   </div>
 
-  <!-- Apply Job Modal -->
   <div v-if="showApplyModal" class="modal-overlay" @click.self="closeModal">
     <div class="apply-modal">
       <button class="close-btn" @click="closeModal">&times;</button>
