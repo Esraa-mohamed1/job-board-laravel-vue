@@ -1,31 +1,46 @@
+
 <template>
   <div class="home-page">
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-      <div class="container-fluid px-md-4">
-        <router-link class="navbar-brand" to="/">Skillhunt</router-link>
-        <button
-          class="navbar-toggler"
-          type="button"
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+      <div class="container">
+        <router-link class="navbar-brand me-4 text-dark fw-bold fs-4" to="/">
+          <i class="fas fa-briefcase me-2 text-primary fs-3"></i> MyJob
+        </router-link>
+        
+        <button 
+          class="navbar-toggler" 
+          type="button" 
           @click="toggleNavbar"
-          aria-controls="ftco-nav"
-          aria-expanded="false"
           aria-label="Toggle navigation"
         >
-          <span class="oi oi-menu"></span> Menu
+          <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" :class="{ show: navbarOpen }" id="ftco-nav">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item"><router-link to="/" class="nav-link">Home</router-link></li>
-            <li class="nav-item"><router-link to="/browsejobs" class="nav-link">Browse Jobs</router-link></li>
-            <li class="nav-item active"><router-link to="/blog" class="nav-link">Blog</router-link></li>
-                        <li class="nav-item active"><router-link to="/contact" class="nav-link">Contact</router-link></li>
-
+        <div class="collapse navbar-collapse" :class="{ show: navbarOpen }">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <router-link to="/" class="nav-link" active-class="active" exact>Home</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/browsejobs" class="nav-link" active-class="active">Jobs</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/contact" class="nav-link" active-class="active">About Us</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link to="/contact" class="nav-link" active-class="active">Contact Us</router-link>
+            </li>
           </ul>
+
+          <div class="d-flex">
+            <router-link to="/login" class="btn btn-outline-primary me-2">Login</router-link>
+            <router-link to="/register" class="btn btn-primary">Register</router-link>
+          </div>
         </div>
       </div>
     </nav>
+
     <!-- Loading State -->
     <div v-if="loading" class="loading-overlay">
       <div class="spinner-border text-primary" role="status"></div>
@@ -99,6 +114,37 @@
             <div class="col-lg-5 d-none d-lg-block">
               <div class="hero-image">
                 <img src="https://themewagon.github.io/skillhunt/assets/img/hero-img.png" alt="Job seekers" class="img-fluid">
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- About the Web Section -->
+      <section class="about-web-section py-5">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-md-8 text-center">
+              <h2 class="section-title h3 fw-bold position-relative">About MyJob</h2>
+              <p class="section-subtitle text-muted">Your gateway to career success</p>
+            </div>
+          </div>
+          <div class="row g-4 mt-4">
+            <div class="col-lg-6">
+              <div class="job-card p-4">
+                <h3 class="h5 fw-bold mb-3">Our Mission</h3>
+                <p class="text-muted">
+                  MyJob is dedicated to connecting talented professionals with top employers worldwide. Our platform simplifies the job search process with powerful tools, personalized recommendations, and a seamless user experience.
+                </p>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="job-card p-4">
+                <h3 class="h5 fw-bold mb-3">Why Choose Us</h3>
+                <p class="text-muted">
+                  With thousands of job listings, advanced search filters, and career resources, MyJob empowers candidates and employers to achieve their goals. Join our community to unlock endless opportunities.
+                </p>
+                <router-link to="/browsejobs" class="btn btn-primary apply-btn">Explore Jobs</router-link>
               </div>
             </div>
           </div>
