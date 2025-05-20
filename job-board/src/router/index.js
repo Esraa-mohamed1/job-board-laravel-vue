@@ -14,6 +14,7 @@ import jobDetails from "../views/candidate/jobDetails.vue";
 import jobAlert from "../views/candidate/jobAlert.vue";
 import candidateSupport from "../views/candidate/candidateSupport.vue";
 import overview from "../views/candidate/overview.vue";
+import gopremium from "../views/candidate/gopremium.vue";
 import JobPosting from "../views/employer/posts/postjosb.vue";
 import EmployerJops from "../views/employer/EmployerJops.vue";
 import JobApplications from "@/views/employer/JobApplications.vue";
@@ -141,6 +142,10 @@ const routes = [
       {
         path: "findjob",
         component: findjob,
+      },
+      {
+        path: "gopremium",
+        component: gopremium,
       },
       {
         path: "jobs/:id",

@@ -1,14 +1,12 @@
 <template>
   <div class="job-board container py-1">
     <div class="row">
-      <!-- Sidebar Filters -->
       <aside class="col-lg-3 mb-4">
         <div class="border rounded p-4 bg-white shadow-sm">
           <h5 class="fw-bold mb-4 d-flex align-items-center">
             <i class="fas fa-filter me-2 text-primary"></i> Filter Jobs
           </h5>
 
-          <!-- Category Filter -->
           <div class="mb-4">
             <label for="category" class="form-label fw-semibold d-flex align-items-center">
               <i class="fas fa-list-alt me-2 text-primary"></i> Job Category
@@ -21,7 +19,6 @@
             </select>
           </div>
 
-          <!-- Job Type Filter -->
           <div>
             <label class="form-label fw-semibold d-flex align-items-center">
               <i class="fas fa-briefcase me-2 text-primary"></i> Job Type
@@ -34,7 +31,6 @@
         </div>
       </aside>
 
-      <!-- Job Listings -->
       <section class="col-lg-9">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <div class="text-muted fw-bold">{{ filteredJobs.length.toLocaleString() }} Jobs found</div>
@@ -54,12 +50,10 @@
       </section>
     </div>
 
-    <!-- Scroll to Top -->
     <button class="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-4" @click="scrollToTop">
       <i class="bi bi-arrow-up"></i>
     </button>
 
-    <!-- Pagination -->
     <nav aria-label="Job pagination" class="mt-5">
       <ul class="pagination justify-content-center gap-2">
         <li class="page-item">
@@ -105,7 +99,6 @@ const search = ref('');
 const selectedLocation = ref('');
 const selectedCompany = ref('');
 
-// Fetch jobs
 const fetchJobs = async () => {
   try {
     const params = new URLSearchParams();
@@ -128,7 +121,6 @@ const fetchJobs = async () => {
   }
 };
 
-// Fetch job types
 const fetchJobTypes = async () => {
   try {
     const response = await fetch('http://127.0.0.1:8000/api/job-types');

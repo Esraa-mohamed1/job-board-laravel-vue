@@ -445,7 +445,6 @@ $shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border-color: color.adjust($primary-color, $lightness: -10%);
 }
 
-/* Hero Section */
 .hero-section {
   position: relative;
   background-image: url("../../assets/free.png");
@@ -454,9 +453,9 @@ $shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   background-color: #073e61;
   min-height: 600px;
 }
+ 
 
-
-
+ 
 .hero-title {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   color: $bg-light; /* Changed to lighter color */

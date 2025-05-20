@@ -213,7 +213,7 @@ const submitApplication = async () => {
     const response = await fetch(`http://localhost:8000/api/jobs/${jobId}/apply`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Accept': 'application/json',
          'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
@@ -237,7 +237,7 @@ const submitApplication = async () => {
     successMsg.value = "Application submitted successfully.";
     setTimeout(closeModal, 1200);
   } catch (err) {
-    errorMsg.value = "Failed to submit application.";
+    errorMsg.value = err;
   } finally {
     submitting.value = false;
   }
