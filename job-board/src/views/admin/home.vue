@@ -1,20 +1,21 @@
 <template>
   <div class="admin-dashboard">
-    <!-- Loading overlay -->
     <div v-if="jobStore.loading" class="loading-overlay">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-    
-    <!-- Error message -->
+
     <div v-if="jobStore.error" class="alert alert-danger mx-3 mt-3">
       {{ jobStore.error }}
-      <button @click="jobStore.fetchDashboardData" class="btn btn-sm btn-outline-danger ms-2">
+      <button
+        @click="jobStore.fetchDashboardData"
+        class="btn btn-sm btn-outline-danger ms-2"
+      >
         Retry
       </button>
     </div>
-    
+
     <div class="row g-0">
       <!-- Sidebar -->
       <div class="col-md-3 col-lg-2 sidebar">
@@ -23,28 +24,39 @@
         </div>
         <ul class="nav flex-column mt-2">
           <li class="nav-item">
-            <router-link to="/admin" class="nav-link" :class="{ active: $route.path === '/admin' }">
+            <router-link
+              to="/admin"
+              class="nav-link"
+              :class="{ active: $route.path === '/admin' }"
+            >
               <i class="fas fa-tachometer-alt me-2"></i> Overview
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/admin/pending" class="nav-link" :class="{ active: $route.path === '/admin/pending' }">
+            <router-link
+              to="/pending"
+              class="nav-link"
+              :class="{ active: $route.path === '/admin/pending' }"
+            >
               <i class="fas fa-clipboard-list me-2"></i> Pending Jobs
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/admin/approved" class="nav-link" :class="{ active: $route.path === '/admin/approved' }">
+            <router-link
+              to="/approved"
+              class="nav-link"
+              :class="{ active: $route.path === '/admin/approved' }"
+            >
               <i class="fas fa-check-circle me-2"></i> Approved Jobs
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link to="/admin/rejected" class="nav-link" :class="{ active: $route.path === '/admin/rejected' }">
+            <router-link
+              to="/rejected"
+              class="nav-link"
+              :class="{ active: $route.path === '/admin/rejected' }"
+            >
               <i class="fas fa-times-circle me-2"></i> Rejected Jobs
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/admin/settings" class="nav-link" :class="{ active: $route.path === '/admin/settings' }">
-              <i class="fas fa-cog me-2"></i> Settings
             </router-link>
           </li>
         </ul>
@@ -59,13 +71,17 @@
       <div class="col-md-9 col-lg-10 ms-auto main-content">
         <div class="container-fluid py-4">
           <h3 class="mb-3">Hello, Admin User</h3>
-          <p class="text-secondary mb-4">Here is your job moderation dashboard</p>
+          <p class="text-secondary mb-4">
+            Here is your job moderation dashboard
+          </p>
 
           <!-- Stats cards -->
           <div class="row mb-4">
             <div class="col-md-4">
               <div class="card stat-card">
-                <div class="card-body d-flex justify-content-between align-items-center">
+                <div
+                  class="card-body d-flex justify-content-between align-items-center"
+                >
                   <div>
                     <h2 class="mb-0">{{ jobStore.pendingCount }}</h2>
                     <div class="text-secondary">Pending Jobs</div>
@@ -78,7 +94,9 @@
             </div>
             <div class="col-md-4">
               <div class="card stat-card">
-                <div class="card-body d-flex justify-content-between align-items-center">
+                <div
+                  class="card-body d-flex justify-content-between align-items-center"
+                >
                   <div>
                     <h2 class="mb-0">{{ jobStore.approvedCount }}</h2>
                     <div class="text-secondary">Approved Jobs</div>
@@ -91,7 +109,9 @@
             </div>
             <div class="col-md-4">
               <div class="card stat-card">
-                <div class="card-body d-flex justify-content-between align-items-center">
+                <div
+                  class="card-body d-flex justify-content-between align-items-center"
+                >
                   <div>
                     <h2 class="mb-0">{{ jobStore.rejectedCount }}</h2>
                     <div class="text-secondary">Rejected Jobs</div>
@@ -106,7 +126,9 @@
 
           <!-- Pending jobs table -->
           <div class="card mb-4">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <div
+              class="card-header bg-white d-flex justify-content-between align-items-center"
+            >
               <h5 class="mb-0">Jobs Pending Review</h5>
               <div class="view-all">
                 <router-link to="/admin/pending" class="text-primary">
@@ -129,38 +151,53 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="job in jobStore.pendingJobs.slice(0, 5)" :key="job.id">
+                    <tr
+                      v-for="job in jobStore.pendingJobs.slice(0, 5)"
+                      :key="job.id"
+                    >
                       <td>
                         <div class="d-flex align-items-center">
-                          <div class="company-logo me-3" :style="{ backgroundColor: job.logoBackground }">
-                            <img :src="job.logo" alt="Company Logo" v-if="job.logo">
-                            <span v-else>{{ job.companyInitial }}</span>
+                          <div
+                            class="company-logo me-3"
+                            :style="{
+                              backgroundColor: getLogoBackground(job.title),
+                            }"
+                          >
+                            <span>{{ getInitial(job.title) }}</span>
                           </div>
                           <div>{{ job.title }}</div>
                         </div>
                       </td>
                       <td>{{ job.company }}</td>
                       <td>
-                        <i class="fas fa-map-marker-alt me-1 text-secondary"></i>
+                        <i
+                          class="fas fa-map-marker-alt me-1 text-secondary"
+                        ></i>
                         {{ job.location }}
                       </td>
-                      <td>
-                        <i class="fas fa-dollar-sign me-1 text-secondary"></i>
-                        {{ job.salary }}
-                      </td>
+                      <td>{{ job.salary }}</td>
                       <td>{{ job.datePosted }}</td>
                       <td>
                         <span class="badge bg-warning">Pending</span>
                       </td>
                       <td>
                         <div class="btn-group">
-                          <button class="btn btn-sm btn-outline-secondary" @click="viewJobDetails(job.id)">
+                          <button
+                            class="btn btn-sm btn-outline-secondary"
+                            @click="viewJobDetails(job.id)"
+                          >
                             View
                           </button>
-                          <button class="btn btn-sm btn-success" @click="approveJob(job.id)">
+                          <button
+                            class="btn btn-sm btn-success"
+                            @click="jobStore.approveJob(job.id)"
+                          >
                             <i class="fas fa-check"></i>
                           </button>
-                          <button class="btn btn-sm btn-danger" @click="rejectJob(job.id)">
+                          <button
+                            class="btn btn-sm btn-danger"
+                            @click="jobStore.rejectJob(job.id)"
+                          >
                             <i class="fas fa-times"></i>
                           </button>
                         </div>
@@ -179,7 +216,9 @@
 
           <!-- Approved jobs table -->
           <div class="card">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <div
+              class="card-header bg-white d-flex justify-content-between align-items-center"
+            >
               <h5 class="mb-0">Recently Approved Jobs</h5>
               <div class="view-all">
                 <router-link to="/admin/approved" class="text-primary">
@@ -202,31 +241,40 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="job in jobStore.approvedJobs" :key="job.id">
+                    <tr
+                      v-for="job in jobStore.approvedJobs.slice(0, 3)"
+                      :key="job.id"
+                    >
                       <td>
                         <div class="d-flex align-items-center">
-                          <div class="company-logo me-3" :style="{ backgroundColor: job.logoBackground }">
-                            <img :src="job.logo" alt="Company Logo" v-if="job.logo">
-                            <span v-else>{{ job.companyInitial }}</span>
+                          <div
+                            class="company-logo me-3"
+                            :style="{
+                              backgroundColor: getLogoBackground(job.title),
+                            }"
+                          >
+                            <span>{{ getInitial(job.title) }}</span>
                           </div>
                           <div>{{ job.title }}</div>
                         </div>
                       </td>
                       <td>{{ job.company }}</td>
                       <td>
-                        <i class="fas fa-map-marker-alt me-1 text-secondary"></i>
+                        <i
+                          class="fas fa-map-marker-alt me-1 text-secondary"
+                        ></i>
                         {{ job.location }}
                       </td>
-                      <td>
-                        <i class="fas fa-dollar-sign me-1 text-secondary"></i>
-                        {{ job.salary }}
-                      </td>
+                      <td>{{ job.salary }}</td>
                       <td>{{ job.dateApproved }}</td>
                       <td>
                         <span class="badge bg-success">Approved</span>
                       </td>
                       <td>
-                        <button class="btn btn-sm btn-outline-secondary" @click="viewJobDetails(job.id)">
+                        <button
+                          class="btn btn-sm btn-outline-secondary"
+                          @click="viewJobDetails(job.id)"
+                        >
                           View Details
                         </button>
                       </td>
@@ -246,20 +294,36 @@
     </div>
 
     <!-- Job Details Modal -->
-    <div class="modal fade" id="jobDetailsModal" tabindex="-1" aria-hidden="true">
+    <div
+      class="modal fade"
+      id="jobDetailsModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">{{ jobStore.currentJob?.title }}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
             <div v-if="jobStore.currentJob">
               <div class="row mb-4">
                 <div class="col-md-4">
-                  <div class="company-logo-lg mb-3" :style="{ backgroundColor: jobStore.currentJob.logoBackground }">
-                    <img :src="jobStore.currentJob.logo" v-if="jobStore.currentJob.logo">
-                    <span v-else>{{ jobStore.currentJob.companyInitial }}</span>
+                  <div
+                    class="company-logo-lg mb-3"
+                    :style="{
+                      backgroundColor: getLogoBackground(
+                        jobStore.currentJob.title
+                      ),
+                    }"
+                  >
+                    <span>{{ getInitial(jobStore.currentJob.title) }}</span>
                   </div>
                   <h4>{{ jobStore.currentJob.company }}</h4>
                   <div class="text-muted mb-2">
@@ -274,20 +338,35 @@
                     <i class="fas fa-calendar-alt me-1"></i>
                     Posted: {{ jobStore.currentJob.datePosted }}
                   </div>
-                  <div v-if="jobStore.currentJob.dateApproved" class="text-muted">
+                  <div
+                    v-if="jobStore.currentJob.dateApproved"
+                    class="text-muted"
+                  >
                     <i class="fas fa-check-circle me-1"></i>
                     Approved: {{ jobStore.currentJob.dateApproved }}
                   </div>
                 </div>
                 <div class="col-md-8">
                   <h5>Job Description</h5>
-                  <div class="job-description" v-html="jobStore.currentJob.description"></div>
+                  <div
+                    class="job-description"
+                    v-html="
+                      jobStore.currentJob.description ||
+                      'No description available'
+                    "
+                  ></div>
                 </div>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
           </div>
         </div>
       </div>
@@ -296,57 +375,47 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
-import { useJobStore } from '@/stores/jobStore';
-import { Modal } from 'bootstrap';
-import { useRouter } from 'vue-router';
-import { useToast } from 'vue-toast-notification';
-import 'vue-toast-notification/dist/theme-sugar.css';
+import { onMounted, ref, nextTick } from "vue";
+import { useJobStore } from "../../stores/admin/jobStore";
+import { Modal } from "bootstrap";
+import { useRouter } from "vue-router";
+import { useToast } from "vue-toast-notification";
 
 const jobStore = useJobStore();
 const router = useRouter();
 const toast = useToast();
 const jobDetailsModal = ref(null);
 
-onMounted(() => {
-  // Initialize modal
-  jobDetailsModal.value = new Modal(document.getElementById('jobDetailsModal'));
-  
-  // Fetch initial data
-  jobStore.fetchDashboardData();
+onMounted(async () => {
+  await jobStore.fetchDashboardData();
+  await nextTick();
+  jobDetailsModal.value = new Modal(document.getElementById("jobDetailsModal"));
 });
 
 const viewJobDetails = async (jobId) => {
   try {
     await jobStore.fetchJobDetails(jobId);
-    jobDetailsModal.value.show();
+    console.log("Current job:", jobStore.currentJob); // Debugging
+    if (jobStore.currentJob) {
+      jobDetailsModal.value.show();
+    } else {
+      toast.error("Failed to load job details");
+    }
   } catch (error) {
-    toast.error('Failed to load job details');
+    console.error("Error fetching job details:", error);
+    toast.error("Error loading job details");
   }
 };
-
-const approveJob = async (jobId) => {
-  try {
-    await jobStore.approveJob(jobId);
-    toast.success('Job approved successfully');
-  } catch (error) {
-    toast.error('Failed to approve job');
-  }
-};
-
-const rejectJob = async (jobId) => {
-  try {
-    await jobStore.rejectJob(jobId);
-    toast.success('Job rejected successfully');
-  } catch (error) {
-    toast.error('Failed to reject job');
-  }
-};
-
 const logout = () => {
-  // Clear auth token and redirect to login
-  localStorage.removeItem('authToken');
-  router.push('/login');
+  localStorage.removeItem("authToken");
+  router.push("/login");
+};
+
+const getInitial = (title) => title?.charAt(0)?.toUpperCase() || "?";
+const getLogoBackground = (title) => {
+  const colors = ["#3498db", "#2ecc71", "#e74c3c", "#f39c12", "#9b59b6"];
+  const index = title ? Math.floor(title.charCodeAt(0) % colors.length) : 0;
+  return colors[index];
 };
 </script>
 
@@ -360,7 +429,7 @@ const logout = () => {
   background-color: white;
   height: 100vh;
   position: fixed;
-  box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
 }
@@ -393,7 +462,7 @@ const logout = () => {
 .stat-card {
   border-radius: 8px;
   border: none;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
 .stat-icon {
@@ -443,12 +512,6 @@ const logout = () => {
   color: white;
   font-weight: bold;
   font-size: 36px;
-}
-
-.company-logo-lg img {
-  max-width: 100%;
-  max-height: 100%;
-  border-radius: 8px;
 }
 
 .table th {

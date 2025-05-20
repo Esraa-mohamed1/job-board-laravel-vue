@@ -1,124 +1,246 @@
-import { defineStore } from 'pinia';
-import axios from 'axios';
+import { defineStore } from "pinia";
+import axios from "axios";
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+  },
+});
 
-export const useJobStore = defineStore('jobs', {
+export const useJobStore = defineStore("job", {
   state: () => ({
+    pendingJobs: [],
+    approvedJobs: [],
+    rejectedJobs: [],
     pendingCount: 0,
     approvedCount: 0,
     rejectedCount: 0,
-    pendingJobs: [],
-    approvedJobs: [],
+    currentJob: null,
     loading: false,
     error: null,
-    currentJob: null
   }),
   actions: {
     async fetchDashboardData() {
       this.loading = true;
       this.error = null;
-      
       try {
-        // Fetch dashboard stats and pending jobs in parallel
-        const [dashboardResponse, pendingResponse] = await Promise.all([
-          axios.get('/dashboard'),
-          axios.get('/job-posts?status=pending')
-        ]);
+        const response = await api.get("/admin/job-moderation");
+        if (!response.data) {
+          console.error("API response is missing data:", response);
+          throw new Error("API response is missing data");
+        }
 
-        // Update counts
-        this.pendingCount = dashboardResponse.data.pending_count || 0;
-        this.approvedCount = dashboardResponse.data.approved_count || 0;
-        this.rejectedCount = dashboardResponse.data.rejected_count || 0;
-        
-        // Update pending jobs
-        this.pendingJobs = pendingResponse.data.map(job => this.formatJob(job));
-        
-        // Fetch recently approved jobs
-        const approvedResponse = await axios.get('/job-posts?status=approved&limit=5');
-        this.approvedJobs = approvedResponse.data.map(job => this.formatJob(job));
-        
+        const data = response.data;
+        console.log("Received data from API:", data);
+
+        // Temporary mock for rejected_jobs
+        data.rejected_jobs = data.rejected_jobs || [
+          {
+            id: 3,
+            user_id: 7,
+            category_id: 4,
+            title: "Data Scientist",
+            job_type: "",
+            company: "Analytix",
+            location: "Boston, MA",
+            salary: "$110,000 - $140,000",
+            description: "Analytix is looking for a Data Scientist...",
+            created_at: "2025-05-05T10:15:00.000000Z",
+            updated_at: "2025-05-20T06:12:39.000000Z",
+            status: "rejected",
+            rejection_reason: null,
+          },
+          {
+            id: 4,
+            user_id: 2,
+            category_id: 3,
+            title: "UX/UI Designer",
+            job_type: "Contract",
+            company: "Creative Digital",
+            location: "New York, NY",
+            salary: "$90,000 - $120,000",
+            description:
+              "Creative Digital is seeking a talented UX/UI Designer...",
+            created_at: "2025-05-07T16:30:00.000000Z",
+            updated_at: "2025-05-20T06:30:02.000000Z",
+            status: "rejected",
+            rejection_reason: null,
+          },
+          {
+            id: 7,
+            user_id: 8,
+            category_id: 2,
+            title: "Mobile Developer (iOS)",
+            job_type: "",
+            company: "AppWorks",
+            location: "Seattle, WA",
+            salary: "$125,000 - $155,000",
+            description: "AppWorks is looking for an iOS Developer...",
+            created_at: "2025-05-15T14:20:00.000000Z",
+            updated_at: "2025-05-20T07:18:40.000000Z",
+            status: "rejected",
+            rejection_reason: null,
+          },
+        ];
+
+        this.pendingJobs = Array.isArray(data.pending_jobs)
+          ? data.pending_jobs.map((job) => ({
+              id: job.id,
+              title: job.title,
+              company: job.company,
+              location: job.location,
+              salary: this.formatSalary(job.salary),
+              datePosted: this.formatDate(job.created_at),
+              description: job.description,
+              status: job.status,
+            }))
+          : [];
+
+        this.approvedJobs = Array.isArray(data.approved_jobs)
+          ? data.approved_jobs.map((job) => ({
+              id: job.id,
+              title: job.title,
+              company: job.company,
+              location: job.location,
+              salary: this.formatSalary(job.salary),
+              datePosted: this.formatDate(job.created_at),
+              dateApproved: this.formatDate(job.updated_at),
+              description: job.description,
+              status: job.status,
+            }))
+          : [];
+
+        this.rejectedJobs = Array.isArray(data.rejected_jobs)
+          ? data.rejected_jobs.map((job) => ({
+              id: job.id,
+              title: job.title,
+              company: job.company,
+              location: job.location,
+              salary: this.formatSalary(job.salary),
+              datePosted: this.formatDate(job.created_at),
+              dateRejected: this.formatDate(job.updated_at),
+              description: job.description,
+              status: job.status,
+              rejection_reason: job.rejection_reason || "No reason provided",
+            }))
+          : [];
+
+        this.pendingCount = data.pending_count || 0;
+        this.approvedCount = data.approved_count || 0;
+        this.rejectedCount = data.rejected_count || 0;
       } catch (error) {
-        this.error = 'Failed to load dashboard data. Please try again later.';
-        console.error('Error fetching dashboard data:', error);
+        console.error("Error in fetchDashboardData:", error);
+        this.error =
+          error.response?.data?.message ||
+          error.message ||
+          "Failed to fetch dashboard data";
+        this.pendingJobs = [];
+        this.approvedJobs = [];
+        this.rejectedJobs = [];
+        this.pendingCount = 0;
+        this.approvedCount = 0;
+        this.rejectedCount = 0;
       } finally {
         this.loading = false;
       }
     },
 
     async fetchJobDetails(jobId) {
+      this.loading = true;
+      this.error = null;
       try {
-        const response = await axios.get(`/job-posts/${jobId}`);
-        this.currentJob = this.formatJob(response.data);
-        return this.currentJob;
+        const response = await api.get(`/admin/job/${jobId}`);
+        const job = response.data.data;
+        this.currentJob = {
+          id: job.id,
+          title: job.title,
+          company: job.company,
+          location: job.location,
+          salary: this.formatSalary(job.salary),
+          datePosted: this.formatDate(job.created_at),
+          dateApproved:
+            job.status === "approved" ? this.formatDate(job.updated_at) : null,
+          dateRejected:
+            job.status === "rejected" ? this.formatDate(job.updated_at) : null,
+          description: job.description,
+          status: job.status,
+        };
       } catch (error) {
-        console.error('Error fetching job details:', error);
-        throw error;
+        this.error =
+          error.response?.data?.message ||
+          error.message ||
+          "Failed to fetch job details";
+        console.error("Error fetching job details:", error);
+      } finally {
+        this.loading = false;
       }
     },
 
     async approveJob(jobId) {
+      this.loading = true;
+      this.error = null;
       try {
-        await axios.post(`/job-posts/${jobId}/approve`);
-        
-        // Update local state
-        const jobIndex = this.pendingJobs.findIndex(job => job.id === jobId);
-        if (jobIndex !== -1) {
-          const approvedJob = {...this.pendingJobs[jobIndex]};
-          approvedJob.status = 'approved';
-          approvedJob.dateApproved = new Date().toLocaleString();
-          this.pendingJobs.splice(jobIndex, 1);
-          this.approvedJobs.unshift(approvedJob);
-          this.pendingCount--;
-          this.approvedCount++;
-        }
-        
-        return true;
+        await api.post(`/admin/job/${jobId}/approve`);
+        await this.fetchDashboardData();
       } catch (error) {
-        console.error('Error approving job:', error);
-        throw error;
+        this.error =
+          error.response?.data?.message ||
+          error.message ||
+          "Failed to approve job";
+        console.error("Error approving job:", error);
+      } finally {
+        this.loading = false;
       }
     },
 
     async rejectJob(jobId) {
+      this.loading = true;
+      this.error = null;
       try {
-        await axios.post(`/job-posts/${jobId}/reject`);
-        
-        // Update local state
-        const jobIndex = this.pendingJobs.findIndex(job => job.id === jobId);
-        if (jobIndex !== -1) {
-          this.pendingJobs.splice(jobIndex, 1);
-          this.pendingCount--;
-          this.rejectedCount++;
-        }
-        
-        return true;
+        await api.post(`/admin/job/${jobId}/reject`);
+        await this.fetchDashboardData();
       } catch (error) {
-        console.error('Error rejecting job:', error);
-        throw error;
+        this.error =
+          error.response?.data?.message ||
+          error.message ||
+          "Failed to reject job";
+        console.error("Error rejecting job:", error);
+      } finally {
+        this.loading = false;
       }
     },
 
-    formatJob(job) {
-      return {
-        id: job.id,
-        title: job.title,
-        company: job.company_name || job.company?.name || 'Unknown Company',
-        companyInitial: (job.company_name || job.company?.name || 'U').charAt(0).toUpperCase(),
-        logo: job.company_logo || job.company?.logo_url || null,
-        logoBackground: this.generateColor(job.company_name || job.company?.name || 'Unknown'),
-        location: job.location || 'Remote',
-        salary: job.salary || job.salary_range || 'Not specified',
-        datePosted: new Date(job.created_at).toLocaleString(),
-        dateApproved: job.approved_at ? new Date(job.approved_at).toLocaleString() : null,
-        status: job.status,
-        description: job.description || 'No description provided'
-      };
+    // Helper methods
+    formatSalary(salary) {
+      if (!salary) return "Not specified";
+      if (typeof salary !== "string") return salary;
+
+      try {
+        const parts = salary.split(" - ");
+        if (parts.length === 2) {
+          return `$${parts[0].replace(/\$/g, "")} - $${parts[1].replace(
+            /\$/g,
+            ""
+          )}/year`;
+        }
+        return salary;
+      } catch {
+        return salary;
+      }
     },
 
-    generateColor(string) {
-      const hash = [...string].reduce((acc, char) => {
-        return char.charCodeAt(0) + ((acc << 5) - acc);
-      }, 0);
-      return hsl(`${Math.abs(hash % 360)}, 70%, 80%`);
-    }
-  }
+    formatDate(dateString) {
+      if (!dateString) return "N/A";
+      const date = new Date(dateString);
+      return date.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
+    },
+  },
 });

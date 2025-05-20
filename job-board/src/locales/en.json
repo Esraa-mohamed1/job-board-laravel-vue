@@ -1,0 +1,22 @@
+{
+    "nav": {
+      "home": "Home",
+      "jobs": "Find Job",
+      "employers": "Find Employers",
+      "dashboard": "Dashboard",
+      "alerts": "Job Alerts",
+      "support": "Candidate Support"
+    },
+
+    "sidebar": {
+    "dashboard": "Dashboard",
+    "applications": "My Applications",
+    "settings": "My Profile",
+    "alerts": "Job Alerts",
+    "saved": "Saved Jobs",
+    "resume": "My Resume",
+    "logout": "Logout"
+  }
+  
+  }
+  

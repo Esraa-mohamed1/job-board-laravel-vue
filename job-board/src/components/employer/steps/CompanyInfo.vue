@@ -1,90 +1,90 @@
 <template>
-    <div class="company-info-step">
-      <h2>Company Information</h2>
-      
-      <div class="form-section">
-        <div class="upload-group">
-          <label>Company Logo</label>
-          <div class="upload-box" @click="triggerLogoUpload">
-            <div v-if="!localData.logo" class="upload-placeholder">
-              <span>Click to upload logo</span>
-              <span class="hint">Recommended size: 400x400px</span>
-            </div>
-            <img v-else :src="localData.logo" class="logo-preview" alt="Company Logo">
-            <input 
-              ref="logoInput"
-              type="file" 
-              accept="image/*"
-              @change="handleLogoUpload"
-              class="file-input"
-            >
+  <div class="company-info-step">
+    <h2>Company Information</h2>
+    
+    <div class="form-section">
+      <div class="upload-group">
+        <label>Company Logo</label>
+        <div class="upload-box" @click="triggerLogoUpload">
+          <div v-if="!localData.logo" class="upload-placeholder">
+            <span>Click to upload logo</span>
+            <span class="hint">Recommended size: 400x400px</span>
           </div>
-        </div>
-        
-        <div class="upload-group">
-          <label>Banner Image</label>
-          <div class="upload-box" @click="triggerBannerUpload">
-            <div v-if="!localData.banner" class="upload-placeholder">
-              <span>Click to upload banner</span>
-              <span class="hint">Recommended size: 1520x405px</span>
-            </div>
-            <img v-else :src="localData.banner" class="banner-preview" alt="Company Banner">
-            <input 
-              ref="bannerInput"
-              type="file" 
-              accept="image/*"
-              @change="handleBannerUpload"
-              class="file-input"
-            >
-          </div>
+          <img v-else :src="localData.logo" class="logo-preview" alt="Company Logo">
+          <input 
+            ref="logoInput"
+            type="file" 
+            accept="image/*"
+            @change="handleLogoUpload"
+            class="file-input"
+          >
         </div>
       </div>
       
-      <div class="form-group">
-        <label for="companyName">Company Name</label>
-        <input
-          id="companyName"
-          v-model="localData.name"
-          type="text"
-          placeholder="Enter your company name"
-          required
-          :class="{'is-invalid': errors.name}"
-          class="form-control"
-        >
-        <div v-if="errors.name" class="invalid-feedback">{{ errors.name }}</div>
-      </div>
-      
-      <div class="form-group">
-        <label for="aboutUs">About Us</label>
-        <textarea
-          id="aboutUs"
-          v-model="localData.about"
-          rows="5"
-          placeholder="Tell candidates about your company..."
-          required
-          :class="{'is-invalid': errors.about}"
-          class="form-control"
-        ></textarea>
-        <div v-if="errors.about" class="invalid-feedback">{{ errors.about }}</div>
-      </div>
-      
-      <div class="form-actions">
-        <button 
-          type="button" 
-          class="btn-next"
-          :disabled="!isFormValid"
-          @click="submitForm"
-        >
-          Save & Continue
-        </button>
+      <div class="upload-group">
+        <label>Banner Image</label>
+        <div class="upload-box" @click="triggerBannerUpload">
+          <div v-if="!localData.banner" class="upload-placeholder">
+            <span>Click to upload banner</span>
+            <span class="hint">Recommended size: 1520x405px</span>
+          </div>
+          <img v-else :src="localData.banner" class="banner-preview" alt="Company Banner">
+          <input 
+            ref="bannerInput"
+            type="file" 
+            accept="image/*"
+            @change="handleBannerUpload"
+            class="file-input"
+          >
+        </div>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-import { ref, computed, watch } from 'vue'
-import { useEmployerStore } from '../../../stores/employer/employer.store'
+    
+    <div class="form-group">
+      <label for="companyName">Company Name</label>
+      <input
+        id="companyName"
+        v-model="localData.company_name"
+        type="text"
+        placeholder="Enter your company name"
+        required
+        :class="{'is-invalid': errors.company_name}"
+        class="form-control"
+      >
+      <div v-if="errors.company_name" class="invalid-feedback">{{ errors.company_name }}</div>
+    </div>
+    
+    <div class="form-group">
+      <label for="aboutUs">About Us</label>
+      <textarea
+        id="aboutUs"
+        v-model="localData.about"
+        rows="5"
+        placeholder="Tell candidates about your company..."
+        required
+        :class="{'is-invalid': errors.about}"
+        class="form-control"
+      ></textarea>
+      <div v-if="errors.about" class="invalid-feedback">{{ errors.about }}</div>
+    </div>
+    
+    <div class="form-actions">
+      <button 
+        type="button" 
+        class="btn-next"
+        :disabled="!isFormValid"
+        @click="submitForm"
+      >
+        Save & Continue
+      </button>
+    </div>
+  </div>
+</template>
 
+<script setup>
+import { ref, computed } from 'vue'
+
+const emit = defineEmits(['next', 'prev'])
 const props = defineProps({
   formData: {
     type: Object,
@@ -92,48 +92,30 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['next', 'prev'])
-
-// Initialize Pinia store
-const store = useEmployerStore()
-
 const localData = ref({
+  company_name: props.formData.company_name || '',
+  about: props.formData.about || '',
   logo: props.formData.logo || '',
-  banner: props.formData.banner || '',
-  name: props.formData.name || '',
-  about: props.formData.about || ''
+  banner: props.formData.banner || ''
 })
 
 const logoFile = ref(null)
 const bannerFile = ref(null)
-const errors = ref({ name: '', about: '' })
+const errors = ref({ company_name: '', about: '' })
 const logoInput = ref(null)
 const bannerInput = ref(null)
 
-watch(() => props.formData, (newData) => {
-  localData.value = {
-    logo: newData.logo || '',
-    banner: newData.banner || '',
-    name: newData.name || '',
-    about: newData.about || ''
-  }
-}, { deep: true })
-
 const isFormValid = computed(() => {
-  return localData.value.name.trim() !== '' && 
+  return localData.value.company_name.trim() !== '' && 
          localData.value.about.trim() !== ''
 })
 
 const validateForm = () => {
   let valid = true
-  errors.value = { name: '', about: '' }
+  errors.value = { company_name: '', about: '' }
 
-  // Company Name validation (only letters, spaces, and basic punctuation)
-  if (localData.value.name.trim() === '') {
-    errors.value.name = 'Company name is required'
-    valid = false
-  } else if (!/^[a-zA-Z\s\-.,&']+$/.test(localData.value.name)) {
-    errors.value.name = 'Company name should only contain letters and basic punctuation'
+  if (localData.value.company_name.trim() === '') {
+    errors.value.company_name = 'Company name is required'
     valid = false
   }
 
@@ -145,7 +127,6 @@ const validateForm = () => {
   return valid
 }
 
-
 const triggerLogoUpload = () => {
   logoInput.value.click()
 }
@@ -154,7 +135,7 @@ const triggerBannerUpload = () => {
   bannerInput.value.click()
 }
 
-const handleLogoUpload = async (event) => {
+const handleLogoUpload = (event) => {
   const file = event.target.files[0]
   if (file) {
     logoFile.value = file
@@ -166,7 +147,7 @@ const handleLogoUpload = async (event) => {
   }
 }
 
-const handleBannerUpload = async (event) => {
+const handleBannerUpload = (event) => {
   const file = event.target.files[0]
   if (file) {
     bannerFile.value = file
@@ -178,28 +159,19 @@ const handleBannerUpload = async (event) => {
   }
 }
 
-const submitForm = async () => {
+const submitForm = () => {
   if (!validateForm()) return
 
-  try {
-    if (logoFile.value) {
-      const logoUrl = await store.uploadImage(logoFile.value)
-      localData.value.logo = logoUrl
-    }
-    
-    if (bannerFile.value) {
-      const bannerUrl = await store.uploadImage(bannerFile.value)
-      localData.value.banner = bannerUrl
-    }
-
-    emit('next', localData.value)
-  } catch (error) {
-    console.error('Error uploading images:', error)
-    alert('Failed to upload images. Please try again.')
+  const formData = {
+    ...localData.value,
+    logoFile: logoFile.value,
+    bannerFile: bannerFile.value
   }
+
+  emit('next', formData)
 }
 </script>
-  
+
 
   <style scoped>
   /* Previous styles remain unchanged */

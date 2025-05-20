@@ -11,7 +11,7 @@
   
   <script setup>
   import { ref } from 'vue'
-  import MultiStepForm from '@/components/employer/MultiStepForm.vue'
+  import MultiStepForm from '../../components/employer/MultiStepForm.vue'
   
   const employerId = ref(1)
   
@@ -24,7 +24,7 @@
   .employer-onboarding-container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 2rem 0;
   }
   </style>
   

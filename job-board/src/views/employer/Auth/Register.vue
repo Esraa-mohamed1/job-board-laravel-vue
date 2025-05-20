@@ -1,137 +1,119 @@
 <template>
-  <div class="register-container">
-    <div class="register-card">
-      <div class="logo">
-        <img src="@/assets/logo.svg" alt="MyJob Logo" width="24" />
-        <span>MyJob</span>
-      </div>
-      
-      <h1>Create account</h1>
-      <p class="login-prompt">Already have account? <router-link to="/login">Log In</router-link></p>
-      
-      <!-- Profile Photo Upload -->
-      <div class="profile-upload">
-        <div class="upload-preview" @click="triggerFileInput">
-          <img v-if="form.profilePhoto" :src="form.profilePhoto" alt="Profile Preview" class="preview-image" />
-          <div v-else class="upload-placeholder">
-            <i class="fas fa-user-circle upload-icon"></i>
-            <span>Upload Photo</span>
+  <div class="row h-100">
+    <div class="col-12 col-md-6 d-flex align-items-center">
+      <div class="register-card">
+        <div class="logo">
+          <img src="@/assets/logo.svg" alt="MyJob Logo" width="24" />
+          <span>MyJob</span>
+        </div>
+        
+        <h1>Create account</h1>
+        <p class="login-prompt">Already have account? <router-link to="/login">Log In</router-link></p>
+        
+
+        <form @submit.prevent="handleRegister">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input v-model="form.fullName" type="text" placeholder="Enter your full name" required>
+            <p v-if="errors.fullName" class="text-danger small">{{ errors.fullName[0] }}</p>
+
           </div>
-        </div>
-        <input 
-          type="file" 
-          ref="fileInput" 
-          accept="image/*" 
-          @change="handleFileUpload" 
-          class="file-input"
-        >
-      </div>
-      
-      <form @submit.prevent="handleRegister">
-        <div class="form-group">
-          <label>Full Name</label>
-          <input v-model="form.fullName" type="text" placeholder="Enter your full name" required>
-        </div>
-        
-        <div class="form-group">
-          <label>Email address</label>
-          <input v-model="form.email" type="email" placeholder="Enter your email" required>
-        </div>
-        
-        <div class="form-group password-group">
-          <label>Password</label>
-          <input v-model="form.password" :type="showPassword ? 'text' : 'password'" placeholder="Create password" required>
-          <button type="button" class="toggle-password" @click="showPassword = !showPassword">
-            <i class="fas" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-          </button>
-        </div>
-        
-        <div class="form-group password-group">
-          <label>Confirm Password</label>
-          <input v-model="form.confirmPassword" :type="showConfirmPassword ? 'text' : 'password'" placeholder="Confirm password" required>
-          <button type="button" class="toggle-password" @click="showConfirmPassword = !showConfirmPassword">
-            <i class="fas" :class="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-          </button>
-        </div>
 
+          <div class="form-group">
+            <label>Email address</label>
+            <input v-model="form.email" type="email" placeholder="Enter your email" required>
+            <p v-if="errors.email" class="text-danger small">{{ errors.email[0] }}</p>
+          </div>
 
-
-
-
-        <div class="form-group">
-          <label>Register as</label>
-          <div class="role-selector">
-            <button 
-              type="button" 
-              class="role-btn" 
-              :class="{ 'active': form.role === 'candidate' }"
-              @click="form.role = 'candidate'"
-            >
-              <i class="fas fa-user-tie"></i>
-              Candidate
-            </button>
-            <button 
-              type="button" 
-              class="role-btn" 
-              :class="{ 'active': form.role === 'employer' }"
-              @click="form.role = 'employer'"
-            >
-              <i class="fas fa-building"></i>
-              Employer
+          <div class="form-group password-group">
+            <label>Password</label>
+            <input v-model="form.password" :type="showPassword ? 'text' : 'password'" placeholder="Create password" required>
+            <button type="button" class="toggle-password" @click="showPassword = !showPassword">
+              <i class="fas" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+             <p v-if="errors.password" class="text-danger small">{{ errors.password[0] }}</p>
             </button>
           </div>
-        </div>
-        
-        <!-- Conditional fields for employer -->
-        <div v-if="form.role === 'employer'" class="form-group">
-          <label>Company Name</label>
-          <input v-model="form.companyName" type="text" placeholder="Enter company name" required>
-        </div>
-        
-        <div class="terms-agreement">
-          <input type="checkbox" id="terms" v-model="form.agreeTerms" required>
-          <label for="terms">I've read and agree with your <router-link to="/terms">Terms of Services</router-link></label>
-        </div>
 
+          <div class="form-group password-group">
+            <label>Confirm Password</label>
+            <input v-model="form.confirmPassword" :type="showConfirmPassword ? 'text' : 'password'" placeholder="Confirm password" required>
+            <button type="button" class="toggle-password" @click="showConfirmPassword = !showConfirmPassword">
+              <i class="fas" :class="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+              <p v-if="errors.confirmPassword" class="text-danger small">{{ errors.confirmPassword[0] }}</p>
+  
+            </button>
+          </div>
 
- 
-        
-        <button type="submit" class="btn-register" :disabled="!isFormValid || loading">
-          <span v-if="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-          {{ loading ? 'Processing...' : 'Create Account' }}
-        </button>
-        
-        <div class="divider">or</div>
-        
-        <button type="button" class="btn-google" @click="signInWithGoogle" :disabled="loading">
-          <img src="@/assets/google-icon.svg" alt="Google">
-          Sign up with Google
-        </button>
-      </form>
+          <div class="form-group">
+            <label>Register as</label>
+            <div class="role-selector">
+              <button 
+                type="button" 
+                class="role-btn" 
+                :class="{ 'active': form.role === 'candidate' }"
+                @click="form.role = 'candidate'"
+              >
+                <i class="fas fa-user-tie"></i>
+                Candidate
+              </button>
+              <button 
+                type="button" 
+                class="role-btn" 
+                :class="{ 'active': form.role === 'employer' }"
+                @click="form.role = 'employer'"
+              >
+                <i class="fas fa-building"></i>
+                Employer
+              </button>
+            </div>
+          </div>
+          <div class="terms-agreement">
+            <input type="checkbox" id="terms" v-model="form.agreeTerms" required>
+            <label for="terms">I've read and agree with your <router-link to="/terms">Terms of Services</router-link></label>
+          </div>
+      <button 
+  type="submit" 
+  class="btn-register" 
+  :disabled="!isFormValid || loading"
+  :class="{ 'loading-state': loading }"
+>
+  <span v-if="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+  <span v-else>Create Account</span>
+</button>
+          
+          <div class="divider">or</div>
+          
+          <button type="button" class="btn-google" @click="signInWithGoogle" :disabled="loading">
+            <img src="@/assets/google-icon.svg" alt="Google">
+            Sign up with Google
+          </button>
+        </form>
+      </div>
     </div>
     
-
-
-    <div class="register-banner">
-      <div class="banner-content">
-        <h2>Find your perfect job or candidate</h2>
-        <p>Join thousands of employers and candidates who found their perfect match</p>
-        
-        <div class="stats-container">
-          <div class="stat-item">
-            <i class="fas fa-briefcase stat-icon"></i>
-            <div class="stat-number">10,000+</div>
-            <div class="stat-label">Live Jobs</div>
-          </div>
-          <div class="stat-item">
-            <i class="fas fa-building stat-icon"></i>
-            <div class="stat-number">5,000+</div>
-            <div class="stat-label">Companies</div>
-          </div>
-          <div class="stat-item">
-            <i class="fas fa-users stat-icon"></i>
-            <div class="stat-number">50,000+</div>
-            <div class="stat-label">Candidates</div>
+    <div class="col-12 col-md-6">
+      <div class="register-banner">
+        <div class="banner-content">
+          <img class="banner-img d-none d-md-block" src="@/assets/signin.svg" alt="my job">
+          <h2>Find your perfect job or candidate</h2>
+          <p>Join thousands of employers and candidates who found their perfect match</p>
+          
+          <div class="stats-container">
+            <div class="stat-item">
+              <i class="fas fa-briefcase stat-icon py-3"></i>
+              <div class="stat-number">10,000+</div>
+              <div class="stat-label">Live Jobs</div>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-building stat-icon py-3"></i>
+              <div class="stat-number">5,000+</div>
+              <div class="stat-label">Companies</div>
+            </div>
+            <div class="stat-item">
+              <i class="fas fa-users stat-icon py-3"></i>
+              <div class="stat-number">50,000+</div>
+              <div class="stat-label">Candidates</div>
+            </div>
           </div>
         </div>
       </div>
@@ -141,139 +123,111 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/employer/auth'
-import { useUserStore } from '@/stores/employer/user'
+import axios from 'axios'
+import Swal from 'sweetalert2' 
 
 const router = useRouter()
-const authStore = useAuthStore()
-const userStore = useUserStore()
 
 const form = ref({
-  fullName: '',
+  fullName: '',  
   email: '',
   password: '',
-  confirmPassword: '',
+  confirmPassword: '',  
   role: 'candidate',
-  companyName: '',
-  profilePhoto: null,
   agreeTerms: false
 })
 
-const fileInput = ref(null)
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 const loading = ref(false)
-
+const errors = ref({})
+const successMessage = ref('')
 const isFormValid = computed(() => {
   const basicValidation = form.value.fullName && 
                         form.value.email && 
                         form.value.password && 
                         form.value.password === form.value.confirmPassword && 
                         form.value.agreeTerms
-  
-  if (form.value.role === 'employer') {
-    return basicValidation && form.value.companyName
-  }
   return basicValidation
 })
 
-const triggerFileInput = () => {
-  fileInput.value.click()
-}
-
-const handleFileUpload = (event) => {
-  const file = event.target.files[0]
-  if (file) {
-    if (file.size > 2 * 1024 * 1024) {
-      alert('File size exceeds 2MB limit')
-      return
-    }
-    
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      form.value.profilePhoto = e.target.result
-    }
-    reader.readAsDataURL(file)
-  }
-}
 const handleRegister = async () => {
   if (!isFormValid.value) {
-    alert('Please fill all required fields correctly')
+    Swal.fire({ // <-- Use SweetAlert2
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Please fill all required fields correctly'
+    })
     return
   }
 
   try {
     loading.value = true
-    
-    // 1. Register user
-    const user = await authStore.register({
+    errors.value = {}
+
+    const payload = {
+      name: form.value.fullName,
       email: form.value.email,
       password: form.value.password,
-      role: form.value.role
-    })
-    
-    // 2. Prepare profile data
-    const profileData = {
-      userId: user.uid,
-      fullName: form.value.fullName,
-      email: form.value.email,
+      password_confirmation: form.value.confirmPassword,
       role: form.value.role,
-      ...(form.value.profilePhoto && { profilePhoto: form.value.profilePhoto }),
-      ...(form.value.role === 'employer' && { 
-        companyName: form.value.companyName 
+    }
+
+    const response = await axios.post('http://localhost:8000/api/register', payload)
+    successMessage.value = response.data.message
+
+    if (response.status === 200) {
+      await Swal.fire({ 
+        icon: 'success',
+        title: 'Success',
+        text: successMessage.value,
+        showConfirmButton: false
+      })
+      const redirectPath =  '/login'
+      router.push(redirectPath)
+    }
+
+  } catch (error) {
+    if (error.response && error.response.status === 422) {
+      errors.value = error.response.data.errors
+      Swal.fire({ 
+        icon: 'error',
+        title: 'Registration Failed',
+        text: Object.values(errors.value).flat()[0] 
+      })
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Something went wrong',
+        text: 'Please try again later.'
       })
     }
-    
-    // 3. Create profile
-    await userStore.createProfile(profileData)
-    
-    // 4. Redirect based on role
-    const redirectPath = form.value.role === 'employer' 
-      ? '/employer-dashboard' 
-      : '/candidate-dashboard'
-    
-    router.push(redirectPath)
-    
-  } catch (error) {
-    console.error('Registration error:', error)
-    alert(authStore.error || userStore.error || 'Registration failed. Please try again.')
-  } finally {
-    loading.value = false
-  }
-}
-const signInWithGoogle = async () => {
-  try {
-    loading.value = true
-    await authStore.signInWithGoogle()
-    await router.push('/dashboard')
-  } catch (error) {
-    alert(error.message || 'Google sign-in failed')
   } finally {
     loading.value = false
   }
 }
 </script>
+
 <style scoped>
-.register-container {
-  display: flex;
+.row {
   height: 100vh;
+  margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .register-card {
-  flex: 1;
-  padding: 2rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   max-width: 450px;
   margin: 0 auto;
-  overflow-y: auto;
+  width: 100%;
 }
 
 .logo {
   display: flex;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   justify-content: center;
 }
 
@@ -297,7 +251,7 @@ h1 {
 
 .login-prompt {
   color: #666;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   text-align: center;
 }
 
@@ -308,14 +262,15 @@ h1 {
 }
 
 .profile-upload {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   display: flex;
   justify-content: center;
+  text-align:center;
 }
 
 .upload-preview {
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   border: 2px dashed #ddd;
   display: flex;
@@ -338,8 +293,8 @@ h1 {
 }
 
 .upload-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
   color: #ccc;
 }
 
@@ -354,23 +309,23 @@ h1 {
 }
 
 .form-group {
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.75rem;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
   font-weight: 500;
   color: #333;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .form-group input {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 4px;
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .form-group input:focus {
@@ -387,7 +342,7 @@ h1 {
   position: absolute;
   right: 10px;
   top: 50%;
-  transform: translateY(50%);
+  transform: translateY(25%);
   background: none;
   border: none;
   cursor: pointer;
@@ -396,13 +351,13 @@ h1 {
 
 .role-selector {
   display: flex;
-  gap: 1rem;
-  margin-top: 0.5rem;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
 }
 
 .role-btn {
   flex: 1;
-  padding: 0.75rem;
+  padding: 0.5rem;
   border: 1px solid #ddd;
   border-radius: 4px;
   background: white;
@@ -414,8 +369,8 @@ h1 {
 }
 
 .role-btn i {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
   color: #666;
 }
 
@@ -431,12 +386,12 @@ h1 {
 .terms-agreement {
   display: flex;
   align-items: center;
-  margin: 1.5rem 0;
-  font-size: 0.9rem;
+  margin: 0.75rem 0;
+  font-size: 0.85rem;
 }
 
 .terms-agreement input {
-  margin-right: 0.75rem;
+  margin-right: 0.5rem;
 }
 
 .terms-agreement label {
@@ -450,12 +405,12 @@ h1 {
 
 .btn-register {
   width: 100%;
-  padding: 0.875rem;
+  padding: 0.75rem;
   background: #0A65CC;
   color: white;
   border: none;
   border-radius: 4px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s;
@@ -473,9 +428,9 @@ h1 {
 .divider {
   display: flex;
   align-items: center;
-  margin: 1.5rem 0;
+  margin: 0.75rem 0;
   color: #999;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .divider::before,
@@ -486,16 +441,16 @@ h1 {
 }
 
 .divider::before {
-  margin-right: 1rem;
+  margin-right: 0.75rem;
 }
 
 .divider::after {
-  margin-left: 1rem;
+  margin-left: 0.75rem;
 }
 
 .btn-google {
   width: 100%;
-  padding: 0.875rem;
+  padding: 0.75rem;
   background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -503,8 +458,9 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   font-weight: 500;
+  font-size: 0.9rem;
   transition: all 0.2s;
 }
 
@@ -519,74 +475,118 @@ h1 {
 }
 
 .btn-google img {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 .register-banner {
-  flex: 1;
-  background: linear-gradient(rgba(0, 20, 40, 0.8), rgba(0, 20, 40, 0.8)), 
-              url('@/assets/auth-banner.jpg') center/cover;
+  background: linear-gradient(rgba(0, 20, 40, 0.8), rgba(0, 20, 40, 0.8));
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  height: 100%;
+  min-height: 100vh;
 }
 
 .banner-content {
   max-width: 500px;
   text-align: center;
+  padding: 1rem;
+}
+
+.banner-img {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 1.5rem;
 }
 
 .banner-content h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
 }
 
 .banner-content p {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   opacity: 0.9;
+  font-size: 0.9rem;
 }
 
 .stats-container {
   display: flex;
   justify-content: space-between;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .stat-item {
   text-align: center;
   flex: 1;
+  min-width: 100px;
+  padding: 0.5rem;
 }
 
 .stat-icon {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   margin-bottom: 0.5rem;
 }
 
 .stat-number {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: bold;
   margin-bottom: 0.25rem;
 }
 
 .stat-label {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   opacity: 0.8;
 }
 
-@media (max-width: 768px) {
-  .register-container {
-    flex-direction: column;
+@media (max-width: 767.98px) {
+  .row {
+    height: auto;
+  }
+  
+  .register-card {
+    padding: 1rem;
+    min-height: auto;
   }
   
   .register-banner {
-    display: none;
+    min-height: auto;
+    padding: 1.5rem 1rem;
+  }
+  
+  .stats-container {
+    justify-content: center;
+  }
+  
+  .stat-item {
+    flex: 0 0 33.333%;
   }
   
   .role-selector {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .stat-item {
+    flex: 0 0 50%;
+  }
+  
+  .banner-content h2 {
+    font-size: 1.5rem;
+  }
+  
+  .banner-content p {
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+  
+  .register-card {
+    padding: 0.75rem;
   }
 }
 </style>
