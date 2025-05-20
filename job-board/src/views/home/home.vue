@@ -1,60 +1,58 @@
 <template>
   <div class="home-page">
     <!-- Navigation -->
-     
-   <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
-    <div class="container">
-   <router-link class="navbar-brand me-4 text-dark fw-bold fs-4" to="/">
-        <i class="fas fa-briefcase me-2 text-primary fs-3"></i> MyJob
-      </router-link>
-      
-      <button 
-        class="navbar-toggler" 
-        type="button" 
-        @click="toggleNavbar"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" :class="{ show: navbarOpen }">
-        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <router-link to="/" class="nav-link" active-class="active" exact>Home</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/browsejobs" class="nav-link" active-class="active">Jobs</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/contact" class="nav-link" active-class="active">About Us</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/contact" class="nav-link" active-class="active">Contact Us</router-link>
-          </li>
-        </ul>
-
-        <div class="d-flex">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+  <div class="container">
+    <router-link class="navbar-brand me-4 text-dark fw-bold fs-4" to="/">
+      <i class="fas fa-briefcase me-2 text-primary fs-3"></i> MyJob
+    </router-link>
+    <button 
+      class="navbar-toggler" 
+      type="button" 
+      @click="toggleNavbar"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" :class="{ show: navbarOpen }">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <router-link to="/" class="nav-link" active-class="active" exact>Home</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/browsejobs" class="nav-link" active-class="active">Jobs</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/contact" class="nav-link" active-class="active">About Us</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/contact" class="nav-link" active-class="active">Contact Us</router-link>
+        </li>
+      </ul>
+      <div class="d-flex">
+        <template v-if="!isAuthenticated">
           <router-link to="/login" class="btn btn-outline-primary me-2">Login</router-link>
           <router-link to="/register" class="btn btn-primary">Register</router-link>
-        </div>
+        </template>
+        <template v-else>
+          <button class="btn btn-danger" @click="logout">Logout</button>
+        </template>
       </div>
     </div>
-  </nav>
-    <!-- Loading State -->
+  </div>
+</nav>
+
     <div v-if="loading" class="loading-overlay">
       <div class="spinner-border text-primary" role="status"></div>
       <p>Loading data...</p>
     </div>
 
-    <!-- Error State -->
     <div v-else-if="error" class="error-message">
       <p>{{ error }}</p>
       <button @click="fetchData" class="btn btn-primary">Retry</button>
     </div>
 
-    <!-- Content -->
     <div v-else>
-      <!-- Hero Section -->
       <section class="hero-section d-flex align-items-center text-white">
         <div class="overlay"></div>
         <div class="container">
@@ -119,7 +117,6 @@
         </div>
       </section>
 
-      <!-- Featured Jobs Section -->
       <section class="featured-jobs-section py-5 bg-light">
         <div class="container">
           <div class="row justify-content-center">
@@ -169,7 +166,6 @@
         </div>
       </section>
 
-      <!-- Recent Blog Posts -->
       <section class="blog-section py-5">
         <div class="container">
           <div class="row justify-content-center">
@@ -203,7 +199,6 @@
         </div>
       </section>
 
-      <!-- Footer -->
       <footer class="ftco-footer ftco-bg-dark ftco-section">
         <div class="container">
           <div class="row mb-5">
@@ -276,10 +271,10 @@
       </footer>
     </div>
   </div>
-</template>
+</template> 
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/employer/auth'
 
@@ -298,10 +293,13 @@ const locationQuery = ref('')
 const loading = ref(true)
 const error = ref(null)
 const navbarOpen = ref(false)
+const isAuthenticated = computed(() => !!localStorage.getItem('authToken')) 
 
 const toggleNavbar = () => {
   navbarOpen.value = !navbarOpen.value
 }
+
+
 
 const fetchData = async () => {
   loading.value = true
@@ -314,14 +312,12 @@ const fetchData = async () => {
     }
     const data = await response.json()
     
-    // Calculate stats
     stats.value = {
       jobs: data.jobs?.length || 0,
       companies: data.employers?.length || 0,
       candidates: data.users?.filter(u => u.role === 'candidate')?.length || 0
     }
     
-    // Get featured jobs (first 4 jobs)
     featuredJobs.value = data.jobs?.slice(0, 4) || []
     
     // Get recent blogs (first 3 blogs)
@@ -335,17 +331,34 @@ const fetchData = async () => {
   }
 }
 
-const searchJobs = () => {
-  if (searchQuery.value || locationQuery.value) {
-    router.push({
-      path: '/browsejobs',
-      query: {
-        search: searchQuery.value,
-        location: locationQuery.value
+const logout = async () => {
+  try {
+    const token = localStorage.getItem('authToken')
+
+    await axios.post('/api/logout', null, {
+      baseURL: 'http://127.0.0.1:8000',
+      headers: {
+        Authorization: `Bearer ${token}`
       }
     })
+
+    clearAuthData()
+    await router.push('/login')
+
+  } catch (error) {
+    console.error('Logout error:', error)
+    clearAuthData()
+    await router.push('/login')
   }
 }
+
+const clearAuthData = () => {
+  localStorage.removeItem('authToken')
+  localStorage.removeItem('userData')
+  localStorage.removeItem('userRole')
+  delete axios.defaults.headers.common['Authorization']
+}
+
 
 const saveJob = (job) => {
   console.log('Job saved:', job)
@@ -354,6 +367,7 @@ const saveJob = (job) => {
 
 // Fetch data on mount
 fetchData()
+
 </script>
 
 <style scoped lang="scss">

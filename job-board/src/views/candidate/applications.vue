@@ -1,7 +1,7 @@
 <template>
   <div class="applied-jobs-container">
     <div class="header">
-      <h1>Applied Jobs (589)</h1>
+      <h1>Applied Jobs ({{ totalApplications }})</h1>
     </div>
 
     <div class="jobs-table">
@@ -15,7 +15,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(job, index) in appliedJobs" :key="index">
+          <tr v-for="(job, index) in paginatedJobs" :key="index">
             <td>
               <div class="job-info">
                 <strong>{{ job.title }}</strong>
@@ -27,7 +27,7 @@
             </td>
             <td>{{ job.dateApplied }}</td>
             <td>
-              <span class="status-badge">
+              <span :class="['status-badge', { 'rejected': job.status.toLowerCase() === 'rejected' }]">
                 <i class="fas fa-check"></i> {{ job.status }}
               </span>
             </td>
@@ -38,66 +38,73 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination" v-if="totalPages > 1">
+      <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+    </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'AppliedJobs',
   data() {
     return {
-      appliedJobs: [
-        {
-          title: 'Networking Engineer | Remote',
-          location: 'Washington',
-          salary: '$50k-80k/month',
-          dateApplied: 'Feb 2, 2019 19:28',
-          status: 'Active'
-        },
-        {
-          title: 'Product Designer | Full Time',
-          location: 'Dhaka',
-          salary: '$50k-80k/month',
-          dateApplied: 'Dec 7, 2019 23:26',
-          status: 'Active'
-        },
-        {
-          title: 'Junior Graphic Designer | Temporary',
-          location: 'Brazil',
-          salary: '$50k-80k/month',
-          dateApplied: 'Feb 2, 2019 19:28',
-          status: 'Active'
-        },
-        {
-          title: 'Visual Designer | Contract Base',
-          location: 'Wisconsin',
-          salary: '$50k-80k/month',
-          dateApplied: 'Dec 7, 2019 23:26',
-          status: 'Active'
-        },
-        {
-          title: 'Marketing Officer | Full Time',
-          location: 'United States',
-          salary: '$50k-80k/month',
-          dateApplied: 'Dec 4, 2019 21:42',
-          status: 'Active'
-        },
-        {
-          title: 'UI/UX Designer | Full Time',
-          location: 'North Dakota',
-          salary: '$50k-80k/month',
-          dateApplied: 'Dec 30, 2019 07:52',
-          status: 'Active'
-        },
-        {
-          title: 'Software Engineer | Full Time',
-          location: 'New York',
-          salary: '$50k-80k/month',
-          dateApplied: 'Dec 30, 2019 05:18',
-          status: 'Active'
-        }
-      ]
+      appliedJobs: [],
+      currentPage: 1,
+      pageSize: 5
     }
+  },
+  computed: {
+    totalApplications() {
+      return this.appliedJobs.length
+    },
+    totalPages() {
+      return Math.ceil(this.appliedJobs.length / this.pageSize)
+    },
+    paginatedJobs() {
+      const start = (this.currentPage - 1) * this.pageSize
+      return this.appliedJobs.slice(start, start + this.pageSize)
+    }
+  },
+  methods: {
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++
+      }
+    },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--
+      }
+    }
+  },
+  mounted() {
+    const token = localStorage.getItem('authToken');
+
+    axios.get('http://127.0.0.1:8000/api/applications', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      const applications = response.data.applications;
+      this.appliedJobs = applications.map(app => ({
+        title: app.job?.title || `Job ID #${app.job_id}`,
+        location: app.job?.location || 'Remote',
+        salary: app.job?.salary || '$50k-80k/month',
+        dateApplied: new Date(app.created_at).toLocaleString(),
+        status: app.status
+      }));
+    })
+    .catch(error => {
+      console.error('Error fetching applications:', error);
+    });
   }
 }
 </script>
@@ -177,6 +184,11 @@ td {
   font-weight: 500;
 }
 
+.status-badge.rejected {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
 .status-badge i {
   font-size: 10px;
 }
@@ -198,21 +210,43 @@ td {
   color: white;
 }
 
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .applied-jobs-container {
     padding: 15px;
   }
-  
+
   th, td {
     padding: 10px 8px;
     font-size: 13px;
   }
-  
+
   .job-info strong {
     font-size: 14px;
   }
-  
+
   .job-details {
     font-size: 12px;
   }
