@@ -51,12 +51,6 @@
         </div>
 
         <div class="d-flex align-items-center ms-auto">
-          <button class="btn btn-light position-relative me-3">
-            <i class="fas fa-bell text-primary fs-4"></i>
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-              1
-            </span>
-          </button>
 
           <div class="dropdown">
             <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">

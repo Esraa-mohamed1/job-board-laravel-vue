@@ -1,7 +1,7 @@
 <template>
   <div class="browse-jobs-page">
 
-   <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+   <!-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
   <div class="container">
     <router-link class="navbar-brand me-4 text-dark fw-bold fs-4" to="/">
       <i class="fas fa-briefcase me-2 text-primary fs-3"></i> MyJob
@@ -40,8 +40,8 @@
       </div>
     </div>
   </div>
-</nav>
-
+</nav> -->
+<Navbar></Navbar>
 
     <section class="job-board container py-5">
       <div class="row">
@@ -134,6 +134,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 import Swal from 'sweetalert2';
+import Navbar from '@/components/homenav.vue';
 
 const router = useRouter();
 
@@ -402,48 +403,51 @@ $font-family-base: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
   background-color: $white;
   min-height: 100vh;
 }
-
 .navbar {
   padding: 1rem 0;
-  background-color: $white !important;
+  background-color: $white !important; // Ensure dark background
   box-shadow: 0 0.125rem 0.25rem rgba($dark, 0.075);
   
   .navbar-brand {
     font-size: 1.75rem;
     font-weight: 700;
-    color: $primary !important;
+    color: $white !important; // White for dark background
+    transition: color 0.3s ease;
     
     &:hover {
-      color: $primary-light !important;
+      color: $primary-light !important; // Lighter blue on hover
     }
   }
 
   .nav-link {
+    color: $white !important; // White links for dark background
     font-weight: 500;
     padding: 0.5rem 1rem;
-    color: $dark !important;
     transition: color 0.3s ease;
     
-    &:hover, &.active {
-      color: $primary !important;
+    &:hover {
+      color: $primary-light !important; // Hover effect
+    }
+    
+    &.active {
+      color: $primary !important; // Active link in primary color
     }
   }
 
   .navbar-toggler {
     border: none;
     padding: 0.5rem;
-    color: $dark;
+    color: $white;
     
     &:focus {
       box-shadow: none;
     }
 
-    .oi-menu {
-      color: $primary;
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.9)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); // White toggler icon
     }
   }
 }
-
 /* Hero Section */
 .hero-wrap-2 {
   position: relative;
@@ -494,7 +498,6 @@ $font-family-base: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Rob
   }
 }
 
-/* Main Content */
 .job-board {
   padding: 5rem 0;
   position: relative;

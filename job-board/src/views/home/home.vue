@@ -1,7 +1,7 @@
 <template>
   <div class="home-page">
     <!-- Navigation -->
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+      <!-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
   <div class="container">
     <router-link class="navbar-brand me-4 text-dark fw-bold fs-4" to="/">
       <i class="fas fa-briefcase me-2 text-primary fs-3"></i> MyJob
@@ -40,7 +40,13 @@
       </div>
     </div>
   </div>
-</nav>
+</nav> -->
+
+ <Navbar />
+
+
+
+
 
     <div v-if="loading" class="loading-overlay">
       <div class="spinner-border text-primary" role="status"></div>
@@ -60,38 +66,7 @@
             <div class="col-lg-7">
               <h1 class="hero-title display-4">Find Your Dream Job</h1>
               <p class="hero-subtitle lead mb-4">Browse thousands of jobs from top companies</p>
-              
-              <div class="job-search-form mb-5">
-                <form class="row g-2 align-items-center">
-                  <div class="col-md-5">
-                    <div class="input-group">
-                      <span class="input-group-text"><i class="fas fa-search"></i></span>
-                      <input 
-                        type="text" 
-                        class="form-control search-input" 
-                        placeholder="Job title, keywords"
-                        v-model="searchQuery"
-                      >
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="input-group">
-                      <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
-                      <input 
-                        type="text" 
-                        class="form-control search-input" 
-                        placeholder="Location"
-                        v-model="locationQuery"
-                      >
-                    </div>
-                  </div>
-                  <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary w-100 apply-btn" @click.prevent="searchJobs">
-                      Search Jobs
-                    </button>
-                  </div>
-                </form>
-              </div>
+             
 
               <div class="stats-grid d-flex justify-content-between gap-4">
                 <div class="stat-item text-center">
@@ -110,7 +85,6 @@
             </div>
             <div class="col-lg-5 d-none d-lg-block">
               <div class="hero-image">
-                <img src="https://themewagon.github.io/skillhunt/assets/img/hero-img.png" alt="Job seekers" class="img-fluid">
               </div>
             </div>
           </div>
@@ -277,6 +251,8 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/employer/auth'
+import Navbar from '@/components/homenav.vue';
+
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -472,20 +448,14 @@ $shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 /* Hero Section */
 .hero-section {
   position: relative;
-  background-image: url('https://blog.people-cloud.com/hs-fs/hub/1817347/file-3972374098-jpg/blog-files/por-que-incluir-tecnologia-en-la-gestion-de-recursos-humanos.jpg?width=1024&name=por-que-incluir-tecnologia-en-la-gestion-de-recursos-humanos.jpg');
+  background-image: url("../../assets/free.png");
   background-size: cover;
   background-position: center;
+  background-color: #073e61;
   min-height: 600px;
 }
 
-.overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-}
+
 
 .hero-title {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);

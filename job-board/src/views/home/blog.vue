@@ -1,48 +1,7 @@
 <template>
   <div class="blog-page">
     <!-- Navigation -->
-    <   <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
-  <div class="container">
-    <router-link class="navbar-brand me-4 text-dark fw-bold fs-4" to="/">
-      <i class="fas fa-briefcase me-2 text-primary fs-3"></i> MyJob
-    </router-link>
-    <button 
-      class="navbar-toggler" 
-      type="button" 
-      @click="toggleNavbar"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" :class="{ show: navbarOpen }">
-      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <router-link to="/" class="nav-link" active-class="active" exact>Home</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link to="/browsejobs" class="nav-link" active-class="active">Jobs</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link to="/contact" class="nav-link" active-class="active">About Us</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link to="/contact" class="nav-link" active-class="active">Contact Us</router-link>
-        </li>
-      </ul>
-      <div class="d-flex">
-        <template v-if="!isAuthenticated">
-          <router-link to="/login" class="btn btn-outline-primary me-2">Login</router-link>
-          <router-link to="/register" class="btn btn-primary">Register</router-link>
-        </template>
-        <template v-else>
-          <button class="btn btn-danger" @click="logout">Logout</button>
-        </template>
-      </div>
-    </div>
-  </div>
-</nav>
-
-
+<Navbar></Navbar>
     <!-- Hero Section -->
     <section class="hero-section position-relative text-white py-5">
       <div class="hero-overlay"></div>
@@ -226,72 +185,9 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'BlogPage',
-  data() {
-    return {
-      navbarOpen: false,
-      blogs: [],
-      newsletterEmail: '',
-      currentPage: 1,
-      blogsPerPage: 12,
-      loading: false,
-      error: null,
-    };
-  },
-  computed: {
-    paginatedBlogs() {
-      const start = (this.currentPage - 1) * this.blogsPerPage;
-      const end = start + this.blogsPerPage;
-      return this.blogs.slice(start, end);
-    },
-    totalPages() {
-      return Math.ceil(this.blogs.length / this.blogsPerPage);
-    },
-  },
-  async mounted() {
-    await this.loadBlogsData();
-  },
-  methods: {
-    async loadBlogsData() {
-      this.loading = true;
-      this.error = null;
-      try {
-        const response = await fetch('/db.json');
-        if (!response.ok) {
-          throw new Error('Failed to fetch blogs data');
-        }
-        const data = await response.json();
-        this.blogs = data.blogs || [];
-      } catch (error) {
-        console.error('Error loading blogs:', error);
-        this.error = 'Unable to load blogs. Please try again later.';
-      } finally {
-        this.loading = false;
-      }
-    },
-    toggleNavbar() {
-      this.navbarOpen = !this.navbarOpen;
-    },
-    changePage(page) {
-      if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    },
-    subscribe() {
-      console.log('Subscribed:', this.newsletterEmail);
-      alert('Subscribed to newsletter! (This is a demo)');
-      this.newsletterEmail = '';
-    },
-    logout() {
-      console.log('User logged out');
-      alert('Logged out! (This is a demo)');
-      this.$router.push('/login');
-    },
-  },
-};
+<script scoped>
+import Navbar from '@/components/shared/navbar.vue';
+
 </script>
 
 <style scoped lang="scss">
