@@ -375,7 +375,8 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import { useUserStore } from '../../../src/stores/candidate/userStore'
 import axios from 'axios'
-
+import Swal from 'sweetalert2'
+const API_BASE_URL = 'http://127.0.0.1:8000';
 const userStore = useUserStore()
 
 // Active tab state
@@ -384,6 +385,11 @@ const activeTab = ref('personal')
 // Refs for file inputs
 const photoInput = ref(null)
 const resumeInput = ref(null)
+
+
+
+
+
 
 // Form data objects
 const userData = ref({
@@ -418,15 +424,40 @@ const passwordData = ref({
   password_confirmation: ''
 });
 
+
+
+// Computed property for profile photo URL
+const profilePhotoUrl = computed(() => {
+  if (userData.value.profile_photo instanceof File) {
+    return URL.createObjectURL(userData.value.profile_photo)
+  }
+  if (userStore.user?.profile_photo_path) {
+    return userStore.user.profile_photo_path.startsWith('http')
+      ? userStore.user.profile_photo_path
+      : `${API_BASE_URL}/storage/${userStore.user.profile_photo_path}`
+  }
+  return null
+})
+
 const updatePasswordd = async () => {
   if (passwordData.value.password !== passwordData.value.password_confirmation) {
-    alert('New password and confirmation do not match');
+    Swal.fire({
+      icon: 'error',
+      title: 'Password Mismatch',
+      text: 'New password and confirmation do not match',
+      confirmButtonColor: '#3085d6',
+    });
     return;
   }
   
   try {
     await userStore.updatePassword(passwordData.value);
-    alert('Password updated successfully');
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'Password updated successfully',
+      confirmButtonColor: '#3085d6',
+    });
     // Clear fields after success
     passwordData.value = {
       current_password: '',
@@ -435,7 +466,12 @@ const updatePasswordd = async () => {
     };
   } catch (error) {
     console.error('Error updating password:', error);
-    alert(error.message || 'Failed to update password. Please try again.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.message || 'Failed to update password. Please try again.',
+      confirmButtonColor: '#3085d6',
+    });
   }
 };
 
@@ -443,15 +479,15 @@ const updatePasswordd = async () => {
 const newResumes = ref([])
 
 // Computed property for profile photo URL
-const profilePhotoUrl = computed(() => {
-  if (userData.value.profile_photo instanceof File) {
-    return URL.createObjectURL(userData.value.profile_photo)
-  }
-  if (userStore.user?.profile_photo_path) {
-    return `/storage/${userStore.user.profile_photo_path}`
-  }
-  return null
-})
+// const profilePhotoUrl = computed(() => {
+//   if (userData.value.profile_photo instanceof File) {
+//     return URL.createObjectURL(userData.value.profile_photo)
+//   }
+//   if (userStore.user?.profile_photo_path) {
+//     return `/storage/${userStore.user.profile_photo_path}`
+//   }
+//   return null
+// })
 
 // Methods
 const setActiveTab = (tab) => {
@@ -466,7 +502,12 @@ const handlePhotoUpload = (event) => {
   const file = event.target.files[0]
   if (file) {
     if (file.size > 2 * 1024 * 1024) {
-      alert('File size exceeds 2MB limit')
+      Swal.fire({
+        icon: 'error',
+        title: 'File Too Large',
+        text: 'File size exceeds 2MB limit',
+        confirmButtonColor: '#3085d6',
+      });
       return
     }
     userData.value.profile_photo = file
@@ -484,23 +525,43 @@ const handleResumeUpload = async (event) => {
   // Validate files
   for (const file of files) {
     if (file.size > 5 * 1024 * 1024) {
-      alert(`File ${file.name} exceeds 5MB limit`);
+      Swal.fire({
+        icon: 'error',
+        title: 'File Too Large',
+        text: `File ${file.name} exceeds 5MB limit`,
+        confirmButtonColor: '#3085d6',
+      });
       return;
     }
     if (!['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(file.type)) {
-      alert(`File ${file.name} must be a PDF, DOC, or DOCX`);
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid File Type',
+        text: `File ${file.name} must be a PDF, DOC, or DOCX`,
+        confirmButtonColor: '#3085d6',
+      });
       return;
     }
   }
 
   try {
     await userStore.uploadResumes(userStore.user.id, files);
-    alert('Resumes uploaded successfully');
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'Resumes uploaded successfully',
+      confirmButtonColor: '#3085d6',
+    });
     // Clear the file input
     resumeInput.value.value = '';
   } catch (error) {
     console.error('Error uploading resumes:', error);
-    alert(error.message || 'Failed to upload resumes. Please try again.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.message || 'Failed to upload resumes. Please try again.',
+      confirmButtonColor: '#3085d6',
+    });
   }
 };
 
@@ -530,21 +591,80 @@ const downloadResume = async (resume) => {
     document.body.removeChild(link)
   } catch (error) {
     console.error('Error downloading resume:', error)
-    alert('Failed to download resume. Please try again.')
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Failed to download resume. Please try again.',
+      confirmButtonColor: '#3085d6',
+    });
   }
 }
 
 const deleteResume = async (resumeId) => {
-  if (confirm('Are you sure you want to delete this resume?')) {
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!'
+  });
+
+  if (result.isConfirmed) {
     try {
       await userStore.deleteResume(resumeId)
+      Swal.fire({
+        title: 'Deleted!',
+        text: 'Your resume has been deleted.',
+        icon: 'success',
+        confirmButtonColor: '#3085d6',
+      });
     } catch (error) {
       console.error('Error deleting resume:', error)
-      alert('Failed to delete resume. Please try again.')
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to delete resume. Please try again.',
+        confirmButtonColor: '#3085d6',
+      });
     }
   }
 }
-
+// const savePersonalChanges = async () => {
+//   try {
+//     const dataToUpdate = {
+//       ...userData.value,
+//       _method: 'PUT'
+//     };
+//     await userStore.updateProfile(dataToUpdate);
+//     Swal.fire({
+//       icon: 'success',
+//       title: 'Success!',
+//       text: 'Personal information updated successfully',
+//       confirmButtonColor: '#3085d6',
+//     });
+//   } catch (error) {
+//     console.error('Error updating personal information:', error);
+//     Swal.fire({
+//       icon: 'error',
+//       title: 'Error',
+//       text: error.message || 'Failed to update personal information. Please try again.',
+//       confirmButtonColor: '#3085d6',
+//     });
+//   }
+// };
+// const profilePhotoUrl = computed(() => {
+//   if (userData.value.profile_photo instanceof File) {
+//     return URL.createObjectURL(userData.value.profile_photo);
+//   }
+//   if (userStore.user?.profile_photo_path) {
+//     return userStore.user.profile_photo_path.startsWith('http')
+//       ? userStore.user.profile_photo_path
+//       : `${API_BASE_URL}/storage/${userStore.user.profile_photo_path}`;
+//   }
+//   return null;
+// });
 
 const savePersonalChanges = async () => {
   try {
@@ -572,14 +692,29 @@ const savePersonalChanges = async () => {
     
     // Refresh user data
     await userStore.fetchUser();
-    alert('Personal information updated successfully');
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'Personal information updated successfully',
+      confirmButtonColor: '#3085d6',
+    });
   } catch (error) {
     console.error('Error updating personal information:', error);
     if (error.response) {
       const errors = error.response.data.errors || error.response.data.message;
-      alert(JSON.stringify(errors));
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        html: typeof errors === 'string' ? errors : Object.values(errors).join('<br>'),
+        confirmButtonColor: '#3085d6',
+      });
     } else {
-      alert('Failed to update personal information. Please try again.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to update personal information. Please try again.',
+        confirmButtonColor: '#3085d6',
+      });
     }
   }
 };
@@ -590,10 +725,20 @@ const saveProfileChanges = async () => {
       ...profileData.value,
       _method: 'PUT'
     })
-    alert('Profile information updated successfully')
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'Profile information updated successfully',
+      confirmButtonColor: '#3085d6',
+    });
   } catch (error) {
     console.error('Error updating profile:', error)
-    alert('Failed to update profile. Please try again.')
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Failed to update profile. Please try again.',
+      confirmButtonColor: '#3085d6',
+    });
   }
 }
 
@@ -603,55 +748,123 @@ const saveSocialChanges = async () => {
       ...socialData.value,
       _method: 'PUT'
     })
-    alert('Social links updated successfully')
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'Social links updated successfully',
+      confirmButtonColor: '#3085d6',
+    });
   } catch (error) {
     console.error('Error updating social links:', error)
-    alert('Failed to update social links. Please try again.')
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Failed to update social links. Please try again.',
+      confirmButtonColor: '#3085d6',
+    });
   }
 }
 
-
-
 // Initialize data when component mounts
+// onMounted(async () => {
+//   try {
+//     await userStore.fetchUser()
+    
+//     // Populate form data from store
+//     if (userStore.user) {
+//       userData.value = {
+//         name: userStore.user.name,
+//         email: userStore.user.email,
+//         phone: userStore.user.phone,
+//         website: userStore.user.website,
+//         professional_title: userStore.user.professional_title,
+//         profile_photo: null
+//       }
+      
+//       if (userStore.user.profile) {
+//         profileData.value = {
+//           nationality: userStore.user.profile.nationality,
+//           date_of_birth: userStore.user.profile.date_of_birth,
+//           gender: userStore.user.profile.gender,
+//           marital_status: userStore.user.profile.marital_status,
+//           education: userStore.user.profile.education,
+//           experience: userStore.user.profile.experience,
+//           biography: userStore.user.profile.biography
+//         }
+//       }
+      
+//       if (userStore.user.social_links) {
+//         socialData.value = {
+//           linkedin: userStore.user.social_links.linkedin,
+//           twitter: userStore.user.social_links.twitter,
+//           github: userStore.user.social_links.github,
+//           facebook: userStore.user.social_links.facebook
+//         }
+//       }
+//     }
+//   } catch (error) {
+//     console.error('Error fetching user data:', error)
+//     Swal.fire({
+//       icon: 'error',
+//       title: 'Error',
+//       text: 'Failed to load user data. Please try again.',
+//       confirmButtonColor: '#3085d6',
+//     });
+//   }
+// })
+
+
+
 onMounted(async () => {
   try {
-    await userStore.fetchUser()
+    // Fetch user data if not already loaded
+    if (!userStore.user || Object.keys(userStore.user).length === 0) {
+      await userStore.fetchUser()
+    }
     
     // Populate form data from store
     if (userStore.user) {
+      // Personal info
       userData.value = {
-        name: userStore.user.name,
-        email: userStore.user.email,
-        phone: userStore.user.phone,
-        website: userStore.user.website,
-        professional_title: userStore.user.professional_title,
-        profile_photo: null
+        name: userStore.user.name || '',
+        email: userStore.user.email || '',
+        phone: userStore.user.phone || '',
+        website: userStore.user.website || '',
+        professional_title: userStore.user.professional_title || '',
+        profile_photo: null // Don't overwrite with existing photo to allow new uploads
       }
       
+      // Profile info
       if (userStore.user.profile) {
         profileData.value = {
-          nationality: userStore.user.profile.nationality,
-          date_of_birth: userStore.user.profile.date_of_birth,
-          gender: userStore.user.profile.gender,
-          marital_status: userStore.user.profile.marital_status,
-          education: userStore.user.profile.education,
-          experience: userStore.user.profile.experience,
-          biography: userStore.user.profile.biography
+          nationality: userStore.user.profile.nationality || '',
+          date_of_birth: userStore.user.profile.date_of_birth || '',
+          gender: userStore.user.profile.gender || '',
+          marital_status: userStore.user.profile.marital_status || '',
+          education: userStore.user.profile.education || '',
+          experience: userStore.user.profile.experience || '',
+          biography: userStore.user.profile.biography || ''
         }
       }
       
+      // Social links
       if (userStore.user.social_links) {
         socialData.value = {
-          linkedin: userStore.user.social_links.linkedin,
-          twitter: userStore.user.social_links.twitter,
-          github: userStore.user.social_links.github,
-          facebook: userStore.user.social_links.facebook
+          linkedin: userStore.user.social_links.linkedin || '',
+          twitter: userStore.user.social_links.twitter || '',
+          github: userStore.user.social_links.github || '',
+          facebook: userStore.user.social_links.facebook || ''
         }
       }
     }
   } catch (error) {
-    console.error('Error fetching user data:', error)
-    alert('Failed to load user data. Please try again.')
+    console.error('Error initializing user data:', error)
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Failed to load user data. Please refresh the page.',
+      confirmButtonColor: '#3085d6',
+    })
   }
 })
 </script>

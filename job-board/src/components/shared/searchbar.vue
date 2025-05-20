@@ -51,11 +51,17 @@
         </div>
 
         <div class="d-flex align-items-center ms-auto">
-
           <div class="dropdown">
             <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="../../assets/candidate2.jpg" alt="User"
-                class="rounded-circle" width="50" height="50">
+              <!-- Updated profile image section -->
+              <template v-if="hasProfilePhoto">
+                <img :src="profilePhotoUrl" alt="User"
+                  class="rounded-circle" width="50" height="50">
+              </template>
+              <template v-else>
+                <img src="../../assets/candidate2.jpg" alt="User"
+                  class="rounded-circle" width="50" height="50">
+              </template>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
               <li>
@@ -78,13 +84,34 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import { useUserStore } from '../../stores/candidate/userStore'
 
 const search = ref('')
 const jobs = ref([])
 const router = useRouter()
+const userStore = useUserStore()
+
+// Computed property for profile photo URL
+const hasProfilePhoto = computed(() => {
+  return userStore.user && userStore.user.profile_photo_path
+})
+
+const profilePhotoUrl = computed(() => {
+  if (!hasProfilePhoto.value) return null
+  return userStore.user.profile_photo_path.startsWith('http')
+    ? userStore.user.profile_photo_path
+    : `http://127.0.0.1:8000/storage/${userStore.user.profile_photo_path}`
+})
+
+// Fetch user data when component mounts
+onMounted(async () => {
+  if (!userStore.user) {
+    await userStore.fetchUser()
+  }
+})
 
 const handleSearch = () => {
   if (search.value.trim()) {
@@ -111,18 +138,9 @@ const fetchJobs = async () => {
 
 const logout = async () => {
   try {
-    const token = localStorage.getItem('authToken')
-
-    await axios.post('/api/logout', null, {
-      baseURL: 'http://127.0.0.1:8000',
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-
+    await userStore.logout()
     clearAuthData()
     await router.push('/login')
-
   } catch (error) {
     console.error('Logout error:', error)
     clearAuthData()

@@ -39,11 +39,14 @@
               <i class="far fa-clock"></i> {{ job.timeRemaining }}
             </span>
           </div>
-          <div class="job-hover-content">
-            <button class="quick-apply-btn">
-              Quick Apply <i class="fas fa-bolt"></i>
-            </button>
+       <RouterLink :to="`/candidate/jobs/${job.id}`">
+       <div class="job-hover-content">
+        <button class="quick-apply-btn">
+      Quick Apply <i class="fas fa-bolt"></i>
+    </button>
           </div>
+           </RouterLink>
+
         </div>
       </div>
     </div>
@@ -52,52 +55,94 @@
     <button class="floating-action-btn">
       <i class="fas fa-paper-plane"></i>
     </button>
+
+    <!-- Pagination Controls -->
+<div class="pagination-controls" v-if="totalPages > 1">
+  <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
+  <span>Page {{ currentPage }} of {{ totalPages }}</span>
+  <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
+</div>
+
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'ModernJobAlerts',
   data() {
     return {
-      jobCategories: [
-        {
-          title: 'Technical Support Specialist',
-          type: 'Full Time',
-          jobs: [
-            {
-              title: 'UUIX Designer',
-              jobType: 'Remote',
-              salary: '$100-$15K',
-              timeRemaining: '1 day left'
-            },
-            {
-              title: 'Annotator',
-              location: 'USA',
-              jobType: 'On-site',
-              salary: '$100-$15K',
-              timeRemaining: '1 day left'
-            }
-          ]
-        },
-        {
-          title: 'Front End Developer',
-          type: 'Interactive',
-          jobs: [
-            {
-              title: 'Mymoonlight',
-              location: 'Bangladesh',
-              jobType: 'Remote',
-              salary: '$100-$15K',
-              timeRemaining: '1 day left'
-            }
-          ]
-        }
-      ]
+      jobCategories: [],
+      currentPage: 1,
+      totalPages: 1,
+    };
+  },
+  mounted() {
+    this.fetchJobs();
+  },
+  methods: {
+    async fetchJobs() {
+      try {
+        const token = localStorage.getItem('authToken');
+        const response = await axios.get('http://127.0.0.1:8000/api/latest-jobs', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          params: {
+            page: this.currentPage
+          }
+        });
+
+        const jobs = response.data.jobs.data || response.data.jobs; 
+        const total = response.data.jobs.total || 1; 
+        const perPage = response.data.jobs.per_page || 3;
+
+        this.totalPages = Math.ceil(total / perPage);
+
+        this.jobCategories = [
+          {
+            title: 'Latest Jobs',
+            type: 'All Types',
+            jobs: jobs.map(job => ({
+               id: job.id,
+              title: job.title,
+              location: job.location,
+              jobType: job.job_type || 'Not specified',
+              salary: job.salary ? `${job.salary} EGP` : 'Negotiable',
+              timeRemaining: this.calculateTimeRemaining(job.created_at)
+            }))
+          }
+        ];
+      } catch (error) {
+        console.error('Failed to fetch jobs:', error);
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.fetchJobs();
+      }
+    },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.fetchJobs();
+      }
+    },
+    calculateTimeRemaining(createdAt) {
+      const created = new Date(createdAt);
+      const now = new Date();
+      const diffTime = Math.abs(now - created);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return `${diffDays} day(s) ago`;
     }
   }
-}
+};
 </script>
+
+
+
 
 <style scoped>
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
