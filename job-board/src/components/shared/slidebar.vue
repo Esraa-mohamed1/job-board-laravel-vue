@@ -1,7 +1,7 @@
 <template>
     <div class="col-md-2-5 sidebar py-3 border-end bg-light">
       <div class="d-flex align-items-center px-3 mb-3">
-        <img src="@/assets/logo.svg" alt="MyJob Logo" width="18" class="me-2" />
+           <i class="fas fa-briefcase me-2 text-primary fs-3"></i> 
         <span class="fw-bold text-primary small">MyJob</span>
         <span class="ms-auto badge bg-primary rounded-pill small py-1 px-2">Jobs</span>
       </div>
