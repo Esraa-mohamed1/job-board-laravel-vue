@@ -1,32 +1,47 @@
 <template>
   <div>
     <!-- Navigation - Enhanced with shadow and smoother transition -->
-    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-light
-     ftco-navbar-light" id="ftco-navbar" style="box-shadow: 0 2px 15px rgba(0,0,0,0.1);">
-      <div class="container-fluid px-md-4">
-        <router-link class="navbar-brand" to="/" style="font-weight: 700; color:rgb(1, 4, 7); letter-spacing: 1px;">Skillhunt</router-link>
-        <button
-          class="navbar-toggler"
-          type="button"
-          @click="toggleNavbar"
-          aria-controls="ftco-nav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-          style="border: none; outline: none;"
-        >
-          <span class="oi oi-menu"></span> Menu
-        </button>
-
-        <div class="collapse navbar-collapse" :class="{ show: navbarOpen }" id="ftco-nav">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item"><router-link to="/" class="nav-link">Home</router-link></li>
-            <li class="nav-item"><router-link to="/browsejobs" class="nav-link">Browse Jobs</router-link></li>
-            <li class="nav-item"><router-link to="/blog" class="nav-link">Blog</router-link></li>
-            <li class="nav-item active"><router-link to="/contact" class="nav-link" style="color: #4eabff !important;">Contact</router-link></li>
-          </ul>
-        </div>
+       <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+  <div class="container">
+    <router-link class="navbar-brand me-4 text-dark fw-bold fs-4" to="/">
+      <i class="fas fa-briefcase me-2 text-primary fs-3"></i> MyJob
+    </router-link>
+    <button 
+      class="navbar-toggler" 
+      type="button" 
+      @click="toggleNavbar"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" :class="{ show: navbarOpen }">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <router-link to="/" class="nav-link" active-class="active" exact>Home</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/browsejobs" class="nav-link" active-class="active">Jobs</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/contact" class="nav-link" active-class="active">About Us</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/contact" class="nav-link" active-class="active">Contact Us</router-link>
+        </li>
+      </ul>
+      <div class="d-flex">
+        <template v-if="!isAuthenticated">
+          <router-link to="/login" class="btn btn-outline-primary me-2">Login</router-link>
+          <router-link to="/register" class="btn btn-primary">Register</router-link>
+        </template>
+        <template v-else>
+          <button class="btn btn-danger" @click="logout">Logout</button>
+        </template>
       </div>
-    </nav>
+    </div>
+  </div>
+</nav>
+
 
     
 

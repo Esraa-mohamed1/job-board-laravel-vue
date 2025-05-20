@@ -1,58 +1,47 @@
 <template>
   <div class="blog-page">
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-      <div class="container-fluid px-4">
-        <router-link class="navbar-brand fw-bold" to="/">Skillhunt</router-link>
-        <button
-          class="navbar-toggler"
-          type="button"
-          @click="toggleNavbar"
-          aria-controls="navbarNav"
-          :aria-expanded="navbarOpen"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" :class="{ show: navbarOpen }" id="navbarNav">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <router-link class="nav-link" to="/">Home</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="/browsejobs">Browse Jobs</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link active" aria-current="page" to="/blog">Blog</router-link>
-            </li>
-            <li class="nav-item">
-              <router-link class="nav-link" to="/contact">Contact</router-link>
-            </li>
-          </ul>
-          <div class="d-flex align-items-center">
-            <div class="dropdown">
-              <button
-                class="btn btn-outline-primary d-flex align-items-center"
-                type="button"
-                id="userDropdown"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                <i class="bi bi-person-circle me-2"></i>
-                <span>Profile</span>
-              </button>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                <li><router-link class="dropdown-item" to="/login">Login</router-link></li>
-                <li><router-link class="dropdown-item" to="/register">Register</router-link></li>
-                <li><router-link class="dropdown-item" to="/dashboard">Dashboard</router-link></li>
-                <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="#" @click="logout">Logout</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
+    <   <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+  <div class="container">
+    <router-link class="navbar-brand me-4 text-dark fw-bold fs-4" to="/">
+      <i class="fas fa-briefcase me-2 text-primary fs-3"></i> MyJob
+    </router-link>
+    <button 
+      class="navbar-toggler" 
+      type="button" 
+      @click="toggleNavbar"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" :class="{ show: navbarOpen }">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <router-link to="/" class="nav-link" active-class="active" exact>Home</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/browsejobs" class="nav-link" active-class="active">Jobs</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/contact" class="nav-link" active-class="active">About Us</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/contact" class="nav-link" active-class="active">Contact Us</router-link>
+        </li>
+      </ul>
+      <div class="d-flex">
+        <template v-if="!isAuthenticated">
+          <router-link to="/login" class="btn btn-outline-primary me-2">Login</router-link>
+          <router-link to="/register" class="btn btn-primary">Register</router-link>
+        </template>
+        <template v-else>
+          <button class="btn btn-danger" @click="logout">Logout</button>
+        </template>
       </div>
-    </nav>
+    </div>
+  </div>
+</nav>
+
 
     <!-- Hero Section -->
     <section class="hero-section position-relative text-white py-5">

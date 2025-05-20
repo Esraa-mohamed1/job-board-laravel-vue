@@ -7,7 +7,12 @@
       </div>
   
       <div class="sidebar-menu px-3">
-       
+        <div class="sidebar-menu-item mb-2">
+          <RouterLink to="/candidate/dashboard/overview" class="d-flex align-items-center text-decoration-none text-dark py-2 px-2 rounded" active-class="bg-light text-primary">
+            <i class="fas fa-briefcase me-2 text-muted"></i>
+            <span class="small">{{ $t('Overview') }}</span>
+          </RouterLink>
+        </div>
         <div class="sidebar-menu-item mb-2">
           <RouterLink to="/candidate/dashboard/applications" class="d-flex align-items-center text-decoration-none text-dark py-2 px-2 rounded" active-class="bg-light text-primary">
             <i class="fas fa-briefcase me-2 text-muted"></i>
@@ -35,24 +40,10 @@
       
       </div>
   
-      <!-- Logout Button -->
-      <div class="mt-auto px-3 pt-5">
-        <button class="btn btn-outline-danger btn-sm w-100 d-flex align-items-center justify-content-center py-2" @click="logout">
-          <i class="fas fa-sign-out-alt me-2"></i> {{ $t('sidebar.logout') }}
-        </button>
-      </div>
     </div>
   </template>
   
   <script setup>
-  import { useRouter } from 'vue-router'
-  const router = useRouter()
-  
-  function logout() {
-
-    localStorage.removeItem('token')
-    router.push('/login')
-  }
   </script>
   
   <style scoped>

@@ -1,18 +1,18 @@
 <template>
-    <div class="step-container">
-      <div class="completion-message">
-        <h2>Setup Progress</h2>
-        <p class="completion-percentage">100% Completed</p>
-        <p class="congrats">Congratulations, Your profile is 100% complete!</p>
-        <p class="message">Donec hendrerit, ante mattis pellentesque eleifend, tortor urna malesuada ante, eget aliquam nulla augue hendrerit ligula. Nunc mattis arcu, mattis sed sem vitae.</p>
-      </div>
-      
-      <button class="btn-dashboard" @click="completeSetup">View Dashboard</button>
+  <div class="step-container">
+    <div class="completion-message">
+      <h2>Setup Progress</h2>
+      <p class="completion-percentage">100% Completed</p>
+      <p class="congrats">Congratulations, Your profile is 100% complete!</p>
+      <p class="message">Your company profile has been successfully created and is now visible to potential candidates.</p>
     </div>
-  </template>
-  
-  <script setup>
-  import { useRouter } from 'vue-router'
+    
+    <button class="btn-dashboard" @click="completeSetup">View Dashboard</button>
+  </div>
+</template>
+
+<script setup>
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const emit = defineEmits(['complete'])
@@ -21,7 +21,8 @@ const completeSetup = () => {
   emit('complete')
   router.push('/employer/dashboard')
 }
-  </script>
+</script>
+
   
   <style scoped>
   .step-container {

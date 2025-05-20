@@ -1,276 +1,254 @@
 <template>
-  <div class="job-alerts-container">
+  <div class="applied-jobs-container">
     <div class="header">
-      <div class="title-badge">
-        <h1># Job Applications</h1>
-     
-      </div>
-   
+      <h1>Applied Jobs ({{ totalApplications }})</h1>
     </div>
 
-    <div class="divider"></div>
-
-    <div class="job-category">
-      <div class="category-header">
-        <h2>Technical Support Specialist</h2>
-        <span class="job-tag">Full Time</span>
-      </div>
-      
-      <div class="job-listing">
-        <div class="job-meta">
-          <h3 class="job-title">UUIX Designer</h3>
-          <span class="job-type">Remote</span>
-        </div>
-        <div class="job-details">
-          <span class="salary">$100-$15K</span>
-          <span class="time-remaining">
-            <i class="far fa-clock"></i>
-            <span>1 day left</span>
-          </span>
-        </div>
-      </div>
-      
-      <div class="job-listing">
-        <div class="job-meta">
-          <h3 class="job-title">Annotator, USA</h3>
-          <span class="job-type">On-site</span>
-        </div>
-        <div class="job-details">
-          <span class="salary">$100-$15K</span>
-          <span class="time-remaining">
-            <i class="far fa-clock"></i>
-            <span>1 day left</span>
-          </span>
-        </div>
-      </div>
+    <div class="jobs-table">
+      <table>
+        <thead>
+          <tr>
+            <th>JOB</th>
+            <th>DATE APPLIED</th>
+            <th>STATUS</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(job, index) in paginatedJobs" :key="index">
+            <td>
+              <div class="job-info">
+                <strong>{{ job.title }}</strong>
+                <div class="job-details">
+                  <span>{{ job.location }}</span>
+                  <span>{{ job.salary }}</span>
+                </div>
+              </div>
+            </td>
+            <td>{{ job.dateApplied }}</td>
+            <td>
+              <span :class="['status-badge', { 'rejected': job.status.toLowerCase() === 'rejected' }]">
+                <i class="fas fa-check"></i> {{ job.status }}
+              </span>
+            </td>
+            <td>
+              <button class="view-details-btn">View Details</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
-    <div class="divider"></div>
-
-    <div class="job-category">
-      <div class="category-header">
-        <h2>Front End Developer</h2>
-        <span class="job-tag">Interactive</span>
-      </div>
-      
-      <div class="job-listing">
-        <div class="job-meta">
-          <h3 class="job-title">Mymoonlight, Bangladesh</h3>
-          <span class="job-type">Remote</span>
-        </div>
-        <div class="job-details">
-          <span class="salary">$100-$15K</span>
-          <span class="time-remaining">
-            <i class="far fa-clock"></i>
-            <span>1 day left</span>
-          </span>
-        </div>
-      </div>
+    <!-- Pagination Controls -->
+    <div class="pagination" v-if="totalPages > 1">
+      <button @click="prevPage" :disabled="currentPage === 1">Previous</button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">Next</button>
     </div>
-
- 
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
-  name: 'JobAlerts'
+  name: 'AppliedJobs',
+  data() {
+    return {
+      appliedJobs: [],
+      currentPage: 1,
+      pageSize: 5
+    }
+  },
+  computed: {
+    totalApplications() {
+      return this.appliedJobs.length
+    },
+    totalPages() {
+      return Math.ceil(this.appliedJobs.length / this.pageSize)
+    },
+    paginatedJobs() {
+      const start = (this.currentPage - 1) * this.pageSize
+      return this.appliedJobs.slice(start, start + this.pageSize)
+    }
+  },
+  methods: {
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++
+      }
+    },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--
+      }
+    }
+  },
+  mounted() {
+    const token = localStorage.getItem('authToken');
+
+    axios.get('http://127.0.0.1:8000/api/applications', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    .then(response => {
+      const applications = response.data.applications;
+      this.appliedJobs = applications.map(app => ({
+        title: app.job?.title || `Job ID #${app.job_id}`,
+        location: app.job?.location || 'Remote',
+        salary: app.job?.salary || '$50k-80k/month',
+        dateApplied: new Date(app.created_at).toLocaleString(),
+        status: app.status
+      }));
+    })
+    .catch(error => {
+      console.error('Error fetching applications:', error);
+    });
+  }
 }
 </script>
 
 <style scoped>
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
 
-.job-alerts-container {
+.applied-jobs-container {
   font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 25px;
   background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.title-badge {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-h1 {
-  color: #0d6efd;
-  font-size: 26px;
-  margin: 0;
-  font-weight: 700;
-}
-
-.new-badge {
-  background-color: #ff6b6b;
-  color: white;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.search-bar {
-  display: flex;
-  align-items: center;
-}
-
-.search-bar input {
-  padding: 10px 15px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px 0 0 8px;
-  outline: none;
-  width: 180px;
-  transition: all 0.2s ease;
-}
-
-.search-bar input:focus {
-  border-color: #0d6efd;
-  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
-}
-
-.search-bar button {
-  padding: 10px 15px;
-  background-color: #0d6efd;
-  color: white;
-  border: none;
-  border-radius: 0 8px 8px 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease;
-}
-
-.search-bar button:hover {
-  background-color: #0b5ed7;
-}
-
-.divider {
-  height: 1px;
-  background-color: #f0f0f0;
-  margin: 20px 0;
-}
-
-.category-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-h2 {
-  color: #212529;
-  font-size: 18px;
-  margin: 0;
-  font-weight: 600;
-}
-
-.job-tag {
-  background-color: rgba(13, 110, 253, 0.1);
-  color: #0d6efd;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.job-listing {
-  background-color: white;
-  padding: 16px;
-  margin-bottom: 12px;
   border-radius: 8px;
-  border: 1px solid #f0f0f0;
-  transition: all 0.2s ease;
-  cursor: pointer;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.job-listing:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(13, 110, 253, 0.1);
-  border-color: #0d6efd;
-}
-
-.job-meta {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.job-title {
+.header h1 {
+  font-size: 24px;
   font-weight: 600;
-  font-size: 16px;
-  color: #212529;
+  color: #333;
+  margin-bottom: 20px;
 }
 
-.job-type {
-  color: #6c757d;
-  font-size: 13px;
-  background-color: #f8f9fa;
-  padding: 2px 8px;
-  border-radius: 4px;
+.jobs-table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  padding: 12px 16px;
+  font-weight: 600;
+  color: #666;
+  font-size: 14px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #eee;
+}
+
+td {
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+  vertical-align: top;
+}
+
+.job-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.job-info strong {
+  font-weight: 600;
+  color: #333;
 }
 
 .job-details {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  color: #666;
 }
 
-.salary {
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status-badge.rejected {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.status-badge i {
+  font-size: 10px;
+}
+
+.view-details-btn {
+  background-color: transparent;
   color: #0d6efd;
-  font-weight: 600;
-  font-size: 15px;
+  border: 1px solid #0d6efd;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.time-remaining {
+.view-details-btn:hover {
+  background-color: #0d6efd;
+  color: white;
+}
+
+.pagination {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 6px;
-  color: #6c757d;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+  cursor: pointer;
+  border-radius: 4px;
   font-size: 13px;
 }
 
-.time-remaining i {
-  color: #6c757d;
-  font-size: 12px;
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
-.apply-now-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  padding: 14px;
-  background-color: #0d6efd;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 20px;
-}
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .applied-jobs-container {
+    padding: 15px;
+  }
 
-.apply-now-btn:hover {
-  background-color: #0b5ed7;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
-}
+  th, td {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
 
-.apply-now-btn i {
-  font-size: 14px;
+  .job-info strong {
+    font-size: 14px;
+  }
+
+  .job-details {
+    font-size: 12px;
+  }
 }
 </style>

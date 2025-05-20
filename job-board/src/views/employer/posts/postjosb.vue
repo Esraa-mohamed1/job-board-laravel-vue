@@ -384,70 +384,35 @@ export default {
       }
     },
     
-   async submitJob() {
-  this.formSubmitted = true;
-  this.validateForm();
+    async submitJob() {
+      this.formSubmitted = true;
+      this.validateForm();
 
-  if (this.hasErrors) {
-    this.showAlert('Please fix the validation errors before submitting.', 'error');
-    return;
-  }
+      if (this.hasErrors) {
+        this.showAlert('Please fix the validation errors before submitting.', 'error');
+        return;
+      }
 
-  try {
-    this.isLoading = true;
-    
-    // Prepare the data to match your Laravel Job model
-    const jobData = {
-      title: this.job.title,
-      job_type: this.job.type,
-      category: this.job.category,
-      location: this.job.location,
-      salary_type: this.job.salaryType,
-      min_salary: this.job.salaryType === 'range' ? this.job.minSalary : null,
-      max_salary: this.job.salaryType === 'range' ? this.job.maxSalary : null,
-      salary: this.job.salaryType === 'fixed' ? this.job.fixedSalary : null,
-      education_level: this.job.education,
-      experience_level: this.job.experience,
-      job_level: this.job.level,
-      description: this.job.description,
-      responsibilities: this.job.responsibilities,
-      skills: this.job.skills.join(','),
-      keywords: this.job.keywords
-    };
-
-    // Get auth token from localStorage
-    const token = localStorage.getItem('token');
-
-    const response = await fetch('/api/jobs', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(jobData)
-    });
-
-    const data = await response.json();
-    
-    if (!response.ok) {
-      throw new Error(data.message || 'Job submission failed');
-    }
-    
-    this.showAlert('Job posted successfully!', 'success');
-    this.resetForm();
-    this.formSubmitted = false;
-    
-    // Redirect to employer jobs list
-    this.$router.push('/employer/dashboard/myjobs');
-    
-  } catch (error) {
-    this.showAlert(error.message || 'Failed to post job. Please try again.', 'error');
-    console.error('Submission error:', error);
-  } finally {
-    this.isLoading = false;
-  }
-}
+      try {
+        this.isLoading = true;
+        const response = await fetch('http://localhost:3000/jobs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(this.job)
+        });
+        
+        if (!response.ok) throw new Error('Job submission failed');
+        
+        this.showAlert('Job posted successfully!', 'success');
+        this.resetForm();
+        this.formSubmitted = false;
+      } catch (error) {
+        this.showAlert(error.message, 'error');
+        console.error('Submission error:', error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
     resetForm() {
       this.job = {
         title: '',
@@ -486,9 +451,9 @@ export default {
       alert(`${type.toUpperCase()}: ${message}`);
     }
   },
-  mounted() {
-    this.loadDraft();
-  }
+  // mounted() {
+  //   this.loadDraft();
+  // }
 };
 </script>
 
