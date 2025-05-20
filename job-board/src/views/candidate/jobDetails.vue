@@ -46,7 +46,9 @@
           <h2>Hiring Information</h2>
           <div class="hiring-card">
             <h2>Ready to Apply?</h2>
-            <router-link to="/post-job" class="post-job-btn bounce-btn">Apply Now</router-link>
+            <button class="post-job-btn bounce-btn" @click="showApplyModal = true">
+              Apply Now
+            </button>
           </div>
         </section>
       </div>
@@ -87,6 +89,40 @@
     </div>
   </div>
 
+  <!-- Apply Job Modal -->
+  <div v-if="showApplyModal" class="modal-overlay" @click.self="closeModal">
+    <div class="apply-modal">
+      <button class="close-btn" @click="closeModal">&times;</button>
+      <h2 class="modal-title">Apply Job: {{ jobData.title }}</h2>
+      <form @submit.prevent="submitApplication" class="apply-form">
+        <label class="form-label mt-3">Choose Resume</label>
+        <select v-model="selectedResume" class="form-select" required>
+          <option value="" disabled>Select...</option>
+          <option v-for="resume in resumes" :key="resume.id" :value="resume.path">
+            {{ resume.name }}
+          </option>
+        </select>
+        <label class="form-label mt-4">Cover Letter</label>
+        <textarea
+          class="form-control cover-letter-input"
+          rows="6"
+          v-model="coverLetter"
+          placeholder="Write down your biography here. Let the employers know who you are..."
+          required
+        ></textarea>
+        <div class="modal-actions">
+          <button class="btn btn-light cancel-btn" type="button" @click="closeModal">Cancel</button>
+          <button class="btn btn-primary apply-btn" type="submit" :disabled="submitting">
+            <span v-if="submitting" class="spinner-border spinner-border-sm"></span>
+            <span v-else>Apply Now</span>
+          </button>
+        </div>
+        <div v-if="errorMsg" class="alert alert-danger mt-2">{{ errorMsg }}</div>
+        <div v-if="successMsg" class="alert alert-success mt-2">{{ successMsg }}</div>
+      </form>
+    </div>
+  </div>
+
   <div v-else-if="loading" class="loading">
     <p>Loading job details...</p>
   </div>
@@ -103,12 +139,37 @@ const route = useRoute();
 const jobData = ref(null);
 const loading = ref(true);
 
+const showApplyModal = ref(false);
+const resumes = ref([]);
+const selectedResume = ref('');
+const coverLetter = ref('');
+const submitting = ref(false);
+const errorMsg = ref('');
+const successMsg = ref('');
+
+const loadResumes = async () => {
+  try {
+    const token = localStorage.getItem('authToken')
+    const response = await fetch('http://localhost:8000/api/user/resumes', {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
+    });
+    if (!response.ok) throw new Error('Failed to fetch resumes');
+    const data = await response.json();
+    resumes.value = Array.isArray(data) ? data : (data.data || []);
+  } catch (err) {
+    resumes.value = [];
+  }
+};
 const loadJobData = async () => {
   try {
     const jobId = route.params.id;
     const response = await fetch(`http://localhost:8000/api/jobs/${jobId}`);
     if (!response.ok) throw new Error('Failed to fetch job details');
     jobData.value = await response.json();
+    await loadResumes();
   } catch (err) {
     console.error('Error loading job details:', err.message);
   } finally {
@@ -134,12 +195,225 @@ const formatDate = (dateString) => {
   }
 };
 
+const closeModal = () => {
+  showApplyModal.value = false;
+  selectedResume.value = '';
+  coverLetter.value = '';
+  errorMsg.value = '';
+  successMsg.value = '';
+};
+
+const submitApplication = async () => {
+  errorMsg.value = '';
+  successMsg.value = '';
+  submitting.value = true;
+      const token = localStorage.getItem('authToken')
+
+  try {
+    const jobId = jobData.value.id;
+    const response = await fetch(`http://localhost:8000/api/jobs/${jobId}/apply`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+         'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        cover_letter: coverLetter.value,
+        resume_path: selectedResume.value
+      })
+    });
+
+    if (response.status === 409) {
+      const data = await response.json();
+      errorMsg.value = data.message || "You have already applied for this job.";
+      submitting.value = false;
+      return;
+    }
+    if (!response.ok) {
+      const data = await response.json();
+      errorMsg.value = data.message || "Failed to apply for job.";
+      submitting.value = false;
+      return;
+    }
+    successMsg.value = "Application submitted successfully.";
+    setTimeout(closeModal, 1200);
+  } catch (err) {
+    errorMsg.value = "Failed to submit application.";
+  } finally {
+    submitting.value = false;
+  }
+};
+
 onMounted(() => {
   loadJobData();
 });
 </script>
-  
-  <style scoped>
+
+<style scoped>
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.42);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+.apply-modal {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 96vw;
+  padding: 2rem 2rem 1.5rem 2rem;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(44,62,80,0.25);
+  animation: fadeIn .22s;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(30px);} to { opacity: 1; transform: none;}}
+.close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: color .2s;
+}
+.close-btn:hover { color: #333; }
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+}
+.apply-form label {
+  font-weight: 500;
+  margin-bottom: .4rem;
+  display: block;
+}
+.form-select {
+  width: 100%;
+  padding: .5rem;
+  border-radius: 6px;
+  border: 1px solid #d5dae2;
+  margin-bottom: 0.5rem;
+}
+.cover-letter-input {
+  width: 100%;
+  min-height: 120px;
+  border-radius: 6px;
+  border: 1px solid #d5dae2;
+  padding: .8rem;
+  font-size: 1rem;
+  margin-bottom: 0.7rem;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.4rem;
+}
+.cancel-btn {
+  background: #f5f6fa;
+  color: #4a6baf;
+  border: 1px solid #e3e6f0;
+}
+.cancel-btn:hover {
+  background: #f0f2f9;
+  color: #2c3e50;
+}
+.apply-btn {
+  background: #1671fa;
+  color: #fff;
+  border: none;
+  min-width: 120px;
+}
+.apply-btn:hover {  
+  background: #105fc6;
+}
+  .modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.42);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+.apply-modal {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 96vw;
+  padding: 2rem 2rem 1.5rem 2rem;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(44,62,80,0.25);
+  animation: fadeIn .22s;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(30px);} to { opacity: 1; transform: none;}}
+.close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: color .2s;
+}
+.close-btn:hover { color: #333; }
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+}
+.apply-form label {
+  font-weight: 500;
+  margin-bottom: .4rem;
+  display: block;
+}
+.form-select {
+  width: 100%;
+  padding: .5rem;
+  border-radius: 6px;
+  border: 1px solid #d5dae2;
+  margin-bottom: 0.5rem;
+}
+.cover-letter-input {
+  width: 100%;
+  min-height: 120px;
+  border-radius: 6px;
+  border: 1px solid #d5dae2;
+  padding: .8rem;
+  font-size: 1rem;
+  margin-bottom: 0.7rem;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.4rem;
+}
+.cancel-btn {
+  background: #f5f6fa;
+  color: #4a6baf;
+  border: 1px solid #e3e6f0;
+}
+.cancel-btn:hover {
+  background: #f0f2f9;
+  color: #2c3e50;
+}
+.apply-btn {
+  background: #1671fa;
+  color: #fff;
+  border: none;
+  min-width: 120px;
+}
+.apply-btn:hover {  
+  background: #105fc6;
+}
   .job-details-container {
     max-width: 1200px;
     margin: 2rem auto;
