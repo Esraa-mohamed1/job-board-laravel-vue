@@ -39,11 +39,14 @@
               <i class="far fa-clock"></i> {{ job.timeRemaining }}
             </span>
           </div>
-          <div class="job-hover-content">
-            <button class="quick-apply-btn">
-              Quick Apply <i class="fas fa-bolt"></i>
-            </button>
+       <RouterLink :to="`/candidate/jobs/${job.id}`">
+       <div class="job-hover-content">
+        <button class="quick-apply-btn">
+      Quick Apply <i class="fas fa-bolt"></i>
+    </button>
           </div>
+           </RouterLink>
+
         </div>
       </div>
     </div>
@@ -91,7 +94,7 @@ export default {
           }
         });
 
-        const jobs = response.data.jobs.data || response.data.jobs; // Adjust based on your API format
+        const jobs = response.data.jobs.data || response.data.jobs; 
         const total = response.data.jobs.total || 1; 
         const perPage = response.data.jobs.per_page || 3;
 
@@ -102,6 +105,7 @@ export default {
             title: 'Latest Jobs',
             type: 'All Types',
             jobs: jobs.map(job => ({
+               id: job.id,
               title: job.title,
               location: job.location,
               jobType: job.job_type || 'Not specified',
