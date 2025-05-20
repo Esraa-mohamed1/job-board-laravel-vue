@@ -124,11 +124,37 @@
       </div>
     </div>
 
-    <div v-else-if="loading" class="loading">
-      <p>Loading job details...</p>
+  <div v-if="showApplyModal" class="modal-overlay" @click.self="closeModal">
+    <div class="apply-modal">
+      <button class="close-btn" @click="closeModal">&times;</button>
+      <h2 class="modal-title">Apply Job: {{ jobData.title }}</h2>
+      <form @submit.prevent="submitApplication" class="apply-form">
+        <label class="form-label mt-3">Choose Resume</label>
+        <select v-model="selectedResume" class="form-select" required>
+          <option value="" disabled>Select...</option>
+          <option v-for="resume in resumes" :key="resume.id" :value="resume.path">
+            {{ resume.name }}
+          </option>
+        </select>
+        <label class="form-label mt-4">Cover Letter</label>
+        <textarea
+          class="form-control cover-letter-input"
+          rows="6"
+          v-model="coverLetter"
+          placeholder="Write down your biography here. Let the employers know who you are..."
+          required
+        ></textarea>
+        <div class="modal-actions">
+          <button class="btn btn-light cancel-btn" type="button" @click="closeModal">Cancel</button>
+          <button class="btn btn-primary apply-btn" type="submit" :disabled="submitting">
+            <span v-if="submitting" class="spinner-border spinner-border-sm"></span>
+            <span v-else>Apply Now</span>
+          </button>
+        </div>
+        <div v-if="errorMsg" class="alert alert-danger mt-2">{{ errorMsg }}</div>
+        <div v-if="successMsg" class="alert alert-success mt-2">{{ successMsg }}</div>
+      </form>
     </div>
-    <div v-else class="error">
-      <p>Error loading job details.</p>
     </div>
   </div>
 </template>
