@@ -8,6 +8,9 @@ import '@fortawesome/fontawesome-free/css/all.min.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap'
 import { createI18n } from 'vue-i18n'
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+
 
 import en from './locales/en.json'
 import ar from './locales/ar.json'
@@ -23,6 +26,7 @@ const i18n = createI18n({
 
 const pinia = createPinia()
 const app = createApp(App)
+app.use(ElementPlus)
 app.use(i18n)
 app.use(pinia)
 app.use(router)
