@@ -18,31 +18,44 @@
         <div class="form-section card-style">
           <div class="section-header" @click="toggleSection('basic')">
             <h2 class="section-title"><i class="fas fa-info-circle me-2"></i>Basic Information</h2>
-            <i class="fas" :class="{ 'fa-chevron-down': !expandedSections.basic, 'fa-chevron-up': expandedSections.basic }"></i>
+            <i class="fas" :class="{'fa-chevron-down': !expandedSections.basic, 'fa-chevron-up': expandedSections.basic}"></i>
           </div>
           <div class="section-content" v-show="expandedSections.basic">
             <div class="row g-3">
               <div class="col-md-6">
                 <div class="form-group floating-label">
-                  <input type="text" id="job-title" v-model="job.title" class="form-control" placeholder=" " required @input="validateField('title')">
+                  <input type="text" id="job-title" v-model="job.title" 
+                         class="form-control" 
+                         placeholder=" "
+                         required
+                         @input="validateField('title')">
                   <label for="job-title">Job Title*</label>
-                  <div class="invalid-feedback animated-feedback">{{ errors.title || 'Please provide a job title.' }}</div>
+                  <div class="invalid-feedback animated-feedback">
+                    {{ errors.title || 'Please provide a job title.' }}
+                  </div>
                 </div>
               </div>
+              
               <div class="col-md-6">
                 <div class="form-group floating-label">
-                  <select id="job-type" v-model="job.job_type" class="form-select" required @change="validateField('job_type')">
+                  <select id="job-type" v-model="job.type" 
+                          class="form-select" 
+                          required
+                          @change="validateField('type')">
                     <option value="" disabled selected></option>
                     <option value="full-time">Full-time</option>
                     <option value="part-time">Part-time</option>
                     <option value="contract">Contract</option>
-                    <option value="freelance">Freelance</option>
                     <option value="internship">Internship</option>
+                    <option value="remote">Remote</option>
                   </select>
                   <label for="job-type">Job Type*</label>
-                  <div class="invalid-feedback animated-feedback">{{ errors.job_type || 'Please select a job type.' }}</div>
+                  <div class="invalid-feedback animated-feedback">
+                    {{ errors.type || 'Please select a job type.' }}
+                  </div>
                 </div>
               </div>
+              
               <div class="col-md-6">
                 <div class="form-group floating-label">
                   <select id="job-category" v-model="job.category_id" 
@@ -60,18 +73,18 @@
                   </div>
                 </div>
               </div>
+              
               <div class="col-md-6">
                 <div class="form-group floating-label">
-                  <input type="text" id="job-location" v-model="job.location" class="form-control" placeholder=" " required @input="validateField('location')">
+                  <input type="text" id="job-location" v-model="job.location" 
+                         class="form-control" 
+                         placeholder=" "
+                         required
+                         @input="validateField('location')">
                   <label for="job-location">Location*</label>
-                  <div class="invalid-feedback animated-feedback">{{ errors.location || 'Please provide a location.' }}</div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-group floating-label">
-                  <input type="text" id="company" v-model="job.company" class="form-control" placeholder=" " required @input="validateField('company')">
-                  <label for="company">Company*</label>
-                  <div class="invalid-feedback animated-feedback">{{ errors.company || 'Please provide a company name.' }}</div>
+                  <div class="invalid-feedback animated-feedback">
+                    {{ errors.location || 'Please provide a location.' }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -81,7 +94,7 @@
         <div class="form-section card-style">
           <div class="section-header" @click="toggleSection('salary')">
             <h2 class="section-title"><i class="fas fa-dollar-sign me-2"></i>Salary Information</h2>
-            <i class="fas" :class="{ 'fa-chevron-down': !expandedSections.salary, 'fa-chevron-up': expandedSections.salary }"></i>
+            <i class="fas" :class="{'fa-chevron-down': !expandedSections.salary, 'fa-chevron-up': expandedSections.salary}"></i>
           </div>
           <div class="section-content" v-show="expandedSections.salary">
             <div class="row g-3">
@@ -128,7 +141,6 @@
                           placeholder=" ">
                     <label for="fixed-salary">Fixed Salary</label>
                   </div>
-                  <div class="invalid-feedback animated-feedback">{{ errors.salary || 'Please provide a valid fixed salary.' }}</div>
                 </div>
               </div>
             </div>
@@ -138,7 +150,7 @@
         <div class="form-section card-style">
           <div class="section-header" @click="toggleSection('requirements')">
             <h2 class="section-title"><i class="fas fa-chart-line me-2"></i>Requirements</h2>
-            <i class="fas" :class="{ 'fa-chevron-down': !expandedSections.requirements, 'fa-chevron-up': expandedSections.requirements }"></i>
+            <i class="fas" :class="{'fa-chevron-down': !expandedSections.requirements, 'fa-chevron-up': expandedSections.requirements}"></i>
           </div>
           <div class="section-content" v-show="expandedSections.requirements">
             <div class="row g-3">
@@ -157,6 +169,7 @@
                   </div>
                 </div>
               </div>
+              
               <div class="col-md-4">
                 <div class="form-group floating-label">
                   <select id="experience" v-model="job.experience_level" class="form-select" required @change="validateField('experience_level')">
@@ -164,6 +177,7 @@
                     <option value="entry">Entry Level</option>
                     <option value="mid">Mid Level (2-5 years)</option>
                     <option value="senior">Senior Level (5+ years)</option>
+                    <option value="executive">Executive</option>
                   </select>
                   <label for="experience">Experience Level*</label>
                   <div class="invalid-feedback animated-feedback">
@@ -171,13 +185,16 @@
                   </div>
                 </div>
               </div>
+              
               <div class="col-md-4">
                 <div class="form-group floating-label">
                   <select id="job-level" v-model="job.job_level" class="form-select" required @change="validateField('job_level')">
                     <option value="" disabled selected></option>
+                    <option value="intern">Intern</option>
                     <option value="junior">Junior</option>
                     <option value="mid">Mid-level</option>
                     <option value="senior">Senior</option>
+                    <option value="lead">Lead</option>
                   </select>
                   <label for="job-level">Job Level*</label>
                   <div class="invalid-feedback animated-feedback">
@@ -192,22 +209,31 @@
         <div class="form-section card-style">
           <div class="section-header" @click="toggleSection('details')">
             <h2 class="section-title"><i class="fas fa-align-left me-2"></i>Job Details</h2>
-            <i class="fas" :class="{ 'fa-chevron-down': !expandedSections.details, 'fa-chevron-up': expandedSections.details }"></i>
+            <i class="fas" :class="{'fa-chevron-down': !expandedSections.details, 'fa-chevron-up': expandedSections.details}"></i>
           </div>
           <div class="section-content" v-show="expandedSections.details">
             <div class="row g-3">
               <div class="col-12">
                 <div class="form-group floating-label">
-                  <textarea id="job-description" v-model="job.description" class="form-control" rows="4" placeholder=" " required @input="validateField('description')"></textarea>
+                  <textarea id="job-description" v-model="job.description" 
+                            class="form-control" rows="4"
+                            placeholder=" "
+                            required
+                            @input="validateField('description')"></textarea>
                   <label for="job-description">Job Description*</label>
                   <div class="invalid-feedback animated-feedback">
                     {{ errors.description || 'Please provide a job description (min 100 characters).' }}
                   </div>
                 </div>
               </div>
+              
               <div class="col-12">
                 <div class="form-group floating-label">
-                  <textarea id="responsibilities" v-model="job.responsibilities" class="form-control" rows="4" placeholder=" " required @input="validateField('responsibilities')"></textarea>
+                  <textarea id="responsibilities" v-model="job.responsibilities" 
+                            class="form-control" rows="4"
+                            placeholder=" "
+                            required
+                            @input="validateField('responsibilities')"></textarea>
                   <label for="responsibilities">Responsibilities*</label>
                   <div class="invalid-feedback animated-feedback">
                     {{ errors.responsibilities || 'Please provide job responsibilities (min 50 characters).' }}
@@ -234,8 +260,8 @@
 
         <div class="form-section card-style">
           <div class="section-header" @click="toggleSection('skills')">
-            <h2 class="section-title"><i class="fas fa-tags me-2"></i>Skills & Tags</h2>
-            <i class="fas" :class="{ 'fa-chevron-down': !expandedSections.skills, 'fa-chevron-up': expandedSections.skills }"></i>
+            <h2 class="section-title"><i class="fas fa-tags me-2"></i>Skills & Keywords</h2>
+            <i class="fas" :class="{'fa-chevron-down': !expandedSections.skills, 'fa-chevron-up': expandedSections.skills}"></i>
           </div>
           <div class="section-content" v-show="expandedSections.skills">
             <div class="row g-3">
@@ -257,16 +283,18 @@
                       </button>
                     </span>
                   </div>
-                  <div class="invalid-feedback animated-feedback">{{ errors.tags || 'Please provide at least one tag.' }}</div>
                 </div>
               </div>
+              
               <div class="col-md-6">
                 <div class="form-group">
                   <label class="form-label">Required Skills*</label>
                   <div class="skills-container">
-                    <span v-for="(skill, index) in job.skills" :key="index" class="skill-badge">
-                      {{ skill }}
-                      <button type="button" class="skill-remove" @click="removeSkill(index)" aria-label="Remove">
+                    <span v-for="(skill, index) in job.skills" :key="index" 
+                          class="skill-badge">
+                      {{ skill }} 
+                      <button type="button" class="skill-remove" 
+                              @click="removeSkill(index)" aria-label="Remove">
                         <i class="fas fa-times"></i>
                       </button>
                     </span>
@@ -279,7 +307,6 @@
                   <div class="invalid-feedback animated-feedback">
                     {{ errors.skills || 'Please add at least 3 skills.' }}
                   </div>
-                  <div class="invalid-feedback animated-feedback" v-if="errors.skills">{{ errors.skills }}</div>
                 </div>
               </div>
             </div>
@@ -505,7 +532,7 @@ export default {
   this.isLoading = true;
 
   try {
-    const response = await axios.post('http://localhost:8000/api/jobs', {
+    const response = await axios.post('http://localhost:8000/api/myjobs', {
       // Only send fields that exist in your database
       title: this.job.title,
       type: this.job.type,
