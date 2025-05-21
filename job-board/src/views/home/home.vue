@@ -1,64 +1,8 @@
 <template>
   <div class="home-page">
-    <!-- Navigation -->
-      <!-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
-  <div class="container">
-    <router-link class="navbar-brand me-4 text-dark fw-bold fs-4" to="/">
-      <i class="fas fa-briefcase me-2 text-primary fs-3"></i> MyJob
-    </router-link>
-    <button 
-      class="navbar-toggler" 
-      type="button" 
-      @click="toggleNavbar"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" :class="{ show: navbarOpen }">
-      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <router-link to="/" class="nav-link" active-class="active" exact>Home</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link to="/browsejobs" class="nav-link" active-class="active">Jobs</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link to="/contact" class="nav-link" active-class="active">About Us</router-link>
-        </li>
-        <li class="nav-item">
-          <router-link to="/contact" class="nav-link" active-class="active">Contact Us</router-link>
-        </li>
-      </ul>
-      <div class="d-flex">
-        <template v-if="!isAuthenticated">
-          <router-link to="/login" class="btn btn-outline-primary me-2">Login</router-link>
-          <router-link to="/register" class="btn btn-primary">Register</router-link>
-        </template>
-        <template v-else>
-          <button class="btn btn-danger" @click="logout">Logout</button>
-        </template>
-      </div>
-    </div>
-  </div>
-</nav> -->
+    <Navbar />
 
- <Navbar />
-
-
-
-
-
-    <div v-if="loading" class="loading-overlay">
-      <div class="spinner-border text-primary" role="status"></div>
-      <p>Loading data...</p>
-    </div>
-
-    <div v-else-if="error" class="error-message">
-      <p>{{ error }}</p>
-      <button @click="fetchData" class="btn btn-primary">Retry</button>
-    </div>
-
-    <div v-else>
+    <div>
       <section class="hero-section d-flex align-items-center text-white">
         <div class="overlay"></div>
         <div class="container">
@@ -67,25 +11,23 @@
               <h1 class="hero-title display-4">Find Your Dream Job</h1>
               <p class="hero-subtitle lead mb-4">Browse thousands of jobs from top companies</p>
              
-
               <div class="stats-grid d-flex justify-content-between gap-4">
                 <div class="stat-item text-center">
-                  <h3 class="display-5 fw-bold">{{ stats.jobs }}</h3>
+                  <h3 class="display-5 fw-bold">1,234</h3>
                   <p class="text-uppercase small">Live Jobs</p>
                 </div>
                 <div class="stat-item text-center">
-                  <h3 class="display-5 fw-bold">{{ stats.companies }}</h3>
+                  <h3 class="display-5 fw-bold">567</h3>
                   <p class="text-uppercase small">Companies</p>
                 </div>
                 <div class="stat-item text-center">
-                  <h3 class="display-5 fw-bold">{{ stats.candidates }}</h3>
+                  <h3 class="display-5 fw-bold">8,901</h3>
                   <p class="text-uppercase small">Candidates</p>
                 </div>
               </div>
             </div>
             <div class="col-lg-5 d-none d-lg-block">
-              <div class="hero-image">
-              </div>
+              <div class="hero-image"></div>
             </div>
           </div>
         </div>
@@ -101,32 +43,109 @@
           </div>
           
           <div class="row g-4 mt-4">
-            <div class="col-md-6" v-for="job in featuredJobs" :key="job.id">
+            <div class="col-md-6">
               <div class="job-card job-post-item p-4 d-flex">
                 <div class="job-details">
                   <div class="job-post-item-header align-items-center">
-                    <span class="subadge">{{ job.jobType }}</span>
+                    <span class="subadge">Full-time</span>
                     <h2 class="mr-3 text-black h5">
-                      <router-link :to="'/job/' + job.id">{{ job.title }}</router-link>
+                 Senior Frontend Developer
                     </h2>
                   </div>
                   <div class="job-post-item-body d-block d-md-flex">
-                    <div class="mr-3"><span class="icon-layers"></span> <a href="#">{{ job.company }}</a></div>
-                    <div><span class="icon-my_location"></span> <span>{{ job.location }}</span></div>
+                    <div class="mr-3"><span class="icon-layers"></span> <a href="#">TechCorp Inc.</a></div>
+                    <div><span class="icon-my_location"></span> <span>San Francisco, CA</span></div>
                   </div>
                   <div class="job-tags mt-2">
-                    <span
-                      v-for="tag in job.tags || [job.category]"
-                      :key="tag"
-                      class="tag-badge"
-                    >{{ tag }}</span>
+                    <span class="tag-badge">React</span>
+                    <span class="tag-badge">JavaScript</span>
+                    <span class="tag-badge">Vue</span>
                   </div>
                 </div>
                 <div class="job-actions ml-auto d-flex flex-column align-items-end">
-                  <a href="#" class="icon text-center d-flex justify-content-center align-items-center icon mr-2 bookmark-btn" @click.prevent="saveJob(job)">
+                  <a href="#" class="icon text-center d-flex justify-content-center align-items-center icon mr-2 bookmark-btn">
+                  </a>
+                
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="job-card job-post-item p-4 d-flex">
+                <div class="job-details">
+                  <div class="job-post-item-header align-items-center">
+                    <span class="subadge">Contract</span>
+                    <h2 class="mr-3 text-black h5">
+                   UX/UI Designer
+                    </h2>
+                  </div>
+                  <div class="job-post-item-body d-block d-md-flex">
+                    <div class="mr-3"><span class="icon-layers"></span> <a href="#">DesignHub</a></div>
+                    <div><span class="icon-my_location"></span> <span>Remote</span></div>
+                  </div>
+                  <div class="job-tags mt-2">
+                    <span class="tag-badge">Figma</span>
+                    <span class="tag-badge">Sketch</span>
+                    <span class="tag-badge">Adobe XD</span>
+                  </div>
+                </div>
+                <div class="job-actions ml-auto d-flex flex-column align-items-end">
+                  <a href="#" class="icon text-center d-flex justify-content-center align-items-center icon mr-2 bookmark-btn">
                     <span class="icon-heart"></span>
                   </a>
-                  <router-link :to="'/job/' + job.id" class="btn btn-primary py-2 apply-btn">Apply Job</router-link>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="job-card job-post-item p-4 d-flex">
+                <div class="job-details">
+                  <div class="job-post-item-header align-items-center">
+                    <span class="subadge">Full-time</span>
+                    <h2 class="mr-3 text-black h5">
+                Backend Engineer
+                    </h2>
+                  </div>
+                  <div class="job-post-item-body d-block d-md-flex">
+                    <div class="mr-3"><span class="icon-layers"></span> <a href="#">DataSystems</a></div>
+                    <div><span class="icon-my_location"></span> <span>New York, NY</span></div>
+                  </div>
+                  <div class="job-tags mt-2">
+                    <span class="tag-badge">Node.js</span>
+                    <span class="tag-badge">Python</span>
+                    <span class="tag-badge">SQL</span>
+                  </div>
+                </div>
+                <div class="job-actions ml-auto d-flex flex-column align-items-end">
+                  <a href="#" class="icon text-center d-flex justify-content-center align-items-center icon mr-2 bookmark-btn">
+                    <span class="icon-heart"></span>
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="job-card job-post-item p-4 d-flex">
+                <div class="job-details">
+                  <div class="job-post-item-header align-items-center">
+                    <span class="subadge">Part-time</span>
+                    <h2 class="mr-3 text-black h5">
+                    </h2>
+                  </div>
+                  <div class="job-post-item-body d-block d-md-flex">
+                    <div class="mr-3"><span class="icon-layers"></span> <a href="#">MarketGrow</a></div>
+                    <div><span class="icon-my_location"></span> <span>Chicago, IL</span></div>
+                  </div>
+                  <div class="job-tags mt-2">
+                    <span class="tag-badge">SEO</span>
+                    <span class="tag-badge">Social Media</span>
+                    <span class="tag-badge">Google Ads</span>
+                  </div>
+                </div>
+                <div class="job-actions ml-auto d-flex flex-column align-items-end">
+                  <a href="#" class="icon text-center d-flex justify-content-center align-items-center icon mr-2 bookmark-btn">
+                    <span class="icon-heart"></span>
+                  </a>
                 </div>
               </div>
             </div>
@@ -150,20 +169,58 @@
           </div>
           
           <div class="row g-4 mt-4">
-            <div class="col-md-4" v-for="blog in recentBlogs" :key="blog.id">
+            <div class="col-md-4">
               <div class="blog-card job-post-item p-4">
-                <router-link :to="'/blog/' + blog.id" class="blog-image">
-                  <img :src="blog.image" :alt="blog.title" class="img-fluid">
+                  <img src="../../assets/download.png" alt="Remote Work" class="img-fluid">
+                <div class="blog-content">
+                  <div class="meta d-flex justify-content-between text-muted small mb-2">
+                    <span>May 15, 2023</span>
+                    <span>John Doe</span>
+                  </div>
+                  <h3 class="h5 fw-bold">
+                    <router-link to="/blog/1">10 Tips for Acing Your Next Job Interview</router-link>
+                  </h3>
+                  <router-link to="/blog/1" class="read-more text-primary text-decoration-none">
+                    Read More <i class="fas fa-arrow-right ms-1"></i>
+                  </router-link>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-4">
+              <div class="blog-card job-post-item p-4">
+                <router-link to="/blog/2" class="blog-image">
+                  <img src="../../assets/candidate.jpg" alt="Remote Work" class="img-fluid">
                 </router-link>
                 <div class="blog-content">
                   <div class="meta d-flex justify-content-between text-muted small mb-2">
-                    <span>{{ blog.date }}</span>
-                    <span>{{ blog.author }}</span>
+                    <span>June 2, 2023</span>
+                    <span>Jane Smith</span>
                   </div>
                   <h3 class="h5 fw-bold">
-                    <router-link :to="'/blog/' + blog.id">{{ blog.title }}</router-link>
+                    <router-link to="/blog/2">How to Write a Resume That Stands Out</router-link>
                   </h3>
-                  <router-link :to="'/blog/' + blog.id" class="read-more text-primary text-decoration-none">
+                  <router-link to="/blog/2" class="read-more text-primary text-decoration-none">
+                    Read More <i class="fas fa-arrow-right ms-1"></i>
+                  </router-link>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-4">
+              <div class="blog-card job-post-item p-4">
+                <router-link to="/blog/3" class="blog-image">
+                  <img src="../../assets/candidate2.jpg" alt="Remote Work" class="img-fluid">
+                </router-link>
+                <div class="blog-content">
+                  <div class="meta d-flex justify-content-between text-muted small mb-2">
+                    <span>June 10, 2023</span>
+                    <span>Mike Johnson</span>
+                  </div>
+                  <h3 class="h5 fw-bold">
+                    <router-link to="/blog/3">The Future of Remote Work in 2023</router-link>
+                  </h3>
+                  <router-link to="/blog/3" class="read-more text-primary text-decoration-none">
                     Read More <i class="fas fa-arrow-right ms-1"></i>
                   </router-link>
                 </div>
@@ -245,67 +302,13 @@
       </footer>
     </div>
   </div>
-</template> 
+</template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/employer/auth'
 import Navbar from '@/components/homenav.vue';
+import { useRouter } from 'vue-router';
 
-
-const router = useRouter()
-const authStore = useAuthStore()
-
-const stats = ref({
-  jobs: 0,
-  companies: 0,
-  candidates: 0
-})
-const featuredJobs = ref([])
-const recentBlogs = ref([])
-const searchQuery = ref('')
-const locationQuery = ref('')
-const loading = ref(true)
-const error = ref(null)
-const navbarOpen = ref(false)
-const isAuthenticated = computed(() => !!localStorage.getItem('authToken')) 
-
-const toggleNavbar = () => {
-  navbarOpen.value = !navbarOpen.value
-}
-
-
-
-const fetchData = async () => {
-  loading.value = true
-  error.value = null
-  
-  try {
-    const response = await fetch('/db.json')
-    if (!response.ok) {
-      throw new Error('Failed to fetch data')
-    }
-    const data = await response.json()
-    
-    stats.value = {
-      jobs: data.jobs?.length || 0,
-      companies: data.employers?.length || 0,
-      candidates: data.users?.filter(u => u.role === 'candidate')?.length || 0
-    }
-    
-    featuredJobs.value = data.jobs?.slice(0, 4) || []
-    
-    // Get recent blogs (first 3 blogs)
-    recentBlogs.value = data.blogs?.slice(0, 3) || []
-    
-  } catch (err) {
-    console.error('Error fetching data:', err)
-    error.value = 'Failed to load data. Please try again later.'
-  } finally {
-    loading.value = false
-  }
-}
+const router = useRouter();
 
 const logout = async () => {
   try {
@@ -334,19 +337,10 @@ const clearAuthData = () => {
   localStorage.removeItem('userRole')
   delete axios.defaults.headers.common['Authorization']
 }
-
-
-const saveJob = (job) => {
-  console.log('Job saved:', job)
-  alert(`Job "${job.title}" has been saved to your bookmarks!`)
-}
-
-// Fetch data on mount
-fetchData()
-
 </script>
 
 <style scoped lang="scss">
+/* Your existing SCSS styles remain unchanged */
 @use "sass:color"; /* Import Sass color module */
 
 /* SCSS Variables */
@@ -359,7 +353,7 @@ $bg-light: #F5F7FA; /* Light Blue-Gray */
 $white: #FFFFFF;
 $border-color: #E6ECF5; /* Light Blue Border */
 $text-color: #333333;
-$footer-bg:hsl(221, 91.70%, 9.40%); /* Dark Slate Gray */
+$footer-bg:hsl(221, 70%, 44%); /* Dark Slate Gray */
 $shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
 /* Base Styles */

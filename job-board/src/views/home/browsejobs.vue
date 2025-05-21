@@ -82,7 +82,7 @@
                   <div class="job-post-item-header d-flex align-items-center flex-wrap">
                     <span class="subadge me-2">{{ job.job_type }}</span>
                     <h2 class="job-title">
-                      <router-link :to="'/job/' + job.id">{{ job.title }}</router-link>
+                      <router-link :to="'candidate/jobs/' + job.id">{{ job.title }}</router-link>
                     </h2>
                   </div>
                   <div class="job-post-item-body d-flex flex-wrap gap-2">
@@ -126,6 +126,7 @@
         </section>
       </div>
     </section>
+    
   </div>
 </template>
 

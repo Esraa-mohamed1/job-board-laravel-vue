@@ -28,12 +28,36 @@ import { useRouter, useRoute } from "vue-router";
 
 const router = useRouter();
 const $route = useRoute();
+import axios from 'axios';
 
-const logout = () => {
-  localStorage.removeItem("authToken");
-  router.push("/login");
-};
 
+const logout = async () => {
+  try {
+    const token = localStorage.getItem('authToken')
+
+    await axios.post('/api/logout', null, {
+      baseURL: 'http://127.0.0.1:8000',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    clearAuthData()
+    await router.push('/login')
+
+  } catch (error) {
+    console.error('Logout error:', error)
+    clearAuthData()
+    await router.push('/login')
+  }
+}
+
+const clearAuthData = () => {
+  localStorage.removeItem('authToken')
+  localStorage.removeItem('userData')
+  localStorage.removeItem('userRole')
+  delete axios.defaults.headers.common['Authorization']
+}
 const links = [
   { path: "/admin", label: "Overview", icon: "fas fa-tachometer-alt" },
   { path: "/pending", label: "Pending Jobs", icon: "fas fa-clipboard-list" },

@@ -20,11 +20,10 @@
           <li class="nav-item">
             <router-link to="/browsejobs" class="nav-link" active-class="active">Jobs</router-link>
           </li>
+        
+        
           <li class="nav-item">
-            <router-link to="/contact" class="nav-link" active-class="active">About Us</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/contact" class="nav-link" active-class="active">Contact Us</router-link>
+            <router-link to="/login" class="nav-link" active-class="active">Dashboard</router-link>
           </li>
         </ul>
         <div class="d-flex">

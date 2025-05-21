@@ -1,11 +1,7 @@
 <template>
   <div>
-    <!-- Navigation - Enhanced with shadow and smoother transition -->
-       <Navbar />
-
-
-
     
+<Navbar></Navbar>
 
     <!-- Contact Section - Enhanced with cards and better spacing -->
     <section class="ftco-section contact-section bg-light" style="padding: 7rem 0;">
@@ -70,7 +66,6 @@
               <h3 class="mb-4" style="font-weight: 600; color: #2c3e50;">Send us a message</h3>
               <div class="form-group">
                 <input
-                  v-model="form.name"
                   type="text"
                   class="form-control"
                   placeholder="Your Name"
@@ -80,7 +75,6 @@
               </div>
               <div class="form-group">
                 <input
-                  v-model="form.email"
                   type="email"
                   class="form-control"
                   placeholder="Your Email"
@@ -90,7 +84,6 @@
               </div>
               <div class="form-group">
                 <input
-                  v-model="form.subject"
                   type="text"
                   class="form-control"
                   placeholder="Subject"
@@ -114,10 +107,7 @@
                   type="submit" 
                   value="Send Message" 
                   class="btn btn-primary py-3 px-5" 
-                  style="background: #4eabff; border: none; font-weight: 600; letter-spacing: 0.5px; border-radius: 8px; transition: all 0.3s ease;"
-                  @mouseover="hoverBtn = true"
-                  @mouseleave="hoverBtn = false"
-                  :style="{ transform: hoverBtn ? 'translateY(-2px)' : 'none', boxShadow: hoverBtn ? '0 5px 15px rgba(78, 171, 255, 0.4)' : 'none' }"
+                
                 />
               </div>
             </form>
@@ -224,75 +214,9 @@
   </div>
 </template>
 
-<script>
+<script scoped>
 import Navbar from '@/components/homenav.vue';
 
-export default {
-  name: 'ContactPage',
-  data() {
-    return {
-      navbarOpen: false,
-      hoverBtn: false,
-      form: {
-        name: '',
-        email: '',
-        subject: '',
-        message: ''
-      }
-    };
-  },
-  methods: {
-    toggleNavbar() {
-      this.navbarOpen = !this.navbarOpen;
-    },
-    submitForm() {
-      // Form submission logic
-      console.log('Form submitted:', this.form);
-      alert('Thank you for your message! We will get back to you soon.');
-      this.form = { name: '', email: '', subject: '', message: '' };
-    }
-  },
-  mounted() {
-    // Initialize Google Maps
-    if (window.google && window.google.maps) {
-      const map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 40.7128, lng: -74.0060 }, // New York coordinates
-        zoom: 14,
-        styles: [
-          {
-            "featureType": "all",
-            "elementType": "labels.text.fill",
-            "stylers": [
-              { "color": "#7c7c7c" }
-            ]
-          },
-          {
-            "featureType": "all",
-            "elementType": "labels.text.stroke",
-            "stylers": [
-              { "visibility": "on" },
-              { "color": "#ffffff" },
-              { "weight": 1.5 }
-            ]
-          },
-          {
-            "featureType": "poi",
-            "elementType": "geometry",
-            "stylers": [
-              { "visibility": "on" }
-            ]
-          }
-        ]
-      });
-      
-      new google.maps.Marker({
-        position: { lat: 40.7128, lng: -74.0060 },
-        map: map,
-        title: "Our Location"
-      });
-    }
-  }
-};
 </script>
 
 <style scoped>
