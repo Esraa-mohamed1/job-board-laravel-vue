@@ -1,722 +1,416 @@
 <template>
-    <div class="applications-page">
-      <!-- Breadcrumb Navigation -->
-      <div class="breadcrumb">
-        <router-link to="/employer/dashboard">Home</router-link>
-        <span> / </span>
-        <router-link to="/employer/dashboard/myjobs">Jobs</router-link>
-        <span> / </span>
-        <span>{{ job.title || 'Job' }}</span>
-        <span> / </span>
-        <span>Applications</span>
-      </div>
-  
-      <div class="header">
-        <h1>Job Applications for {{ job.title || 'This Position' }}</h1>
-        <router-link to="/employer/dashboard/myjobs" class="back-btn">
-          <i class="fas fa-arrow-left"></i> Back to Jobs
-        </router-link>
-      </div>
-  
-      <div class="controls">
-        <div class="tabs  container">
-            <div class="row">
-                <div class="col-lg-12 col-md-6 col-sm-12">
-                    <button 
-                        v-for="tab in tabs"
-                        :key="tab"
-                        :class="{ active: activeTab === tab }"
-                        @click="activeTab = tab"
+  <div class="applications-page">
+    <!-- Breadcrumb Navigation -->
+    <div class="breadcrumb">
+      <router-link to="/employer/dashboard">Home</router-link>
+      <span> / </span>
+      <router-link to="/employer/dashboard/myjobs">Jobs</router-link>
+      <span> / </span>
+      <span>{{ job.title || 'Job' }}</span>
+      <span> / </span>
+      <span>Applications</span>
+    </div>
 
-                    >
-                        <i :class="tabIcons[tab]"></i> 
-                        {{ tabLabels[tab] }} ({{ tabCounts[tab] }})
-                    </button>
-                </div>  
-            </div>
-        </div>
-  
-        <div class="filter-sort">
-          <div class="filter">
-            <button @click="showFilterDropdown = !showFilterDropdown" class="filter-btn">
-              <i class="fas fa-filter"></i> Filter
-              <span class="icon">▼</span>
-            </button>
-            <div v-if="showFilterDropdown" class="filter-dropdown">
-              <div class="filter-option">
-                <label><i class="fas fa-briefcase"></i> Experience:</label>
-                <select v-model="filters.experience">
-                  <option value="">All</option>
-                  <option value="1">1+ years</option>
-                  <option value="3">3+ years</option>
-                  <option value="5">5+ years</option>
-                  <option value="10">10+ years</option>
-                </select>
-              </div>
-              <div class="filter-option">
-                <label><i class="fas fa-graduation-cap"></i> Education:</label>
-                <select v-model="filters.education">
-                  <option value="">All</option>
-                  <option value="High School">High School</option>
-                  <option value="Bachelor">Bachelor</option>
-                  <option value="Master">Master</option>
-                  <option value="PhD">PhD</option>
-                </select>
-              </div>
-              <button @click="applyFilters" class="apply-btn">
-                <i class="fas fa-check"></i> Apply
-              </button>
-              <button @click="resetFilters" class="reset-btn">
-                <i class="fas fa-undo"></i> Reset
-              </button>
-            </div>
+    <div class="header">
+      <h1>Job Applications for {{ job.title || 'This Position' }}</h1>
+      <router-link to="/employer/dashboard/myjobs" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Jobs
+      </router-link>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs container">
+      <button
+        v-for="tab in tabs"
+        :key="tab"
+        :class="{ active: activeTab === tab }"
+        @click="activeTab = tab"
+      >
+        <i :class="tabIcons[tab]"></i>
+        {{ tabLabels[tab] }} ({{ tabCounts[tab] }})
+      </button>
+    </div>
+
+    <!-- Applications Container -->
+    <div v-if="loading" class="loading">
+      <i class="fas fa-spinner fa-spin"></i> Loading applications...
+    </div>
+
+    <div v-else-if="filteredApplications.length === 0" class="no-applications">
+      <i class="fas fa-folder-open"></i> No applications found
+    </div>
+
+    <div v-else class="applications-container">
+      <div 
+        v-for="application in filteredApplications" 
+        :key="application.id" 
+        class="application-card" 
+        :class="application.status"
+      >
+        <!-- Candidate Info -->
+        <div class="candidate-info" @click="viewCandidate(application)">
+          <div class="candidate-avatar">
+            <img :src="application.user.avatar || '/images/default-avatar.png'" :alt="application.user.name">
           </div>
-  
-          <div class="sort">
-            <button @click="showSortDropdown = !showSortDropdown" class="sort-btn">
-              <i class="fas fa-sort"></i> Sort
-              <span class="icon">▼</span>
-            </button>
-            <div v-if="showSortDropdown" class="sort-dropdown">
-              <div class="sort-option" @click="sortApplications('newest')">
-                <input type="radio" id="newest" v-model="sortBy" value="newest">
-                <label for="newest"><i class="fas fa-clock"></i> Newest</label>
-              </div>
-              <div class="sort-option" @click="sortApplications('oldest')">
-                <input type="radio" id="oldest" v-model="sortBy" value="oldest">
-                <label for="oldest"><i class="far fa-clock"></i> Oldest</label>
-              </div>
-              <div class="sort-option" @click="sortApplications('experience')">
-                <input type="radio" id="experience" v-model="sortBy" value="experience">
-                <label for="experience"><i class="fas fa-chart-line"></i> Experience (High to Low)</label>
-              </div>
+          <div>
+            <h3>{{ application.user.name }}</h3>
+            <p class="position">{{ application.user.position }}</p>
+            <div class="candidate-meta">
+              <span><i class="fas fa-briefcase"></i> {{ application.user.experience }} Years</span>
+              <span><i class="fas fa-graduation-cap"></i> {{ application.user.education }}</span>
             </div>
           </div>
         </div>
-      </div>
-  
-     
-      <!-- All Applications Tab -->
-      <div v-if="activeTab === 'all'" class="applications-container">
-        <div v-if="loading" class="loading">
-          <i class="fas fa-spinner fa-spin"></i> Loading applications...
+
+        <!-- Application Details -->
+        <div class="application-details">
+          <p><i class="fas fa-calendar-alt"></i> Applied: {{ formatDate(application.created_at) }}</p>
+          <p><i class="fas fa-id-card"></i> Status: {{ application.status }}</p>
         </div>
-        <div v-else-if="filteredApplications.length === 0" class="no-applications">
-          <i class="fas fa-folder-open"></i> No applications found for this job
-        </div>
-        
-        <div v-else v-for="application in filteredApplications" :key="application.id" 
-             class="application-card" :class="application.status" 
-             @click="viewCandidate(application)">
-          <div class="candidate-info">
-            <div class="candidate-avatar">
-              <img :src="getCandidateImage(application.candidateId)" :alt="application.candidateName">
-            </div>
-            <div>
-              <h3>{{ application.candidateName }}</h3>
-              <p class="position">{{ application.position }}</p>
-              <div class="candidate-meta">
-                <span><i class="fas fa-briefcase"></i> {{ application.experience }} Years</span>
-                <span><i class="fas fa-graduation-cap"></i> {{ application.education }}</span>
-              </div>
-            </div>
-          </div>
+
+        <!-- Actions -->
+        <div class="application-actions">
+          <button class="download-btn" @click.stop="downloadCV(application)">
+            <i class="fas fa-download"></i> CV
+          </button>
           
-          <div class="application-details">
-            <p><i class="fas fa-calendar-alt"></i> Applied: {{ formatDate(application.appliedDate) }}</p>
-            <p><i class="fas fa-id-card"></i> ID: {{ application.id }}</p>
-          </div>
-          
-          <div class="application-actions">
-            <button class="download-btn" @click.stop="downloadCV(application)">
-              <i class="fas fa-download"></i> CV
-            </button>
+          <template v-if="application.status !== 'accepted'">
             <button 
               class="shortlist-btn" 
-              @click.stop="toggleShortlist(application)"
-              v-if="application.status !== 'accepted'"
+              @click.stop="updateStatus(application, 'shortlisted')"
+              :disabled="application.status === 'shortlisted'"
             >
               <i class="fas fa-star"></i> {{ application.status === 'shortlisted' ? 'Shortlisted' : 'Shortlist' }}
             </button>
+            
             <button 
               class="accept-btn" 
-              @click.stop="acceptCandidate(application)"
-              v-if="application.status !== 'accepted'"
+              @click.stop="updateStatus(application, 'accepted')"
             >
               <i class="fas fa-check-circle"></i> Accept
             </button>
-            <span class="badge accepted-badge" v-if="application.status === 'accepted'">
-              <i class="fas fa-check-circle"></i> Accepted
-            </span>
-          </div>
+          </template>
+          
+          <span v-else class="badge accepted-badge">
+            <i class="fas fa-check-circle"></i> Accepted
+          </span>
         </div>
       </div>
-  
-      <!-- Shortlisted Applications Tab -->
-      <div v-else-if="activeTab === 'shortlisted'" class="applications-container">
-        <div v-if="loading" class="loading">
-          <i class="fas fa-spinner fa-spin"></i> Loading applications...
-        </div>
-        <div v-else-if="filteredShortlisted.length === 0" class="no-applications">
-          <i class="fas fa-star"></i> No shortlisted applications
-        </div>
-        
-        <div v-else v-for="application in filteredShortlisted" :key="application.id" 
-             class="application-card shortlisted" @click="viewCandidate(application)">
-          <div class="candidate-info">
-            <div class="candidate-avatar">
-              <img :src="getCandidateImage(application.candidateId)" :alt="application.candidateName">
+    <div class="candidate-profile-header">
+          <div class="profile-header-content">
+            <div class="profile-image">
+              <img :src="getCandidateImage(selectedCandidate.id)" :alt="selectedCandidate.name" />
             </div>
-            <div>
-              <h3>{{ application.candidateName }}</h3>
-              <p class="position">{{ application.position }}</p>
-              <div class="candidate-meta">
-                <span><i class="fas fa-briefcase"></i> {{ application.experience }} Years</span>
-                <span><i class="fas fa-graduation-cap"></i> {{ application.education }}</span>
+            <div class="profile-info">
+              <h2>{{ selectedCandidate.name }}</h2>
+              <p class="position">{{ selectedCandidate.position }}</p>
+              <div class="profile-stats">
+                <div class="stat-item">
+                  <span class="stat-value">{{ selectedCandidate.experience || '0' }}</span>
+                  <span class="stat-label">Years Exp.</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">{{ selectedCandidate.education || 'Not specified' }}</span>
+                  <span class="stat-label">Education</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">{{ selectedCandidate.nationality || 'Not specified' }}</span>
+                  <span class="stat-label">Nationality</span>
+                </div>
               </div>
             </div>
           </div>
-          
-          <div class="application-details">
-            <p><i class="fas fa-calendar-alt"></i> Applied: {{ formatDate(application.appliedDate) }}</p>
-            <p><i class="fas fa-id-card"></i> ID: {{ application.id }}</p>
-          </div>
-          
-          <div class="application-actions">
-            <button class="download-btn" @click.stop="downloadCV(application)">
-              <i class="fas fa-download"></i> CV
-            </button>
-            <button class="accept-btn badge" @click.stop="acceptCandidate(application)">
-              <i class="fas fa-check-circle"></i> Accept
-            </button>
-            <button class="remove-btn" @click.stop="toggleShortlist(application)">
-              <i class="fas fa-times"></i> Remove
-            </button>
-          </div>
         </div>
-      </div>
-  
-      <!-- Accepted Applications Tab -->
-      <div v-else-if="activeTab === 'accepted'" class="applications-container">
-        <div v-if="loading" class="loading">
-          <i class="fas fa-spinner fa-spin"></i> Loading applications...
-        </div>
-        <div v-else-if="filteredAccepted.length === 0" class="no-applications">
-          <i class="fas fa-check-circle"></i> No accepted applications yet
-        </div>
-        
-        <div v-else v-for="application in filteredAccepted" :key="application.id" 
-             class="application-card accepted" @click="viewCandidate(application)">
-          <div class="candidate-info">
-            <div class="candidate-avatar">
-              <img :src="getCandidateImage(application.candidateId)" :alt="application.candidateName">
+
+        <div class="candidate-sections">
+          <!-- Biography -->
+          <div class="section">
+            <h3><i class="fas fa-user icon-title"></i> BIOGRAPHY</h3>
+            <p class="bio-text">
+              {{ selectedCandidate.bio || 'No biography available' }}
+            </p>
+            <div class="skills-tags">
+              <span v-for="(skill, index) in selectedCandidate.skills" :key="index" class="skill-tag">
+                <i :class="skillIcons[skill] || 'fas fa-check'"></i> {{ skill }}
+              </span>
             </div>
-            <div>
-              <h3>{{ application.candidateName }}</h3>
-              <p class="position">{{ application.position }}</p>
-              <div class="candidate-meta">
-                <span><i class="fas fa-briefcase"></i> {{ application.experience }} Years</span>
-                <span><i class="fas fa-graduation-cap"></i> {{ application.education }}</span>
+          </div>
+
+          <!-- Cover Letter -->
+          <div class="section">
+            <h3><i class="fas fa-envelope icon-title"></i> COVER LETTER</h3>
+            <div class="cover-letter-box">
+              <p class="cover-letter">
+                {{ selectedCandidate.coverLetter || 'No cover letter provided' }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Contact Information -->
+          <div class="section">
+            <h3><i class="fas fa-id-card icon-title"></i> CONTACT INFORMATION</h3>
+            <div class="contact-details">
+              <div class="contact-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>{{ selectedCandidate.location || 'Not specified' }}</span>
+              </div>
+              <div class="contact-item">
+                <i class="fas fa-phone"></i>
+                <span>{{ selectedCandidate.phone || 'Not specified' }}</span>
+              </div>
+              <div class="contact-item">
+                <i class="fas fa-envelope"></i>
+                <span>{{ selectedCandidate.email || 'Not specified' }}</span>
               </div>
             </div>
           </div>
-          
-          <div class="application-details">
-            <p><i class="fas fa-calendar-alt"></i> Applied: {{ formatDate(application.appliedDate) }}</p>
-            <p><i class="fas fa-check-circle"></i> Accepted: {{ formatDate(application.acceptedDate) }}</p>
+
+          <!-- Social Media -->
+          <div class="section">
+            <h3><i class="fas fa-share-alt icon-title"></i> SOCIAL MEDIA</h3>
+            <div class="social-media-links">
+              <a v-if="selectedCandidate.linkedin" :href="selectedCandidate.linkedin" class="social-link linkedin">
+                <i class="fab fa-linkedin-in"></i>
+              </a>
+              <a v-if="selectedCandidate.twitter" :href="selectedCandidate.twitter" class="social-link twitter">
+                <i class="fab fa-twitter"></i>
+              </a>
+              <a v-if="selectedCandidate.github" :href="selectedCandidate.github" class="social-link github">
+                <i class="fab fa-github"></i>
+              </a>
+              <a v-if="selectedCandidate.portfolio" :href="selectedCandidate.portfolio" class="social-link portfolio">
+                <i class="fas fa-globe"></i>
+              </a>
+            </div>
           </div>
-          
-          <div class="application-actions">
-            <button class="download-btn" @click.stop="downloadCV(application)">
-              <i class="fas fa-download"></i> CV
+
+          <!-- Resume -->
+          <div class="section resume-section">
+            <button class="download-btn" @click="downloadResume(selectedCandidate)">
+              <i class="fas fa-download"></i> Download Resume
             </button>
-            <button class="contact-btn" @click.stop="contactCandidate(application)">
-              <i class="fas fa-envelope"></i> Contact
+            <p class="resume-name">{{ selectedCandidate.name }}.pdf</p>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="section action-section" v-if="selectedApplication.status !== 'accepted'">
+            <button class="accept-btn" @click="acceptCandidate(selectedApplication)">
+              <i class="fas fa-check-circle"></i> Accept Candidate
             </button>
-            <button class="reject-btn" @click.stop="rejectCandidate(application)">
+            <button class="shortlist-btn" v-if="selectedApplication.status !== 'shortlisted'" @click="toggleShortlist(selectedApplication)">
+              <i class="fas fa-star"></i> Shortlist
+            </button>
+          </div>
+          <div class="section action-section" v-else>
+            <button class="contact-btn" @click="contactCandidate(selectedCandidate)">
+              <i class="fas fa-envelope"></i> Contact Candidate
+            </button>
+            <button class="reject-btn badge" @click="rejectCandidate(selectedApplication)">
               <i class="fas fa-times"></i> Reject
             </button>
           </div>
         </div>
-      </div>
-  
-      <!-- Candidate Modal -->
-      <div v-if="showCandidateModal" class="modal-overlay" @click.self="closeCandidateModal">
-        <div class="modal-content candidate-modal">
-          <button class="close-modal" @click="closeCandidateModal">&times;</button>
-          
-          <div class="candidate-profile-header">
-            <div class="profile-header-content">
-              <div class="profile-image">
-                <img :src="getCandidateImage(selectedCandidate.id)" :alt="selectedCandidate.name">
-              </div>
-              <div class="profile-info">
-                <h2>{{ selectedCandidate.name }}</h2>
-                <p class="position">{{ selectedCandidate.position }}</p>
-                <div class="profile-stats">
-                  <div class="stat-item">
-                    <span class="stat-value">{{ selectedCandidate.experience || '0' }}</span>
-                    <span class="stat-label">Years Exp.</span>
-                  </div>
-                  <div class="stat-item">
-                    <span class="stat-value">{{ selectedCandidate.education || 'Not specified' }}</span>
-                    <span class="stat-label">Education</span>
-                  </div>
-                  <div class="stat-item">
-                    <span class="stat-value">{{ selectedCandidate.nationality || 'Not specified' }}</span>
-                    <span class="stat-label">Nationality</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-  
-          <div class="candidate-sections">
-            <div class="section">
-              <h3><i class="fas fa-user icon-title"></i> BIOGRAPHY</h3>
-              <p class="bio-text">
-                {{ selectedCandidate.bio || 'No biography available' }}
-              </p>
-              <div class="skills-tags">
-                <span v-for="(skill, index) in selectedCandidate.skills" :key="index" class="skill-tag">
-                  <i :class="skillIcons[skill] || 'fas fa-check'"></i> {{ skill }}
-                </span>
-              </div>
-            </div>
-  
-            <div class="section">
-              <h3><i class="fas fa-envelope icon-title"></i> COVER LETTER</h3>
-              <div class="cover-letter-box">
-                <p class="cover-letter">
-                  {{ selectedCandidate.coverLetter || 'No cover letter provided' }}
-                </p>
-              </div>
-            </div>
-  
-            <div class="section">
-              <h3><i class="fas fa-id-card icon-title"></i> CONTACT INFORMATION</h3>
-              <div class="contact-details">
-                <div class="contact-item">
-                  <i class="fas fa-map-marker-alt"></i>
-                  <span>{{ selectedCandidate.location || 'Not specified' }}</span>
-                </div>
-                <div class="contact-item">
-                  <i class="fas fa-phone"></i>
-                  <span>{{ selectedCandidate.phone || 'Not specified' }}</span>
-                </div>
-                <div class="contact-item">
-                  <i class="fas fa-envelope"></i>
-                  <span>{{ selectedCandidate.email || 'Not specified' }}</span>
-                </div>
-              </div>
-            </div>
-  
-            <div class="section">
-              <h3><i class="fas fa-share-alt icon-title"></i> SOCIAL MEDIA</h3>
-              <div class="social-media-links">
-                <a v-if="selectedCandidate.linkedin" :href="selectedCandidate.linkedin" class="social-link linkedin">
-                  <i class="fab fa-linkedin-in"></i>
-                </a>
-                <a v-if="selectedCandidate.twitter" :href="selectedCandidate.twitter" class="social-link twitter">
-                  <i class="fab fa-twitter"></i>
-                </a>
-                <a v-if="selectedCandidate.github" :href="selectedCandidate.github" class="social-link github">
-                  <i class="fab fa-github"></i>
-                </a>
-                <a v-if="selectedCandidate.portfolio" :href="selectedCandidate.portfolio" class="social-link portfolio">
-                  <i class="fas fa-globe"></i>
-                </a>
-              </div>
-            </div>
-  
-            <div class="section resume-section">
-              <button class="download-btn" @click="downloadResume(selectedCandidate)">
-                <i class="fas fa-download"></i> Download Resume
-              </button>
-              <p class="resume-name">{{ selectedCandidate.name }}.pdf</p>
-            </div>
-  
-            <div class="section action-section" v-if="selectedApplication.status !== 'accepted'">
-              <button class="accept-btn" @click="acceptCandidate(selectedApplication)">
-                <i class="fas fa-check-circle"></i> Accept Candidate
-              </button>
-              <button class="shortlist-btn" 
-                      @click="toggleShortlist(selectedApplication)"
-                      v-if="selectedApplication.status !== 'shortlisted'">
-                <i class="fas fa-star"></i> Shortlist
-              </button>
-            </div>
-  
-            <div class="section action-section" v-else>
-              <button class="contact-btn" @click="contactCandidate(selectedCandidate)">
-                <i class="fas fa-envelope"></i> Contact Candidate
-              </button>
-              <button class="reject-btn badge" @click="rejectCandidate(selectedApplication)">
-                <i class="fas fa-times"></i> Reject
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    props: {
-      id: {
-        type: String,
-        required: true
-      }
-    },
-    data() {
-      return {
-        job: {},
-        allApplications: [],
-        shortlistedApplications: [],
-        acceptedApplications: [],
-        activeTab: 'all',
-        tabs: ['all', 'shortlisted', 'accepted'],
-        tabIcons: {
-          all: 'fas fa-list',
-          shortlisted: 'fas fa-star',
-          accepted: 'fas fa-check-circle'
-        },
-        tabLabels: {
-          all: 'All Applications',
-          shortlisted: 'Shortlisted',
-          accepted: 'Accepted'
-        },
-        loading: true,
-        showFilterDropdown: false,
-        showSortDropdown: false,
-        filters: {
-          experience: '',
-          education: ''
-        },
-        sortBy: 'newest',
-        showCandidateModal: false,
-        selectedCandidate: {},
-        selectedApplication: {},
-        candidatesData: [],
-        skillIcons: {
-          'UI/UX Design': 'fas fa-palette',
-          'Mobile App': 'fas fa-mobile-alt',
-          'Wireframing': 'fas fa-pencil-ruler',
-          'JavaScript': 'fab fa-js',
-          'CSS': 'fab fa-css3-alt',
-          'HTML': 'fab fa-html5',
-          'React': 'fab fa-react',
-          'Vue': 'fab fa-vuejs',
-          'Node.js': 'fab fa-node-js'
-        }
-      };
-    },
-    computed: {
-      tabCounts() {
-        return {
-          all: this.allApplications.length,
-          shortlisted: this.shortlistedApplications.length,
-          accepted: this.acceptedApplications.length
-        }
-      },
-      filteredApplications() {
-        let apps = this.allApplications;
-        
-        if (this.filters.experience) {
-          apps = apps.filter(app => app.experience >= parseInt(this.filters.experience));
-        }
-        
-        if (this.filters.education) {
-          apps = apps.filter(app => app.education.includes(this.filters.education));
-        }
-        
-        return this.sortApps([...apps]);
-      },
-      filteredShortlisted() {
-        return this.sortApps([...this.shortlistedApplications]);
-      },
-      filteredAccepted() {
-        return this.sortApps([...this.acceptedApplications]);
-      }
-    },
-    async created() {
-      await this.fetchJob();
-      await this.fetchApplications();
-      await this.fetchCandidatesData();
-    },
-    methods: {
-      async fetchJob() {
-        try {
-          const response = await fetch(`http://localhost:3000/jobs/${this.id}`);
-          
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          
-          const data = await response.json();
-          
-          if (!data || !data.title) {
-            console.warn('Job data exists but has no title:', data);
-            this.job = { title: 'Untitled Position', ...data };
-          } else {
-            this.job = data;
-          }
-          
-        } catch (error) {
-          console.error('Error fetching job:', error);
-          this.job = { 
-            id: this.id,
-            title: 'Position Not Available',
-            company: 'Unknown Company'
-          };
-        }
-      },
-      
-      async fetchApplications() {
-        try {
-          const [appsResponse, candidatesResponse] = await Promise.all([
-            fetch(`http://localhost:3000/applications?jobId=${this.id}`),
-            fetch('http://localhost:3000/candidates')
-          ]);
-          
-          if (!appsResponse.ok || !candidatesResponse.ok) {
-            throw new Error('Failed to fetch data');
-          }
-          
-          const applications = await appsResponse.json();
-          this.candidatesData = await candidatesResponse.json();
-          
-          this.allApplications = applications.map(app => {
-            const candidate = this.candidatesData.find(c => c.id === app.candidateId) || {};
-            return {
-              id: app.id,
-              candidateId: app.candidateId,
-              candidateName: candidate.name || 'Unknown Candidate',
-              position: candidate.position || 'Designer',
-              experience: candidate.experience || 0,
-              education: candidate.education || 'Not specified',
-              appliedDate: app.appliedDate || new Date().toISOString(),
-              acceptedDate: app.acceptedDate || null,
-              status: app.status || 'pending',
-              cvUrl: candidate.resumeUrl || '#',
-              candidateData: candidate
-            };
-          });
-          
-          this.shortlistedApplications = this.allApplications.filter(app => app.status === 'shortlisted');
-          this.acceptedApplications = this.allApplications.filter(app => app.status === 'accepted');
-          
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        } finally {
-          this.loading = false;
-        }
-      },
-      
-      async fetchCandidatesData() {
-        try {
-          const response = await fetch('http://localhost:3000/candidates');
-          this.candidatesData = await response.json();
-        } catch (error) {
-          console.error('Error fetching candidates:', error);
-        }
-      },
-      
-      formatDate(dateString) {
-        if (!dateString) return 'Not available';
-        const options = { 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        };
-        return new Date(dateString).toLocaleDateString('en-US', options);
-      },
-      
-      sortApps(apps) {
-        switch(this.sortBy) {
-          case 'newest':
-            return apps.sort((a, b) => new Date(b.appliedDate) - new Date(a.appliedDate));
-          case 'oldest':
-            return apps.sort((a, b) => new Date(a.appliedDate) - new Date(b.appliedDate));
-          case 'experience':
-            return apps.sort((a, b) => b.experience - a.experience);
-          default:
-            return apps;
-        }
-      },
-      
-      sortApplications(type) {
-        this.sortBy = type;
-        this.showSortDropdown = false;
-      },
-      
-      applyFilters() {
-        this.showFilterDropdown = false;
-      },
-      
-      resetFilters() {
-        this.filters = {
-          experience: '',
-          education: ''
-        };
-        this.showFilterDropdown = false;
-      },
-      
-      getCandidateImage(candidateId) {
-        const gender = candidateId.charAt(0) === '1' ? 'women' : 'men';
-        const id = parseInt(candidateId.substr(1, 2)) || 44;
-        return `https://randomuser.me/api/portraits/${gender}/${id}.jpg`;
-      },
-      
-      viewCandidate(application) {
-        this.selectedCandidate = {
-          ...application.candidateData,
-          name: application.candidateName,
-          position: application.position,
-          experience: application.experience,
-          education: application.education
-        };
-        this.selectedApplication = application;
-        this.showCandidateModal = true;
-      },
-      
-      closeCandidateModal() {
-        this.showCandidateModal = false;
-        this.selectedCandidate = {};
-        this.selectedApplication = {};
-      },
-      
-      async toggleShortlist(application) {
-        try {
-          const newStatus = application.status === 'shortlisted' ? 'pending' : 'shortlisted';
-          
-          const response = await fetch(`http://localhost:3000/applications/${application.id}`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ status: newStatus })
-          });
-          
-          if (!response.ok) throw new Error('Failed to update application');
-          
-          application.status = newStatus;
-          this.shortlistedApplications = this.allApplications.filter(app => app.status === 'shortlisted');
-          
-        } catch (error) {
-          console.error('Error updating application:', error);
-        }
-      },
-      
-      async acceptCandidate(application) {
-        try {
-          const acceptedDate = new Date().toISOString();
-          
-          const response = await fetch(`http://localhost:3000/applications/${application.id}`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ 
-              status: 'accepted',
-              acceptedDate: acceptedDate
-            })
-          });
-          
-          if (!response.ok) throw new Error('Failed to accept application');
-          
-          application.status = 'accepted';
-          application.acceptedDate = acceptedDate;
-          this.shortlistedApplications = this.allApplications.filter(app => app.status === 'shortlisted');
-          this.acceptedApplications = this.allApplications.filter(app => app.status === 'accepted');
-          
-          this.$notify({
-            title: 'Candidate Accepted',
-            text: `${application.candidateName} has been accepted for this position`,
-            type: 'success'
-          });
-          
-        } catch (error) {
-          console.error('Error accepting application:', error);
-          this.$notify({
-            title: 'Error',
-            text: 'Failed to accept candidate',
-            type: 'error'
-          });
-        }
-      },
-      
-      async rejectCandidate(application) {
-        try {
-          const response = await fetch(`http://localhost:3000/applications/${application.id}`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ status: 'rejected' })
-          });
-          
-          if (!response.ok) throw new Error('Failed to reject application');
-          
-          application.status = 'rejected';
-          this.acceptedApplications = this.allApplications.filter(app => app.status === 'accepted');
-          
-          this.$notify({
-            title: 'Candidate Rejected',
-            text: `${application.candidateName} has been rejected`,
-            type: 'warn'
-          });
-          
-        } catch (error) {
-          console.error('Error rejecting application:', error);
-          this.$notify({
-            title: 'Error',
-            text: 'Failed to reject candidate',
-            type: 'error'
-          });
-        }
-      },
-      
-      contactCandidate(candidate) {
-        // This could be expanded to open an email client or messaging interface
-        const subject = `Regarding Your Application for ${this.job.title}`;
-        const body = `Dear ${candidate.name},\n\n`;
-        const mailtoLink = `mailto:${candidate.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        
-        window.open(mailtoLink, '_blank');
-      },
-      
-      downloadCV(application) {
-        if (application.cvUrl) {
-          window.open(application.cvUrl, '_blank');
-        } else {
-          this.$notify({
-            title: 'Error',
-            text: 'CV not available for download',
-            type: 'error'
-          });
-        }
-      },
-      
-      downloadResume(candidate) {
-        if (candidate.resumeUrl) {
-          window.open(candidate.resumeUrl, '_blank');
-        } else {
-          this.$notify({
-            title: 'Error',
-            text: 'Resume not available for download',
-            type: 'error'
-          });
-        }
-      }
+
+
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  props: {
+    id: {
+      type: String,
+      required: true
     }
-  };
-  </script>
-  
-  
+  },
+  data() {
+    return {
+      job: {},
+      allApplications: [],
+      shortlistedApplications: [],
+      acceptedApplications: [],
+      activeTab: 'all',
+      tabs: ['all', 'shortlisted', 'accepted'],
+      tabIcons: {
+        all: 'fas fa-list',
+        shortlisted: 'fas fa-star',
+        accepted: 'fas fa-check-circle'
+      },
+      tabLabels: {
+        all: 'All Applications',
+        shortlisted: 'Shortlisted',
+        accepted: 'Accepted'
+      },
+      loading: true,
+      showFilterDropdown: false,
+      showSortDropdown: false,
+      filters: {
+        experience: '',
+        education: ''
+      },
+      sortBy: 'newest',
+      showCandidateModal: false,
+      selectedCandidate: {},
+      selectedApplication: {},
+      candidatesData: [],
+      skillIcons: {
+        'UI/UX Design': 'fas fa-palette',
+        'Mobile App': 'fas fa-mobile-alt',
+        'Wireframing': 'fas fa-pencil-ruler',
+        'JavaScript': 'fab fa-js',
+        'CSS': 'fab fa-css3-alt',
+        'HTML': 'fab fa-html5',
+        'React': 'fab fa-react',
+        'Vue': 'fab fa-vuejs',
+        'Node.js': 'fab fa-node-js'
+      }
+    };
+  },
+  computed: {
+    tabCounts() {
+    return {
+      all: this.allApplications.length,
+      shortlisted: this.shortlistedApplications.length,
+      accepted: this.acceptedApplications.length
+    };
+  },
+  filteredApplications() {
+    let apps = [...this.allApplications];
+
+    // Apply filters
+    if (this.filters.experience) {
+      apps = apps.filter(app => (app.user?.experience || 0) >= parseInt(this.filters.experience));
+    }
+    if (this.filters.education) {
+      apps = apps.filter(app => app.user?.education === this.filters.education);
+    }
+
+    // Apply sorting
+    switch (this.sortBy) {
+      case 'newest':
+        apps.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        break;
+      case 'oldest':
+        apps.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        break;
+      case 'experience':
+        apps.sort((a, b) => (b.user?.experience || 0) - (a.user?.experience || 0));
+        break;
+    }
+
+    return apps;
+  },
+   filteredShortlisted() {
+    return this.filteredApplications.filter(app => app.status === 'shortlisted');
+  },
+  filteredAccepted() {
+    return this.filteredApplications.filter(app => app.status === 'accepted');
+  }
+  },
+  async created() {
+    await this.fetchJob();
+    await this.fetchApplications();
+  },
+  methods: {
+    async fetchJob() {
+  try {
+    const res = await axios.get(`http://localhost:8000/api/jobs/${this.id}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+      }
+    });
+    this.job = res.data;
+  } catch (error) {
+    console.error('Failed to fetch job:', error);
+  }
+},
+
+async fetchApplications() {
+  try {
+    this.loading = true;
+    const res = await axios.get(`http://localhost:8000/api/jobs/${this.id}/applications`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+      }
+    });
+    this.allApplications = res.data;
+
+    this.shortlistedApplications = this.allApplications.filter(app => app.status === 'shortlisted');
+    this.acceptedApplications = this.allApplications.filter(app => app.status === 'accepted');
+  } catch (error) {
+    console.error('Failed to fetch applications:', error);
+  } finally {
+    this.loading = false;
+  }
+},
+  formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString();
+  },
+  getCandidateImage(userId) {
+    return `/api/users/${userId}/avatar`; // Adjust based on your backend API
+  },
+  viewCandidate(application) {
+    this.selectedCandidate = application.user;
+    this.selectedApplication = application;
+    this.showCandidateModal = true;
+  },
+  closeCandidateModal() {
+    this.showCandidateModal = false;
+    this.selectedCandidate = {};
+    this.selectedApplication = {};
+  },
+  applyFilters() {
+    // Triggered via filter dropdown – computed properties will handle the filtering
+  },
+  resetFilters() {
+    this.filters.experience = '';
+    this.filters.education = '';
+  },
+  sortApplications(sortBy) {
+    this.sortBy = sortBy;
+  },
+  sortApps(apps) {
+    switch (this.sortBy) {
+      case 'newest':
+        return apps.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      case 'oldest':
+        return apps.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      case 'experience':
+        return apps.sort((a, b) => (b.user?.experience || 0) - (a.user?.experience || 0));
+      default:
+        return apps;
+    }
+  },
+  toggleShortlist(application) {
+    const newStatus = application.status === 'shortlisted' ? 'all' : 'shortlisted';
+    axios.patch(`http://localhost:8000/api/applications/${application.id}`, { status: newStatus })
+      .then(() => this.fetchApplications());
+  },
+  acceptCandidate(application) {
+    axios.patch(`http://localhost:8000/api/applications/${application.id}`, { status: 'accepted' })
+      .then(() => this.fetchApplications());
+  },
+  rejectCandidate(application) {
+    axios.patch(`http://localhost:8000/api/applications/${application.id}`, { status: 'rejected' })
+      .then(() => this.fetchApplications());
+  },
+  downloadCV(application) {
+    window.open(`http://localhost:8000/api/applications/${application.id}/cv`, '_blank');
+  },
+  downloadResume(candidate) {
+    window.open(`http://localhost:8000/api/users/${candidate.id}/resume`, '_blank');
+  },
+  contactCandidate(candidate) {
+    window.location.href = `mailto:${candidate.email}`;
+  }
+}
+};
+</script>
+
   <style scoped>
   
   
