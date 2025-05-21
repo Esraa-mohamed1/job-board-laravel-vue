@@ -303,7 +303,7 @@
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">{{ jobStore.currentJob?.title }}</h5>
+            <h5 class="modal-title">{{ jobStore.currentJob && jobStore.currentJob.title }}</h5>
             <button
               type="button"
               class="btn-close"
