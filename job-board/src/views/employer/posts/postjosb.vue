@@ -14,12 +14,7 @@
         </div>
       </div>
 
-<<<<<<< HEAD
-      <form @submit.prevent="submitJob" class="job-posting-form needs-validation" :class="{ 'was-validated': formSubmitted }">
-        <!-- Basic Information Section -->
-=======
       <form @submit.prevent="submitJob" class="job-posting-form needs-validation" novalidate :class="{'was-validated': formSubmitted}">
->>>>>>> 55bfbaf43f4ded36a7840b075f25dd6021eeefba
         <div class="form-section card-style">
           <div class="section-header" @click="toggleSection('basic')">
             <h2 class="section-title"><i class="fas fa-info-circle me-2"></i>Basic Information</h2>
@@ -50,14 +45,6 @@
               </div>
               <div class="col-md-6">
                 <div class="form-group floating-label">
-<<<<<<< HEAD
-                  <select id="job-category" v-model="job.category_id" class="form-select" required @change="validateField('category_id')">
-                    <option value="" disabled selected></option>
-                    <option v-for="category in categories" :value="category.id" :key="category.id">{{ category.name }}</option>
-                  </select>
-                  <label for="job-category">Category*</label>
-                  <div class="invalid-feedback animated-feedback">{{ errors.category_id || 'Please select a category.' }}</div>
-=======
                   <select id="job-category" v-model="job.category_id" 
                           class="form-select" 
                           required
@@ -71,7 +58,6 @@
                   <div class="invalid-feedback animated-feedback">
                     {{ errors.category_id || 'Please select a category.' }}
                   </div>
->>>>>>> 55bfbaf43f4ded36a7840b075f25dd6021eeefba
                 </div>
               </div>
               <div class="col-md-6">
@@ -101,47 +87,13 @@
             <div class="row g-3">
               <div class="col-md-4">
                 <div class="form-group floating-label">
-<<<<<<< HEAD
-                  <select id="salary-type" v-model="job.salary_type" class="form-select" @change="validateSalary">
-=======
                   <select id="salary-type" v-model="job.salary_type" class="form-select">
->>>>>>> 55bfbaf43f4ded36a7840b075f25dd6021eeefba
                     <option value="range">Salary Range</option>
                     <option value="fixed">Fixed Salary</option>
                   </select>
                   <label for="salary-type">Salary Type</label>
                 </div>
               </div>
-<<<<<<< HEAD
-              <template v-if="job.salary_type === 'range'">
-                <div class="col-md-4">
-                  <div class="form-group floating-label">
-                    <div class="input-group">
-                      <span class="input-group-text">$</span>
-                      <input type="number" id="min-salary" v-model.number="job.min_salary" class="form-control" placeholder=" " @input="validateSalary">
-                      <label for="min-salary">Minimum Salary</label>
-                    </div>
-                    <div class="invalid-feedback animated-feedback">{{ errors.min_salary || 'Please provide a valid minimum salary.' }}</div>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="form-group floating-label">
-                    <div class="input-group">
-                      <span class="input-group-text">$</span>
-                      <input type="number" id="max-salary" v-model.number="job.max_salary" class="form-control" placeholder=" " @input="validateSalary">
-                      <label for="max-salary">Maximum Salary</label>
-                    </div>
-                    <div class="invalid-feedback animated-feedback">{{ errors.max_salary || 'Please provide a valid maximum salary.' }}</div>
-                  </div>
-                </div>
-              </template>
-              <div class="col-md-4" v-if="job.salary_type === 'fixed'">
-                <div class="form-group floating-label">
-                  <div class="input-group">
-                    <span class="input-group-text">$</span>
-                    <input type="number" id="salary" v-model.number="job.salary" class="form-control" placeholder=" " @input="validateSalary">
-                    <label for="salary">Fixed Salary</label>
-=======
               
                 <div class="col-md-4" v-if="job.salary_type === 'range'">
                 <div class="form-group floating-label">
@@ -175,7 +127,6 @@
                           class="form-control" 
                           placeholder=" ">
                     <label for="fixed-salary">Fixed Salary</label>
->>>>>>> 55bfbaf43f4ded36a7840b075f25dd6021eeefba
                   </div>
                   <div class="invalid-feedback animated-feedback">{{ errors.salary || 'Please provide a valid fixed salary.' }}</div>
                 </div>
@@ -201,13 +152,9 @@
                     <option value="phd">PhD</option>
                   </select>
                   <label for="education">Education Level*</label>
-<<<<<<< HEAD
-                  <div class="invalid-feedback animated-feedback">{{ errors.education_level || 'Please select an education level.' }}</div>
-=======
                   <div class="invalid-feedback animated-feedback">
                     {{ errors.education_level || 'Please select an education level.' }}
                   </div>
->>>>>>> 55bfbaf43f4ded36a7840b075f25dd6021eeefba
                 </div>
               </div>
               <div class="col-md-4">
@@ -219,13 +166,9 @@
                     <option value="senior">Senior Level (5+ years)</option>
                   </select>
                   <label for="experience">Experience Level*</label>
-<<<<<<< HEAD
-                  <div class="invalid-feedback animated-feedback">{{ errors.experience_level || 'Please select an experience level.' }}</div>
-=======
                   <div class="invalid-feedback animated-feedback">
                     {{ errors.experience_level || 'Please select an experience level.' }}
                   </div>
->>>>>>> 55bfbaf43f4ded36a7840b075f25dd6021eeefba
                 </div>
               </div>
               <div class="col-md-4">
@@ -237,13 +180,9 @@
                     <option value="senior">Senior</option>
                   </select>
                   <label for="job-level">Job Level*</label>
-<<<<<<< HEAD
-                  <div class="invalid-feedback animated-feedback">{{ errors.job_level || 'Please select a job level.' }}</div>
-=======
                   <div class="invalid-feedback animated-feedback">
                     {{ errors.job_level || 'Please select a job level.' }}
                   </div>
->>>>>>> 55bfbaf43f4ded36a7840b075f25dd6021eeefba
                 </div>
               </div>
             </div>
@@ -261,22 +200,15 @@
                 <div class="form-group floating-label">
                   <textarea id="job-description" v-model="job.description" class="form-control" rows="4" placeholder=" " required @input="validateField('description')"></textarea>
                   <label for="job-description">Job Description*</label>
-<<<<<<< HEAD
-                  <div class="invalid-feedback animated-feedback">{{ errors.description || 'Please provide a job description.' }}</div>
-=======
                   <div class="invalid-feedback animated-feedback">
                     {{ errors.description || 'Please provide a job description (min 100 characters).' }}
                   </div>
->>>>>>> 55bfbaf43f4ded36a7840b075f25dd6021eeefba
                 </div>
               </div>
               <div class="col-12">
                 <div class="form-group floating-label">
                   <textarea id="responsibilities" v-model="job.responsibilities" class="form-control" rows="4" placeholder=" " required @input="validateField('responsibilities')"></textarea>
                   <label for="responsibilities">Responsibilities*</label>
-<<<<<<< HEAD
-                  <div class="invalid-feedback animated-feedback">{{ errors.responsibilities || 'Please provide job responsibilities.' }}</div>
-=======
                   <div class="invalid-feedback animated-feedback">
                     {{ errors.responsibilities || 'Please provide job responsibilities (min 50 characters).' }}
                   </div>
@@ -294,17 +226,12 @@
                   <div class="invalid-feedback animated-feedback">
                     {{ errors.company || 'Please provide a company name.' }}
                   </div>
->>>>>>> 55bfbaf43f4ded36a7840b075f25dd6021eeefba
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-<<<<<<< HEAD
-        <!-- Skills & Tags Section -->
-=======
->>>>>>> 55bfbaf43f4ded36a7840b075f25dd6021eeefba
         <div class="form-section card-style">
           <div class="section-header" @click="toggleSection('skills')">
             <h2 class="section-title"><i class="fas fa-tags me-2"></i>Skills & Tags</h2>
@@ -314,13 +241,6 @@
             <div class="row g-3">
               <div class="col-md-6">
                 <div class="form-group floating-label">
-<<<<<<< HEAD
-                  <input type="text" id="job-tags" v-model="tagInput" @keydown.enter.prevent="addTags" @blur="addTags" class="form-control" placeholder=" ">
-                  <label for="job-tags">Job Tags</label>
-                  <small class="text-hint">Press Enter or click outside to add tags</small>
-                  <div v-if="job.tags.length" class="keywords-preview">
-                    <strong>Tags:</strong> {{ job.tags.join(', ') }}
-=======
                   <input type="text" id="job-keywords" v-model="keywordInput" 
                          @keydown.enter.prevent="addKeywords"
                          @blur="addKeywords"
@@ -336,7 +256,6 @@
                         <i class="fas fa-times"></i>
                       </button>
                     </span>
->>>>>>> 55bfbaf43f4ded36a7840b075f25dd6021eeefba
                   </div>
                   <div class="invalid-feedback animated-feedback">{{ errors.tags || 'Please provide at least one tag.' }}</div>
                 </div>
@@ -351,9 +270,6 @@
                         <i class="fas fa-times"></i>
                       </button>
                     </span>
-<<<<<<< HEAD
-                    <input type="text" class="skill-input" v-model="skillInput" @keydown.enter.prevent="addSkill" placeholder="Add skill and press Enter...">
-=======
                     <input type="text" class="skill-input" 
                            v-model="skillInput" 
                            @keydown.enter.prevent="addSkill"
@@ -362,7 +278,6 @@
                   </div>
                   <div class="invalid-feedback animated-feedback">
                     {{ errors.skills || 'Please add at least 3 skills.' }}
->>>>>>> 55bfbaf43f4ded36a7840b075f25dd6021eeefba
                   </div>
                   <div class="invalid-feedback animated-feedback" v-if="errors.skills">{{ errors.skills }}</div>
                 </div>
@@ -389,239 +304,6 @@
   </div>
 </template>
 
-<<<<<<< HEAD
-<script setup>
-import { ref, computed, onMounted } from 'vue';
-import axios from 'axios';
-
-// Reactive state
-const job = ref({
-  title: '',
-  job_type: '',
-  category_id: '',
-  location: '',
-  company: '',
-  salary_type: 'range',
-  min_salary: '',
-  max_salary: '',
-  salary: '',
-  education_level: '',
-  experience_level: '',
-  job_level: '',
-  description: '',
-  responsibilities: '',
-  skills: [],
-  tags: [],
-});
-
-const skillInput = ref('');
-const tagInput = ref('');
-const isLoading = ref(false);
-const formSubmitted = ref(false);
-const categories = ref([]);
-const expandedSections = ref({
-  basic: true,
-  salary: true,
-  requirements: true,
-  details: true,
-  skills: true,
-});
-
-const errors = ref({
-  title: '',
-  job_type: '',
-  category_id: '',
-  location: '',
-  company: '',
-  description: '',
-  responsibilities: '',
-  min_salary: '',
-  max_salary: '',
-  salary: '',
-  education_level: '',
-  experience_level: '',
-  job_level: '',
-  skills: '',
-  tags: '',
-});
-
-const hasErrors = computed(() => Object.values(errors.value).some((error) => error !== ''));
-
-const setupAxios = async () => {
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  }
-};
-
-const fetchCategories = async () => {
-  try {
-    const response = await axios.get('http://localhost:8000/api/categories');
-    categories.value = response.data;
-  } catch (error) {
-    showAlert('Failed to fetch categories.', 'error');
-  }
-};
-
-const toggleSection = (section) => {
-  expandedSections.value[section] = !expandedSections.value[section];
-};
-
-// Validate individual field
-const validateField = (field) => {
-  const value = job.value[field];
-  if (['title', 'location', 'company', 'description', 'responsibilities'].includes(field)) {
-    errors.value[field] = value.trim() ? '' : `${field.replace('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase())} is required`;
-  } else if (['job_type', 'category_id', 'education_level', 'experience_level', 'job_level'].includes(field)) {
-    errors.value[field] = value ? '' : `${field.replace('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase())} is required`;
-  } else if (field === 'skills') {
-    errors.value.skills = job.value.skills.length >= 3 ? '' : 'At least 3 skills are required';
-  } else if (field === 'tags') {
-    errors.value.tags = job.value.tags.length > 0 ? '' : 'At least one tag is required';
-  }
-};
-
-// Validate salary fields
-const validateSalary = () => {
-  if (job.value.salary_type === 'range') {
-    errors.value.min_salary = job.value.min_salary === '' || job.value.min_salary < 0 ? 'Minimum salary must be a positive number' : '';
-    errors.value.max_salary =
-      job.value.max_salary === '' || job.value.max_salary < 0
-        ? 'Maximum salary must be a positive number'
-        : job.value.min_salary && job.value.max_salary && job.value.min_salary > job.value.max_salary
-        ? 'Minimum salary cannot exceed maximum salary'
-        : '';
-    errors.value.salary = '';
-  } else if (job.value.salary_type === 'fixed') {
-    errors.value.salary = job.value.salary === '' || job.value.salary < 0 ? 'Fixed salary must be a positive number' : '';
-    errors.value.min_salary = '';
-    errors.value.max_salary = '';
-  }
-};
-
-// Validate entire form
-const validateForm = () => {
-  ['title', 'job_type', 'category_id', 'location', 'company', 'description', 'responsibilities', 'education_level', 'experience_level', 'job_level', 'skills', 'tags'].forEach(validateField);
-  validateSalary();
-};
-
-// Add skill
-const addSkill = () => {
-  const skill = skillInput.value.trim();
-  if (skill && !job.value.skills.includes(skill)) {
-    job.value.skills.push(skill);
-    skillInput.value = '';
-    validateField('skills');
-  }
-};
-
-// Remove skill
-const removeSkill = (index) => {
-  job.value.skills.splice(index, 1);
-  validateField('skills');
-};
-
-// Add tags
-const addTags = () => {
-  if (tagInput.value) {
-    const newTags = tagInput.value
-      .split(',')
-      .map((k) => k.trim())
-      .filter((k) => k.length > 0 && !job.value.tags.includes(k));
-    job.value.tags = [...new Set([...job.value.tags, ...newTags])];
-    tagInput.value = '';
-    validateField('tags');
-  }
-};
-
-// Submit job
-const submitJob = async () => {
-  formSubmitted.value = true;
-  validateForm();
-
-  if (hasErrors.value) {
-    showAlert('Please fix the validation errors before submitting.', 'error');
-    return;
-  }
-
-  try {
-    isLoading.value = true;
-    await setupAxios();
-    const response = await axios.post('http://localhost:8000/api/jobs', job.value);
-    showAlert('Job posted successfully!', 'success');
-    resetForm();
-    formSubmitted.value = false;
-  } catch (error) {
-    if (error.response?.status === 422) {
-      const backendErrors = error.response.data.errors;
-      Object.keys(backendErrors).forEach((key) => {
-        errors.value[key] = backendErrors[key][0];
-      });
-      showAlert('Please fix the validation errors.', error);
-    } else if (error.response?.status === 401) {
-      showAlert('Unauthorized. Please log in.', error);
-    } else {
-      showAlert(error.message || 'Job submission failed',error);
-    }
-    console.error('Submission error:', error);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-// Reset form
-const resetForm = () => {
-  job.value = {
-    title: '',
-    job_type: '',
-    category_id: '',
-    location: '',
-    company: '',
-    salary_type: 'range',
-    min_salary: '',
-    max_salary: '',
-    salary: '',
-    education_level: '',
-    experience_level: '',
-    job_level: '',
-    description: '',
-    responsibilities: '',
-    skills: [],
-    tags: [],
-  };
-  skillInput.value = '';
-  tagInput.value = '';
-  errors.value = {
-    title: '',
-    job_type: '',
-    category_id: '',
-    location: '',
-    company: '',
-    description: '',
-    responsibilities: '',
-    min_salary: '',
-    max_salary: '',
-    salary: '',
-    education_level: '',
-    experience_level: '',
-    job_level: '',
-    skills: '',
-    tags: '',
-  };
-  formSubmitted.value = false;
-};
-
-// Show alert
-const showAlert = (message, type) => {
-  alert(`${type.toUpperCase()}: ${message}`); // Replace with your preferred notification system (e.g., Vue Toastification)
-};
-
-// Initialize
-onMounted(async () => {
-  await setupAxios();
-  await fetchCategories();
-});
-=======
 <script>
 import axios from 'axios'
 
@@ -910,31 +592,11 @@ resetForm() {
     }
   }
 }
->>>>>>> 55bfbaf43f4ded36a7840b075f25dd6021eeefba
 </script>
 
 
 <style scoped>
-<<<<<<< HEAD
-/* Keep your existing CSS unchanged */
-.employer-dashboard {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-.job-posting-container {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-=======
 /* Your existing styles remain unchanged with small additions for tags */
->>>>>>> 55bfbaf43f4ded36a7840b075f25dd6021eeefba
 .employer-dashboard {
   max-width: 900px;
   margin: 2rem auto;
