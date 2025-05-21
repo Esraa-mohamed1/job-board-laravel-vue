@@ -1,4 +1,3 @@
-
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-2 sticky-top">
     <div class="container-fluid px-3 px-lg-4">
@@ -24,6 +23,13 @@
               @click="closeNavbarOnMobile"
             >
               {{ $t(item.titleKey) }}
+            </router-link>
+            <router-link 
+              class="nav-link px-2 px-lg-3 text-danger" 
+              to="/logout"
+              @click="closeNavbarOnMobile"
+            >
+              <i class="fas fa-sign-out-alt me-1"></i> Logout
             </router-link>
           </div>
         </div>

@@ -64,45 +64,51 @@ export const useEmployerStore = defineStore('employer', {
     },
 
     async uploadImage(file) {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader()
-          
-          reader.onload = (event) => {
-            const base64String = event.target.result
-            resolve(base64String)
-          }
-          
-          reader.onerror = (error) => {
-            reject(new Error('Failed to read image file'))
-          }
-          
-          reader.readAsDataURL(file)
-        })
-      },
-  
-      async saveProfileStep(employerId, stepName, stepData) {
-        this.loading = true
-        try {
-          if (stepName === 'companyInfo' && stepData.logo instanceof File) {
-            stepData.logo = await this.uploadImage(stepData.logo)
-          }
-          if (stepName === 'companyInfo' && stepData.banner instanceof File) {
-            stepData.banner = await this.uploadImage(stepData.banner)
-          }
-  
-          const data = await patchJson(`${API_BASE}/employers/${employerId}`, {
-            [stepName]: stepData
-          })
-          
-          this.profile[stepName] = data[stepName]
-          this.error = null
-          return data
-        } catch (err) {
-          this.error = err.message
-          throw err
-        } finally {
-          this.loading = false
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        
+        reader.onload = (event) => {
+          const base64String = event.target.result
+          resolve(base64String)
         }
+        
+        reader.onerror = (error) => {
+          reject(new Error('Failed to read image file'))
+        }
+        
+        reader.readAsDataURL(file)
+      })
+    },
+
+    async saveProfileStep(employerId, stepName, stepData) {
+      this.loading = true
+      try {
+        if (stepName === 'companyInfo' && stepData.logo instanceof File) {
+          stepData.logo = await this.uploadImage(stepData.logo)
+        }
+        if (stepName === 'companyInfo' && stepData.banner instanceof File) {
+          stepData.banner = await this.uploadImage(stepData.banner)
+        }
+
+        const data = await patchJson(`${API_BASE}/employers/${employerId}`, {
+          [stepName]: stepData
+        })
+        
+        this.profile[stepName] = data[stepName]
+        this.error = null
+        return data
+      } catch (err) {
+        this.error = err.message
+        throw err
+      } finally {
+        this.loading = false
       }
     }
+  },
+
+  getters: {
+    getProfile: (state) => state.profile,
+    isLoading: (state) => state.loading,
+    getError: (state) => state.error
+  }
 })

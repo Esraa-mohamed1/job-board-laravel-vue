@@ -70,12 +70,12 @@ const routes = [
 
   {
     path: '/employer/dashboard',
-    name: 'employer-dashboard',
     component: EmployerDashboard,
     meta: { requiresAuth: true, role: 'employer' },
     children: [
       {
         path: '',
+        name: 'employer-dashboard',
         redirect: { name: 'employer-overview' }
       },
       {

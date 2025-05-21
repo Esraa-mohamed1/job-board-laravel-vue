@@ -267,6 +267,29 @@
           </div>
         </div>
 
+        <!-- Add Status and Published At fields to the form -->
+        <div class="form-section">
+          <h2 class="section-title text-primary"><i class="fas fa-cog me-2"></i>Job Settings</h2>
+          <div class="row g-2">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="status" class="form-label">Status</label>
+                <select id="status" v-model="job.status" class="form-select form-select-sm">
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                  <option value="archived">Archived</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="published_at" class="form-label">Published At</label>
+                <input type="date" id="published_at" v-model="job.published_at" class="form-control form-control-sm" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Form Actions -->
         <div class="form-actions mt-3 pt-2 border-top">
          
@@ -285,6 +308,8 @@
 </template>
 
 <script>
+import jobsService from '@/services/jobs';
+
 export default {
   data() {
     return {
@@ -304,7 +329,9 @@ export default {
         description: '',
         responsibilities: '',
         skills: [],
-        keywords: ''
+        keywords: '',
+        status: 'published',
+        published_at: ''
       },
       skillInput: '',
       keywordInput: '',
@@ -359,6 +386,8 @@ export default {
       this.validateField('description');
       this.validateField('responsibilities');
       this.validateSalary();
+      // Return true if there are no errors
+      return !this.hasErrors;
     },
     addSkill() {
       const skill = this.skillInput.trim();
@@ -386,29 +415,43 @@ export default {
     
     async submitJob() {
       this.formSubmitted = true;
-      this.validateForm();
-
-      if (this.hasErrors) {
-        this.showAlert('Please fix the validation errors before submitting.', 'error');
+      if (!this.validateForm()) {
         return;
       }
 
+      this.isLoading = true;
+      this.successMessage = '';
+      this.errorMessage = '';
+
       try {
-        this.isLoading = true;
-        const response = await fetch('http://localhost:3000/jobs', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(this.job)
-        });
-        
-        if (!response.ok) throw new Error('Job submission failed');
-        
-        this.showAlert('Job posted successfully!', 'success');
+        // Build payload to match backend JSON
+        const payload = {
+          title: this.job.title,
+          job_type: this.job.type,
+          company: this.job.company,
+          location: this.job.location,
+          salary_type: this.job.salaryType,
+          min_salary: this.job.minSalary,
+          max_salary: this.job.maxSalary,
+          salary: this.job.fixedSalary,
+          description: this.job.description,
+          responsibilities: this.job.responsibilities,
+          education_level: this.job.education,
+          experience_level: this.job.experience,
+          job_level: this.job.level,
+          status: this.job.status,
+          published_at: this.job.published_at,
+          category_id: this.job.category,
+          skills: this.job.skills,
+        };
+
+        const response = await jobsService.createJob(payload);
+        this.successMessage = 'Job posted successfully!';
         this.resetForm();
-        this.formSubmitted = false;
+        this.$router.push('/'); // Redirect to home page after successful posting
       } catch (error) {
-        this.showAlert(error.message, 'error');
-        console.error('Submission error:', error);
+        console.error('Error posting job:', error);
+        this.errorMessage = error.message || 'An error occurred while posting the job.';
       } finally {
         this.isLoading = false;
       }
@@ -430,7 +473,9 @@ export default {
         description: '',
         responsibilities: '',
         skills: [],
-        keywords: ''
+        keywords: '',
+        status: 'published',
+        published_at: ''
       };
       this.skillInput = '';
       this.keywordInput = '';

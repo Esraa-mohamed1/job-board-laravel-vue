@@ -18,4 +18,37 @@ employerApi.interceptors.request.use((config) => {
   return Promise.reject(error);
 });
 
+// API Service Methods
+export const employerService = {
+  // Get all employers
+  getAll() {
+    return employerApi.get('/');
+  },
+
+  // Get employer by ID
+  getById(id) {
+    return employerApi.get(`/${id}`);
+  },
+
+  // Create new employer
+  create(data) {
+    return employerApi.post('/', data);
+  },
+
+  // Update employer
+  update(id, data) {
+    return employerApi.put(`/${id}`, data);
+  },
+
+  // Delete employer
+  delete(id) {
+    return employerApi.delete(`/${id}`);
+  },
+
+  // Get employer jobs
+  getJobs(id) {
+    return employerApi.get(`/${id}/jobs`);
+  }
+};
+
 export default employerApi;

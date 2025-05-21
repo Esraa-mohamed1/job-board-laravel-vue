@@ -8,7 +8,7 @@
         </div>
         
         <h1 class="signin-title">Sign in</h1>
-        <p class="login-link">Don’t have account? <a href="/register"> Create Account</a></p>  
+        <p class="login-link">Don't have account? <a href="/register"> Create Account</a></p>  
         <form @submit.prevent="handleLogin">
           <div class="form-group">
             <label>Email address</label>
@@ -117,6 +117,7 @@ const handleLogin = async () => {
 
     // Save to localStorage
     localStorage.setItem('authToken', token)
+    localStorage.setItem('token', token)
     localStorage.setItem('userData', JSON.stringify(user))
     localStorage.setItem('userRole', user.role)
 
