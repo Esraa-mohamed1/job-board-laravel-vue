@@ -153,7 +153,7 @@ const isFormValid = computed(() => {
 
 const handleRegister = async () => {
   if (!isFormValid.value) {
-    Swal.fire({ // <-- Use SweetAlert2
+    Swal.fire({
       icon: 'error',
       title: 'Oops...',
       text: 'Please fill all required fields correctly'

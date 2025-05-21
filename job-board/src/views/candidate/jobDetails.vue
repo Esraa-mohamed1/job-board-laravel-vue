@@ -1,93 +1,128 @@
 <template>
-  <div v-if="jobData" class="job-details-container animate-fade-in">
-    <div class="details-header">
-      <div class="banner-container">
-        <img v-if="jobData.company_banner" :src="jobData.company_banner" alt="Company Banner" class="banner-img fade-in">
-        <div v-else class="default-banner fade-in"></div>
-        <div class="company-logo-container slide-in-left">
-          <img v-if="jobData.company_logo" :src="jobData.company_logo" alt="Company Logo" class="company-logo">
-          <div v-else class="default-logo">{{ getCompanyInitials(jobData.company ?? jobData.company_name) }}</div>
+  <div>
+    <div v-if="jobData" class="job-details-container animate-fade-in">
+      <div class="details-header">
+        <div class="banner-container">
+          <img v-if="jobData.company_banner" :src="jobData.company_banner" alt="Company Banner" class="banner-img fade-in">
+          <div v-else class="default-banner fade-in"></div>
+          <div class="company-logo-container slide-in-left">
+            <img v-if="jobData.company_logo" :src="jobData.company_logo" alt="Company Logo" class="company-logo">
+            <div v-else class="default-logo">{{ getCompanyInitials(jobData.company || jobData.company_name) }}</div>
+          </div>
+        </div>
+        <div class="details-info">
+          <h1 class="slide-in-right">{{ jobData.title }}</h1>
+          <p class="industry fade-in-delay">{{ jobData.company || jobData.company_name }}</p>
+          <div class="meta-info fade-in">
+            <span><i class="fas fa-map-marker-alt"></i> {{ jobData.location }}</span>
+            <span><i class="fas fa-money-bill-wave"></i> {{ jobData.salary }}</span>
+            <span><i class="fas fa-briefcase"></i> {{ jobData.job_type }}</span>
+            <span><i class="fas fa-calendar-alt"></i> Posted {{ formatDate(jobData.created_at) }}</span>
+          </div>
         </div>
       </div>
-      <div class="details-info">
-        <h1 class="slide-in-right">{{ jobData.title }}</h1>
-        <p class="industry fade-in-delay">{{ jobData.company ?? jobData.company_name }}</p>
-        <div class="meta-info fade-in">
-          <span><i class="fas fa-map-marker-alt"></i> {{ jobData.location }}</span>
-          <span><i class="fas fa-money-bill-wave"></i> {{ jobData.salary }}</span>
-          <span><i class="fas fa-briefcase"></i> {{ jobData.job_type }}</span>
-          <span><i class="fas fa-calendar-alt"></i> Posted {{ formatDate(jobData.created_at) }}</span>
+
+      <div class="details-content fade-in">
+        <div class="left-column">
+          <section class="fade-in-delay">
+            <h2>Job Description</h2>
+            <p>{{ jobData.description }}</p>
+          </section>
+
+          <section v-if="jobData.responsibilities" class="fade-in-delay">
+            <h2>Responsibilities</h2>
+            <ul>
+              <li v-for="(responsibility, index) in jobData.responsibilities" :key="index">{{ responsibility }}</li>
+            </ul>
+          </section>
+
+          <section v-if="jobData.skills" class="fade-in-delay">
+            <h2>Required Skills</h2>
+            <ul>
+              <li v-for="(skill, index) in jobData.skills" :key="index">{{ skill }}</li>
+            </ul>
+          </section>
+
+          <section class="hiring-section slide-up">
+            <h2>Hiring Information</h2>
+            <div class="hiring-card">
+              <h2>Ready to Apply?</h2>
+              <button class="post-job-btn bounce-btn" @click="showApplyModal = true">
+                Apply Now
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <div class="right-column">
+          <section class="details-section fade-in-delay">
+            <h2>Job Details</h2>
+            <div class="detail-item">
+              <h3>Job Type</h3>
+              <p>{{ jobData.job_type }}</p>
+            </div>
+            <div class="detail-item">
+              <h3>Location</h3>
+              <p>{{ jobData.location }}</p>
+            </div>
+            <div class="detail-item">
+              <h3>Salary</h3>
+              <p>{{ jobData.salary }}</p>
+            </div>
+            <div class="detail-item">
+              <h3>Posted</h3>
+              <p>{{ formatDate(jobData.created_at) }}</p>
+            </div>
+          </section>
+
+          <section v-if="jobData.contact_email || jobData.contact_phone" class="contact-section fade-in-delay">
+            <h2>Contact Information</h2>
+            <div class="contact-item" v-if="jobData.contact_email">
+              <i class="fas fa-envelope p-3"></i>
+              <a :href="`mailto:${jobData.contact_email}`">{{ jobData.contact_email }}</a>
+            </div>
+            <div class="contact-item" v-if="jobData.contact_phone">
+              <i class="fas fa-phone p-3"></i>
+              <a :href="`tel:${jobData.contact_phone}`">{{ jobData.contact_phone }}</a>
+            </div>
+          </section>
         </div>
       </div>
     </div>
 
-    <div class="details-content fade-in">
-      <div class="left-column">
-        <section class="fade-in-delay">
-          <h2>Job Description</h2>
-          <p>{{ jobData.description }}</p>
-        </section>
-
-        <section v-if="jobData.responsibilities" class="fade-in-delay">
-          <h2>Responsibilities</h2>
-          <ul>
-            <li v-for="(responsibility, index) in jobData.responsibilities" :key="index">{{ responsibility }}</li>
-          </ul>
-        </section>
-
-        <section v-if="jobData.skills" class="fade-in-delay">
-          <h2>Required Skills</h2>
-          <ul>
-            <li v-for="(skill, index) in jobData.skills" :key="index">{{ skill }}</li>
-          </ul>
-        </section>
-
-        <section class="hiring-section slide-up">
-          <h2>Hiring Information</h2>
-          <div class="hiring-card">
-            <h2>Ready to Apply?</h2>
-            <button class="post-job-btn bounce-btn" @click="showApplyModal = true">
-              Apply Now
+    <!-- Apply Job Modal -->
+    <div v-if="showApplyModal" class="modal-overlay" @click.self="closeModal">
+      <div class="apply-modal">
+        <button class="close-btn" @click="closeModal">&times;</button>
+        <h2 class="modal-title">Apply Job: {{ jobData.title }}</h2>
+        <form @submit.prevent="submitApplication" class="apply-form">
+          <label class="form-label mt-3">Choose Resume</label>
+          <select v-model="selectedResume" class="form-select" required>
+            <option value="" disabled>Select...</option>
+            <option v-for="resume in resumes" :key="resume.id" :value="resume.path">
+              {{ resume.name }}
+            </option>
+          </select>
+          <label class="form-label mt-4">Cover Letter</label>
+          <textarea
+            class="form-control cover-letter-input"
+            rows="6"
+            v-model="coverLetter"
+            placeholder="Write down your biography here. Let the employers know who you are..."
+            required
+          ></textarea>
+          <div class="modal-actions">
+            <button class="btn btn-light cancel-btn" type="button" @click="closeModal">Cancel</button>
+            <button class="btn btn-primary apply-btn" type="submit" :disabled="submitting">
+              <span v-if="submitting" class="spinner-border spinner-border-sm"></span>
+              <span v-else>Apply Now</span>
             </button>
           </div>
-        </section>
-      </div>
-
-      <div class="right-column">
-        <section class="details-section fade-in-delay">
-          <h2>Job Details</h2>
-          <div class="detail-item">
-            <h3>Job Type</h3>
-            <p>{{ jobData.job_type }}</p>
-          </div>
-          <div class="detail-item">
-            <h3>Location</h3>
-            <p>{{ jobData.location }}</p>
-          </div>
-          <div class="detail-item">
-            <h3>Salary</h3>
-            <p>{{ jobData.salary }}</p>
-          </div>
-          <div class="detail-item">
-            <h3>Posted</h3>
-            <p>{{ formatDate(jobData.created_at) }}</p>
-          </div>
-        </section>
-
-        <section v-if="jobData.contact_email || jobData.contact_phone" class="contact-section fade-in-delay">
-          <h2>Contact Information</h2>
-          <div class="contact-item" v-if="jobData.contact_email">
-            <i class="fas fa-envelope p-3"></i>
-            <a :href="`mailto:${jobData.contact_email}`">{{ jobData.contact_email }}</a>
-          </div>
-          <div class="contact-item" v-if="jobData.contact_phone">
-            <i class="fas fa-phone p-3"></i>
-            <a :href="`tel:${jobData.contact_phone}`">{{ jobData.contact_phone }}</a>
-          </div>
-        </section>
+          <div v-if="errorMsg" class="alert alert-danger mt-2">{{ errorMsg }}</div>
+          <div v-if="successMsg" class="alert alert-success mt-2">{{ successMsg }}</div>
+        </form>
       </div>
     </div>
-  </div>
 
   <div v-if="showApplyModal" class="modal-overlay" @click.self="closeModal">
     <div class="apply-modal">
@@ -120,13 +155,7 @@
         <div v-if="successMsg" class="alert alert-success mt-2">{{ successMsg }}</div>
       </form>
     </div>
-  </div>
-
-  <div v-else-if="loading" class="loading">
-    <p>Loading job details...</p>
-  </div>
-  <div v-else class="error">
-    <p>Error loading job details.</p>
+    </div>
   </div>
 </template>
 
@@ -213,7 +242,7 @@ const submitApplication = async () => {
     const response = await fetch(`http://localhost:8000/api/jobs/${jobId}/apply`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Accept': 'application/json',
          'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
@@ -237,7 +266,7 @@ const submitApplication = async () => {
     successMsg.value = "Application submitted successfully.";
     setTimeout(closeModal, 1200);
   } catch (err) {
-    errorMsg.value = "Failed to submit application.";
+    errorMsg.value = err;
   } finally {
     submitting.value = false;
   }

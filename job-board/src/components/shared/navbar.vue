@@ -1,6 +1,8 @@
-
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-2 sticky-top">
+  <nav 
+    class="navbar navbar-expand-lg navbar-light border-bottom py-2 sticky-top"
+    :class="[user?.is_premium ? 'bg-gold' : 'bg-white']"
+  >
     <div class="container-fluid px-3 px-lg-4">
       <button 
         class="navbar-toggler" 
@@ -60,26 +62,26 @@
   </nav>
 </template>
 
-  
-
-
-  <script setup>
+<script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import axios from 'axios'
 
 const router = useRouter()
 const route = useRoute()
-
 const { locale, t } = useI18n()
 
-const navItems = [
+const allNavItems = [
   { titleKey: 'nav.home', path: '/' },
   { titleKey: 'nav.jobs', path: '/candidate/findjob' },
   { titleKey: 'nav.dashboard', path: '/candidate/dashboard' },
   { titleKey: 'nav.alerts', path: '/candidate/alerts' },
-  { titleKey: 'nav.support', path: '/candidate/Candidate-Support' }
+  { titleKey: 'nav.support', path: '/candidate/Candidate-Support' },
+  { titleKey: 'Premium', path: '/candidate/gopremium' }
 ]
+
+const navItems = ref([])
 
 const languages = [
   { name: 'English', code: 'en', flag: 'https://flagcdn.com/w20/us.png', rtl: false },
@@ -89,6 +91,7 @@ const languages = [
 const currentLanguage = ref(languages[0])
 const navbarOpen = ref(false)
 const dropdownOpen = ref(false)
+const user = ref(null)
 
 const toggleNavbar = () => {
   navbarOpen.value = !navbarOpen.value
@@ -115,7 +118,26 @@ const changeLanguage = (lang) => {
   localStorage.setItem('lang', lang.code)
 }
 
-onMounted(() => {
+onMounted(async () => {
+  try {
+    const response = await axios.get('http://localhost:8000/api/user', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`
+      }
+    })
+    user.value = response.data
+
+    navItems.value = allNavItems.filter(item => {
+      if (item.titleKey === 'Premium') {
+        return !user.value?.is_premium
+      }
+      return true
+    })
+  } catch (error) {
+    console.error('Failed to fetch user:', error)
+    navItems.value = allNavItems 
+  }
+
   const savedLangCode = localStorage.getItem('lang')
   if (savedLangCode) {
     const lang = languages.find(l => l.code === savedLangCode)
@@ -129,33 +151,19 @@ onMounted(() => {
 })
 </script>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <style scoped>
+.bg-gold {
+   background-image: url('../../assets/gold2.avif');
+
+  border-bottom: 2px solid #e6c200;
+  background-size: cover;
+  background-position: center;
+
+  box-shadow: 0 2px 12px rgba(255, 215, 0, 0.3);
+}
+
+/* Your existing navbar styles */
+
 .navbar {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }

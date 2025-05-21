@@ -11,7 +11,7 @@
             <th>JOB</th>
             <th>DATE APPLIED</th>
             <th>STATUS</th>
-            <th>ACTION</th>
+           
           </tr>
         </thead>
         <tbody>
@@ -27,13 +27,14 @@
             </td>
             <td>{{ job.dateApplied }}</td>
             <td>
-              <span :class="['status-badge', { 'rejected': job.status.toLowerCase() === 'rejected' }]">
-                <i class="fas fa-check"></i> {{ job.status }}
+              <span :class="['status-badge', { 
+                'rejected': job.status.toLowerCase() === 'rejected' ,
+                'pending': job.status.toLowerCase() === 'pending'
+                }]">
+                <i class=""></i> {{ job.status }}
               </span>
             </td>
-            <td>
-              <button class="view-details-btn">View Details</button>
-            </td>
+           
           </tr>
         </tbody>
       </table>
@@ -232,7 +233,7 @@ td {
   cursor: not-allowed;
 }
 
-/* Responsive adjustments */
+
 @media (max-width: 768px) {
   .applied-jobs-container {
     padding: 15px;
@@ -250,5 +251,9 @@ td {
   .job-details {
     font-size: 12px;
   }
+}
+.status-badge.pending {
+  background-color: #fff8e1; 
+  color: #f9a825;  
 }
 </style>
