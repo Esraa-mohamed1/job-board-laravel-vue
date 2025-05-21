@@ -139,6 +139,7 @@ const apiClient = {
     patch: patchJson,
     delete: deleteJson,
   },
+  
 };
 
 export default apiClient;

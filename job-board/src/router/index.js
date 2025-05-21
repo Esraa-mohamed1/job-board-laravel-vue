@@ -26,6 +26,7 @@ import unauthorized from "@/views/auth/Unauthorized.vue";
 import PendingJobs from "../views/admin/PendingJobs.vue";
 import ApprovedJobs from "../views/admin/ApprovedJobs.vue";
 import RejectedJobs from "../views/admin/RejectedJobs.vue";
+import Jobdetails from "@/views/admin/Jobdetails.vue";
 const routes = [
   {
     path: "/register",
@@ -210,6 +211,12 @@ const routes = [
     name: "Unauthorized",
     component: unauthorized,
   },
+  {
+    path: '/admin/job/:id',
+    name: 'JobDetails',
+    component: Jobdetails,
+    props: true
+  }
 ];
 
 const router = createRouter({
@@ -238,6 +245,7 @@ router.beforeEach((to, from, next) => {
   }
 
   next();
+
 });
 
 export default router;

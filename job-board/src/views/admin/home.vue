@@ -182,12 +182,7 @@
                       </td>
                       <td>
                         <div class="btn-group">
-                          <button
-                            class="btn btn-sm btn-outline-secondary"
-                            @click="viewJobDetails(job.id)"
-                          >
-                            View
-                          </button>
+                          
                           <button
                             class="btn btn-sm btn-success"
                             @click="jobStore.approveJob(job.id)"
@@ -271,12 +266,7 @@
                         <span class="badge bg-success">Approved</span>
                       </td>
                       <td>
-                        <button
-                          class="btn btn-sm btn-outline-secondary"
-                          @click="viewJobDetails(job.id)"
-                        >
-                          View Details
-                        </button>
+                       
                       </td>
                     </tr>
                     <tr v-if="jobStore.approvedJobs.length === 0">

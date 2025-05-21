@@ -146,36 +146,33 @@ export const useJobStore = defineStore("job", {
       }
     },
 
-    async fetchJobDetails(jobId) {
-      this.loading = true;
-      this.error = null;
-      try {
-        const response = await api.get(`/admin/job/${jobId}`);
-        const job = response.data.data;
-        this.currentJob = {
-          id: job.id,
-          title: job.title,
-          company: job.company,
-          location: job.location,
-          salary: this.formatSalary(job.salary),
-          datePosted: this.formatDate(job.created_at),
-          dateApproved:
-            job.status === "approved" ? this.formatDate(job.updated_at) : null,
-          dateRejected:
-            job.status === "rejected" ? this.formatDate(job.updated_at) : null,
-          description: job.description,
-          status: job.status,
-        };
-      } catch (error) {
-        this.error =
-          error.response?.data?.message ||
-          error.message ||
-          "Failed to fetch job details";
-        console.error("Error fetching job details:", error);
-      } finally {
-        this.loading = false;
-      }
-    },
+   async fetchJobDetails(jobId) {
+  this.loading = true;
+  this.error = null;
+  try {
+    const response = await api.get(`/jobs/${jobId}`);
+    const job = response.data.data;
+    this.currentJob = {
+      id: job.id,
+      title: job.title,
+      company: job.company,
+      location: job.location,
+      salary: this.formatSalary(job.salary),
+      job_type: job.job_type,
+      datePosted: this.formatDate(job.created_at),
+      dateApproved: job.status === 'approved' ? this.formatDate(job.updated_at) : null,
+      dateRejected: job.status === 'rejected' ? this.formatDate(job.updated_at) : null,
+      description: job.description,
+      status: job.status,
+      rejection_reason: job.rejection_reason
+    };
+  } catch (error) {
+    this.error = error.response?.data?.message || error.message || "Failed to fetch job details";
+    console.error("Error fetching job details:", error);
+  } finally {
+    this.loading = false;
+  }
+},
 
     async approveJob(jobId) {
       this.loading = true;
