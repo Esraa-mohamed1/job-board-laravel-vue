@@ -14,80 +14,58 @@
         </div>
       </div>
 
-      <form @submit.prevent="submitJob" class="job-posting-form needs-validation" novalidate :class="{'was-validated': formSubmitted}">
+      <form @submit.prevent="submitJob" class="job-posting-form needs-validation" :class="{ 'was-validated': formSubmitted }">
         <!-- Basic Information Section -->
         <div class="form-section card-style">
           <div class="section-header" @click="toggleSection('basic')">
             <h2 class="section-title"><i class="fas fa-info-circle me-2"></i>Basic Information</h2>
-            <i class="fas" :class="{'fa-chevron-down': !expandedSections.basic, 'fa-chevron-up': expandedSections.basic}"></i>
+            <i class="fas" :class="{ 'fa-chevron-down': !expandedSections.basic, 'fa-chevron-up': expandedSections.basic }"></i>
           </div>
           <div class="section-content" v-show="expandedSections.basic">
             <div class="row g-3">
               <div class="col-md-6">
                 <div class="form-group floating-label">
-                  <input type="text" id="job-title" v-model="job.title" 
-                         class="form-control" 
-                         placeholder=" "
-                         required
-                         @input="validateField('title')">
+                  <input type="text" id="job-title" v-model="job.title" class="form-control" placeholder=" " required @input="validateField('title')">
                   <label for="job-title">Job Title*</label>
-                  <div class="invalid-feedback animated-feedback">
-                    {{ errors.title || 'Please provide a job title.' }}
-                  </div>
+                  <div class="invalid-feedback animated-feedback">{{ errors.title || 'Please provide a job title.' }}</div>
                 </div>
               </div>
-              
               <div class="col-md-6">
                 <div class="form-group floating-label">
-                  <select id="job-type" v-model="job.type" 
-                          class="form-select" 
-                          required
-                          @change="validateField('type')">
+                  <select id="job-type" v-model="job.job_type" class="form-select" required @change="validateField('job_type')">
                     <option value="" disabled selected></option>
                     <option value="full-time">Full-time</option>
                     <option value="part-time">Part-time</option>
                     <option value="contract">Contract</option>
+                    <option value="freelance">Freelance</option>
                     <option value="internship">Internship</option>
-                    <option value="remote">Remote</option>
                   </select>
                   <label for="job-type">Job Type*</label>
-                  <div class="invalid-feedback animated-feedback">
-                    {{ errors.type || 'Please select a job type.' }}
-                  </div>
+                  <div class="invalid-feedback animated-feedback">{{ errors.job_type || 'Please select a job type.' }}</div>
                 </div>
               </div>
-              
               <div class="col-md-6">
                 <div class="form-group floating-label">
-                  <select id="job-category" v-model="job.category" 
-                          class="form-select" 
-                          required
-                          @change="validateField('category')">
+                  <select id="job-category" v-model="job.category_id" class="form-select" required @change="validateField('category_id')">
                     <option value="" disabled selected></option>
-                    <option value="development">Development</option>
-                    <option value="design">Design</option>
-                    <option value="marketing">Marketing</option>
-                    <option value="sales">Sales</option>
-                    <option value="support">Support</option>
+                    <option v-for="category in categories" :value="category.id" :key="category.id">{{ category.name }}</option>
                   </select>
                   <label for="job-category">Category*</label>
-                  <div class="invalid-feedback animated-feedback">
-                    {{ errors.category || 'Please select a category.' }}
-                  </div>
+                  <div class="invalid-feedback animated-feedback">{{ errors.category_id || 'Please select a category.' }}</div>
                 </div>
               </div>
-              
               <div class="col-md-6">
                 <div class="form-group floating-label">
-                  <input type="text" id="job-location" v-model="job.location" 
-                         class="form-control" 
-                         placeholder=" "
-                         required
-                         @input="validateField('location')">
+                  <input type="text" id="job-location" v-model="job.location" class="form-control" placeholder=" " required @input="validateField('location')">
                   <label for="job-location">Location*</label>
-                  <div class="invalid-feedback animated-feedback">
-                    {{ errors.location || 'Please provide a location.' }}
-                  </div>
+                  <div class="invalid-feedback animated-feedback">{{ errors.location || 'Please provide a location.' }}</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group floating-label">
+                  <input type="text" id="company" v-model="job.company" class="form-control" placeholder=" " required @input="validateField('company')">
+                  <label for="company">Company*</label>
+                  <div class="invalid-feedback animated-feedback">{{ errors.company || 'Please provide a company name.' }}</div>
                 </div>
               </div>
             </div>
@@ -98,68 +76,49 @@
         <div class="form-section card-style">
           <div class="section-header" @click="toggleSection('salary')">
             <h2 class="section-title"><i class="fas fa-dollar-sign me-2"></i>Salary Information</h2>
-            <i class="fas" :class="{'fa-chevron-down': !expandedSections.salary, 'fa-chevron-up': expandedSections.salary}"></i>
+            <i class="fas" :class="{ 'fa-chevron-down': !expandedSections.salary, 'fa-chevron-up': expandedSections.salary }"></i>
           </div>
           <div class="section-content" v-show="expandedSections.salary">
             <div class="row g-3">
               <div class="col-md-4">
                 <div class="form-group floating-label">
-                  <select id="salary-type" v-model="job.salaryType" class="form-select" @change="validateSalary">
+                  <select id="salary-type" v-model="job.salary_type" class="form-select" @change="validateSalary">
                     <option value="range">Salary Range</option>
                     <option value="fixed">Fixed Salary</option>
-                    <option value="negotiable">Negotiable</option>
                   </select>
                   <label for="salary-type">Salary Type</label>
                 </div>
               </div>
-              
-              <template v-if="job.salaryType === 'range'">
+              <template v-if="job.salary_type === 'range'">
                 <div class="col-md-4">
                   <div class="form-group floating-label">
                     <div class="input-group">
                       <span class="input-group-text">$</span>
-                      <input type="number" id="min-salary" v-model.number="job.minSalary" 
-                             class="form-control" 
-                             placeholder=" "
-                             @input="validateSalary">
+                      <input type="number" id="min-salary" v-model.number="job.min_salary" class="form-control" placeholder=" " @input="validateSalary">
                       <label for="min-salary">Minimum Salary</label>
                     </div>
-                    <div class="invalid-feedback animated-feedback">
-                      {{ errors.minSalary || 'Please provide a valid minimum salary.' }}
-                    </div>
+                    <div class="invalid-feedback animated-feedback">{{ errors.min_salary || 'Please provide a valid minimum salary.' }}</div>
                   </div>
                 </div>
-                
                 <div class="col-md-4">
                   <div class="form-group floating-label">
                     <div class="input-group">
                       <span class="input-group-text">$</span>
-                      <input type="number" id="max-salary" v-model.number="job.maxSalary" 
-                             class="form-control" 
-                             placeholder=" "
-                             @input="validateSalary">
+                      <input type="number" id="max-salary" v-model.number="job.max_salary" class="form-control" placeholder=" " @input="validateSalary">
                       <label for="max-salary">Maximum Salary</label>
                     </div>
-                    <div class="invalid-feedback animated-feedback">
-                      {{ errors.maxSalary || 'Please provide a valid maximum salary.' }}
-                    </div>
+                    <div class="invalid-feedback animated-feedback">{{ errors.max_salary || 'Please provide a valid maximum salary.' }}</div>
                   </div>
                 </div>
               </template>
-              
-              <div class="col-md-4" v-if="job.salaryType === 'fixed'">
+              <div class="col-md-4" v-if="job.salary_type === 'fixed'">
                 <div class="form-group floating-label">
                   <div class="input-group">
                     <span class="input-group-text">$</span>
-                    <input type="number" id="fixed-salary" v-model.number="job.fixedSalary" 
-                           class="form-control" 
-                           placeholder=" "
-                           @input="validateSalary">
-                    <label for="fixed-salary">Fixed Salary</label>
+                    <input type="number" id="salary" v-model.number="job.salary" class="form-control" placeholder=" " @input="validateSalary">
+                    <label for="salary">Fixed Salary</label>
                   </div>
-                  <div class="invalid-feedback animated-feedback">
-                    {{ errors.fixedSalary || 'Please provide a valid fixed salary.' }}
-                  </div>
+                  <div class="invalid-feedback animated-feedback">{{ errors.salary || 'Please provide a valid fixed salary.' }}</div>
                 </div>
               </div>
             </div>
@@ -170,47 +129,45 @@
         <div class="form-section card-style">
           <div class="section-header" @click="toggleSection('requirements')">
             <h2 class="section-title"><i class="fas fa-chart-line me-2"></i>Requirements</h2>
-            <i class="fas" :class="{'fa-chevron-down': !expandedSections.requirements, 'fa-chevron-up': expandedSections.requirements}"></i>
+            <i class="fas" :class="{ 'fa-chevron-down': !expandedSections.requirements, 'fa-chevron-up': expandedSections.requirements }"></i>
           </div>
           <div class="section-content" v-show="expandedSections.requirements">
             <div class="row g-3">
               <div class="col-md-4">
                 <div class="form-group floating-label">
-                  <select id="education" v-model="job.education" class="form-select">
+                  <select id="education" v-model="job.education_level" class="form-select" required @change="validateField('education_level')">
                     <option value="" disabled selected></option>
-                    <option value="high-school">High School</option>
+                    <option value="high_school">High School</option>
                     <option value="bachelor">Bachelor's Degree</option>
                     <option value="master">Master's Degree</option>
                     <option value="phd">PhD</option>
                   </select>
-                  <label for="education">Education Level</label>
+                  <label for="education">Education Level*</label>
+                  <div class="invalid-feedback animated-feedback">{{ errors.education_level || 'Please select an education level.' }}</div>
                 </div>
               </div>
-              
               <div class="col-md-4">
                 <div class="form-group floating-label">
-                  <select id="experience" v-model="job.experience" class="form-select">
+                  <select id="experience" v-model="job.experience_level" class="form-select" required @change="validateField('experience_level')">
                     <option value="" disabled selected></option>
                     <option value="entry">Entry Level</option>
                     <option value="mid">Mid Level (2-5 years)</option>
                     <option value="senior">Senior Level (5+ years)</option>
-                    <option value="executive">Executive</option>
                   </select>
-                  <label for="experience">Experience Level</label>
+                  <label for="experience">Experience Level*</label>
+                  <div class="invalid-feedback animated-feedback">{{ errors.experience_level || 'Please select an experience level.' }}</div>
                 </div>
               </div>
-              
               <div class="col-md-4">
                 <div class="form-group floating-label">
-                  <select id="job-level" v-model="job.level" class="form-select">
+                  <select id="job-level" v-model="job.job_level" class="form-select" required @change="validateField('job_level')">
                     <option value="" disabled selected></option>
-                    <option value="intern">Intern</option>
                     <option value="junior">Junior</option>
                     <option value="mid">Mid-level</option>
                     <option value="senior">Senior</option>
-                    <option value="lead">Lead</option>
                   </select>
-                  <label for="job-level">Job Level</label>
+                  <label for="job-level">Job Level*</label>
+                  <div class="invalid-feedback animated-feedback">{{ errors.job_level || 'Please select a job level.' }}</div>
                 </div>
               </div>
             </div>
@@ -221,81 +178,60 @@
         <div class="form-section card-style">
           <div class="section-header" @click="toggleSection('details')">
             <h2 class="section-title"><i class="fas fa-align-left me-2"></i>Job Details</h2>
-            <i class="fas" :class="{'fa-chevron-down': !expandedSections.details, 'fa-chevron-up': expandedSections.details}"></i>
+            <i class="fas" :class="{ 'fa-chevron-down': !expandedSections.details, 'fa-chevron-up': expandedSections.details }"></i>
           </div>
           <div class="section-content" v-show="expandedSections.details">
             <div class="row g-3">
               <div class="col-12">
                 <div class="form-group floating-label">
-                  <textarea id="job-description" v-model="job.description" 
-                            class="form-control" rows="4"
-                            placeholder=" "
-                            required
-                            @input="validateField('description')"></textarea>
+                  <textarea id="job-description" v-model="job.description" class="form-control" rows="4" placeholder=" " required @input="validateField('description')"></textarea>
                   <label for="job-description">Job Description*</label>
-                  <div class="invalid-feedback animated-feedback">
-                    {{ errors.description || 'Please provide a job description.' }}
-                  </div>
+                  <div class="invalid-feedback animated-feedback">{{ errors.description || 'Please provide a job description.' }}</div>
                 </div>
               </div>
-              
               <div class="col-12">
                 <div class="form-group floating-label">
-                  <textarea id="responsibilities" v-model="job.responsibilities" 
-                            class="form-control" rows="4"
-                            placeholder=" "
-                            required
-                            @input="validateField('responsibilities')"></textarea>
+                  <textarea id="responsibilities" v-model="job.responsibilities" class="form-control" rows="4" placeholder=" " required @input="validateField('responsibilities')"></textarea>
                   <label for="responsibilities">Responsibilities*</label>
-                  <div class="invalid-feedback animated-feedback">
-                    {{ errors.responsibilities || 'Please provide job responsibilities.' }}
-                  </div>
+                  <div class="invalid-feedback animated-feedback">{{ errors.responsibilities || 'Please provide job responsibilities.' }}</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Skills & Keywords Section -->
+        <!-- Skills & Tags Section -->
         <div class="form-section card-style">
           <div class="section-header" @click="toggleSection('skills')">
-            <h2 class="section-title"><i class="fas fa-tags me-2"></i>Skills & Keywords</h2>
-            <i class="fas" :class="{'fa-chevron-down': !expandedSections.skills, 'fa-chevron-up': expandedSections.skills}"></i>
+            <h2 class="section-title"><i class="fas fa-tags me-2"></i>Skills & Tags</h2>
+            <i class="fas" :class="{ 'fa-chevron-down': !expandedSections.skills, 'fa-chevron-up': expandedSections.skills }"></i>
           </div>
           <div class="section-content" v-show="expandedSections.skills">
             <div class="row g-3">
               <div class="col-md-6">
                 <div class="form-group floating-label">
-                  <input type="text" id="job-keywords" v-model="keywordInput" 
-                         @keydown.enter.prevent="addKeywords"
-                         @blur="addKeywords"
-                         class="form-control"
-                         placeholder=" ">
-                  <label for="job-keywords">Job Keywords</label>
-                  <small class="text-hint">Press Enter or click outside to add keywords</small>
-                  <div v-if="job.keywords" class="keywords-preview">
-                    <strong>Keywords:</strong> {{ job.keywords }}
+                  <input type="text" id="job-tags" v-model="tagInput" @keydown.enter.prevent="addTags" @blur="addTags" class="form-control" placeholder=" ">
+                  <label for="job-tags">Job Tags</label>
+                  <small class="text-hint">Press Enter or click outside to add tags</small>
+                  <div v-if="job.tags.length" class="keywords-preview">
+                    <strong>Tags:</strong> {{ job.tags.join(', ') }}
                   </div>
+                  <div class="invalid-feedback animated-feedback">{{ errors.tags || 'Please provide at least one tag.' }}</div>
                 </div>
               </div>
-              
               <div class="col-md-6">
                 <div class="form-group">
-                  <label class="form-label">Required Skills</label>
+                  <label class="form-label">Required Skills*</label>
                   <div class="skills-container">
-                    <span v-for="(skill, index) in job.skills" :key="index" 
-                          class="skill-badge">
-                      {{ skill }} 
-                      <button type="button" class="skill-remove" 
-                              @click="removeSkill(index)" aria-label="Remove">
+                    <span v-for="(skill, index) in job.skills" :key="index" class="skill-badge">
+                      {{ skill }}
+                      <button type="button" class="skill-remove" @click="removeSkill(index)" aria-label="Remove">
                         <i class="fas fa-times"></i>
                       </button>
                     </span>
-                    <input type="text" class="skill-input" 
-                           v-model="skillInput" 
-                           @keydown.enter.prevent="addSkill"
-                           placeholder="Add skill and press Enter...">
+                    <input type="text" class="skill-input" v-model="skillInput" @keydown.enter.prevent="addSkill" placeholder="Add skill and press Enter...">
                   </div>
+                  <div class="invalid-feedback animated-feedback" v-if="errors.skills">{{ errors.skills }}</div>
                 </div>
               </div>
             </div>
@@ -321,187 +257,256 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      job: {
-        title: '',
-        type: '',
-        category: '',
-        location: '',
-        salaryType: 'range',
-        minSalary: '',
-        maxSalary: '',
-        fixedSalary: '',
-        salaryTax: '',
-        education: '',
-        experience: '',
-        level: '',
-        description: '',
-        responsibilities: '',
-        skills: [],
-        keywords: ''
-      },
-      skillInput: '',
-      keywordInput: '',
-      isLoading: false,
-      formSubmitted: false,
-      expandedSections: {
-        basic: true,
-        salary: true,
-        requirements: true,
-        details: true,
-        skills: true
-      },
-      errors: {
-        title: '',
-        type: '',
-        category: '',
-        location: '',
-        description: '',
-        responsibilities: '',
-        minSalary: '',
-        maxSalary: '',
-        fixedSalary: ''
-      }
-    };
-  },
-  computed: {
-    hasErrors() {
-      return Object.values(this.errors).some(error => error !== '');
-    }
-  },
-  methods: {
-    toggleSection(section) {
-      this.expandedSections[section] = !this.expandedSections[section];
-    },
-    validateField(field) {
-      const value = this.job[field];
-      if (['title', 'location', 'description', 'responsibilities'].includes(field)) {
-        this.errors[field] = value.trim() ? '' : `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
-      } else if (['type', 'category'].includes(field)) {
-        this.errors[field] = value ? '' : `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
-      }
-    },
-    validateSalary() {
-      if (this.job.salaryType === 'range') {
-        this.errors.minSalary = this.job.minSalary === '' || this.job.minSalary < 0 ? 'Minimum salary must be a positive number' : '';
-        this.errors.maxSalary = this.job.maxSalary === '' || this.job.maxSalary < 0 ? 'Maximum salary must be a positive number' : 
-                               this.job.minSalary && this.job.maxSalary && this.job.minSalary > this.job.maxSalary ? 
-                               'Minimum salary cannot exceed maximum salary' : '';
-      } else if (this.job.salaryType === 'fixed') {
-        this.errors.fixedSalary = this.job.fixedSalary === '' || this.job.fixedSalary < 0 ? 'Fixed salary must be a positive number' : '';
-      } else {
-        this.errors.minSalary = '';
-        this.errors.maxSalary = '';
-        this.errors.fixedSalary = '';
-      }
-    },
-    validateForm() {
-      this.validateField('title');
-      this.validateField('type');
-      this.validateField('category');
-      this.validateField('location');
-      this.validateField('description');
-      this.validateField('responsibilities');
-      this.validateSalary();
-    },
-    addSkill() {
-      const skill = this.skillInput.trim();
-      if (skill && !this.job.skills.includes(skill)) {
-        this.job.skills.push(skill);
-        this.skillInput = '';
-      }
-    },
-    removeSkill(index) {
-      this.job.skills.splice(index, 1);
-    },
-    addKeywords() {
-      if (this.keywordInput) {
-        const newKeywords = this.keywordInput.split(',')
-          .map(k => k.trim())
-          .filter(k => k.length > 0);
-        
-        const existingKeywords = this.job.keywords ? this.job.keywords.split(', ') : [];
-        const allKeywords = [...new Set([...existingKeywords, ...newKeywords])];
-        
-        this.job.keywords = allKeywords.join(', ');
-        this.keywordInput = '';
-      }
-    },
-    
-    async submitJob() {
-      this.formSubmitted = true;
-      this.validateForm();
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import axios from 'axios';
 
-      if (this.hasErrors) {
-        this.showAlert('Please fix the validation errors before submitting.', 'error');
-        return;
-      }
+// Reactive state
+const job = ref({
+  title: '',
+  job_type: '',
+  category_id: '',
+  location: '',
+  company: '',
+  salary_type: 'range',
+  min_salary: '',
+  max_salary: '',
+  salary: '',
+  education_level: '',
+  experience_level: '',
+  job_level: '',
+  description: '',
+  responsibilities: '',
+  skills: [],
+  tags: [],
+});
 
-      try {
-        this.isLoading = true;
-        const response = await fetch('http://localhost:3000/jobs', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(this.job)
-        });
-        
-        if (!response.ok) throw new Error('Job submission failed');
-        
-        this.showAlert('Job posted successfully!', 'success');
-        this.resetForm();
-        this.formSubmitted = false;
-      } catch (error) {
-        this.showAlert(error.message, 'error');
-        console.error('Submission error:', error);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    resetForm() {
-      this.job = {
-        title: '',
-        type: '',
-        category: '',
-        location: '',
-        salaryType: 'range',
-        minSalary: '',
-        maxSalary: '',
-        fixedSalary: '',
-        salaryTax: '',
-        education: '',
-        experience: '',
-        level: '',
-        description: '',
-        responsibilities: '',
-        skills: [],
-        keywords: ''
-      };
-      this.skillInput = '';
-      this.keywordInput = '';
-      this.errors = {
-        title: '',
-        type: '',
-        category: '',
-        location: '',
-        description: '',
-        responsibilities: '',
-        minSalary: '',
-        maxSalary: '',
-        fixedSalary: ''
-      };
-    },
-    showAlert(message, type) {
-      // Replace with your preferred alert/notification system
-      alert(`${type.toUpperCase()}: ${message}`);
-    }
+const skillInput = ref('');
+const tagInput = ref('');
+const isLoading = ref(false);
+const formSubmitted = ref(false);
+const categories = ref([]);
+const expandedSections = ref({
+  basic: true,
+  salary: true,
+  requirements: true,
+  details: true,
+  skills: true,
+});
+
+const errors = ref({
+  title: '',
+  job_type: '',
+  category_id: '',
+  location: '',
+  company: '',
+  description: '',
+  responsibilities: '',
+  min_salary: '',
+  max_salary: '',
+  salary: '',
+  education_level: '',
+  experience_level: '',
+  job_level: '',
+  skills: '',
+  tags: '',
+});
+
+const hasErrors = computed(() => Object.values(errors.value).some((error) => error !== ''));
+
+const setupAxios = async () => {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }
 };
+
+const fetchCategories = async () => {
+  try {
+    const response = await axios.get('http://localhost:8000/api/categories');
+    categories.value = response.data;
+  } catch (error) {
+    showAlert('Failed to fetch categories.', 'error');
+  }
+};
+
+const toggleSection = (section) => {
+  expandedSections.value[section] = !expandedSections.value[section];
+};
+
+// Validate individual field
+const validateField = (field) => {
+  const value = job.value[field];
+  if (['title', 'location', 'company', 'description', 'responsibilities'].includes(field)) {
+    errors.value[field] = value.trim() ? '' : `${field.replace('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase())} is required`;
+  } else if (['job_type', 'category_id', 'education_level', 'experience_level', 'job_level'].includes(field)) {
+    errors.value[field] = value ? '' : `${field.replace('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase())} is required`;
+  } else if (field === 'skills') {
+    errors.value.skills = job.value.skills.length >= 3 ? '' : 'At least 3 skills are required';
+  } else if (field === 'tags') {
+    errors.value.tags = job.value.tags.length > 0 ? '' : 'At least one tag is required';
+  }
+};
+
+// Validate salary fields
+const validateSalary = () => {
+  if (job.value.salary_type === 'range') {
+    errors.value.min_salary = job.value.min_salary === '' || job.value.min_salary < 0 ? 'Minimum salary must be a positive number' : '';
+    errors.value.max_salary =
+      job.value.max_salary === '' || job.value.max_salary < 0
+        ? 'Maximum salary must be a positive number'
+        : job.value.min_salary && job.value.max_salary && job.value.min_salary > job.value.max_salary
+        ? 'Minimum salary cannot exceed maximum salary'
+        : '';
+    errors.value.salary = '';
+  } else if (job.value.salary_type === 'fixed') {
+    errors.value.salary = job.value.salary === '' || job.value.salary < 0 ? 'Fixed salary must be a positive number' : '';
+    errors.value.min_salary = '';
+    errors.value.max_salary = '';
+  }
+};
+
+// Validate entire form
+const validateForm = () => {
+  ['title', 'job_type', 'category_id', 'location', 'company', 'description', 'responsibilities', 'education_level', 'experience_level', 'job_level', 'skills', 'tags'].forEach(validateField);
+  validateSalary();
+};
+
+// Add skill
+const addSkill = () => {
+  const skill = skillInput.value.trim();
+  if (skill && !job.value.skills.includes(skill)) {
+    job.value.skills.push(skill);
+    skillInput.value = '';
+    validateField('skills');
+  }
+};
+
+// Remove skill
+const removeSkill = (index) => {
+  job.value.skills.splice(index, 1);
+  validateField('skills');
+};
+
+// Add tags
+const addTags = () => {
+  if (tagInput.value) {
+    const newTags = tagInput.value
+      .split(',')
+      .map((k) => k.trim())
+      .filter((k) => k.length > 0 && !job.value.tags.includes(k));
+    job.value.tags = [...new Set([...job.value.tags, ...newTags])];
+    tagInput.value = '';
+    validateField('tags');
+  }
+};
+
+// Submit job
+const submitJob = async () => {
+  formSubmitted.value = true;
+  validateForm();
+
+  if (hasErrors.value) {
+    showAlert('Please fix the validation errors before submitting.', 'error');
+    return;
+  }
+
+  try {
+    isLoading.value = true;
+    await setupAxios();
+    const response = await axios.post('http://localhost:8000/api/jobs', job.value);
+    showAlert('Job posted successfully!', 'success');
+    resetForm();
+    formSubmitted.value = false;
+  } catch (error) {
+    if (error.response?.status === 422) {
+      const backendErrors = error.response.data.errors;
+      Object.keys(backendErrors).forEach((key) => {
+        errors.value[key] = backendErrors[key][0];
+      });
+      showAlert('Please fix the validation errors.', error);
+    } else if (error.response?.status === 401) {
+      showAlert('Unauthorized. Please log in.', error);
+    } else {
+      showAlert(error.message || 'Job submission failed',error);
+    }
+    console.error('Submission error:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Reset form
+const resetForm = () => {
+  job.value = {
+    title: '',
+    job_type: '',
+    category_id: '',
+    location: '',
+    company: '',
+    salary_type: 'range',
+    min_salary: '',
+    max_salary: '',
+    salary: '',
+    education_level: '',
+    experience_level: '',
+    job_level: '',
+    description: '',
+    responsibilities: '',
+    skills: [],
+    tags: [],
+  };
+  skillInput.value = '';
+  tagInput.value = '';
+  errors.value = {
+    title: '',
+    job_type: '',
+    category_id: '',
+    location: '',
+    company: '',
+    description: '',
+    responsibilities: '',
+    min_salary: '',
+    max_salary: '',
+    salary: '',
+    education_level: '',
+    experience_level: '',
+    job_level: '',
+    skills: '',
+    tags: '',
+  };
+  formSubmitted.value = false;
+};
+
+// Show alert
+const showAlert = (message, type) => {
+  alert(`${type.toUpperCase()}: ${message}`); // Replace with your preferred notification system (e.g., Vue Toastification)
+};
+
+// Initialize
+onMounted(async () => {
+  await setupAxios();
+  await fetchCategories();
+});
 </script>
 
 <style scoped>
+/* Keep your existing CSS unchanged */
+.employer-dashboard {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.job-posting-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
 .employer-dashboard {
   max-width: 900px;
   margin: 2rem auto;
