@@ -120,10 +120,7 @@ const clearAuthData = () => {
 }
 
 .brand-text {
-  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: #2563eb;
   font-weight: 700;
   transition: all 0.3s ease;
 }
@@ -132,9 +129,7 @@ const clearAuthData = () => {
   transform: translateY(-2px);
 }
 
-.navbar-brand:hover .brand-text {
-  background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%);
-}
+
 
 /* Nav Links with Advanced Hover Effects */
 .nav-link {

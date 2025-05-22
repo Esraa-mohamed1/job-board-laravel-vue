@@ -9,7 +9,7 @@
         <div class="container">
           <div class="row align-items-center">
             <div class="col-lg-7">
-              <h1 class="hero-title">Find Your Dream Job Today</h1>
+              <h1 class="hero-title fw-bold">Find Your Dream Job Today</h1>
               <p class="hero-subtitle">Join thousands of companies and candidates connecting on our platform</p>
               <div class="popular-tags">
                 <span>Popular Searches:</span>
@@ -36,7 +36,7 @@
             </div>
             <div class="col-lg-5 d-none d-lg-block ">
               <div class="hero-image">
-                <img src="../../assets/pic.png" alt="Job seekers illustration" class="img-fluid floating-animation">
+                <img src="../../assets/work-home-concept-design.png" alt="Job seekers illustration" class="img-fluid floating-animation">
               </div>
             </div>
           </div>
@@ -857,7 +857,7 @@ document.addEventListener('DOMContentLoaded', function() {
   --warning-color: #f59e0b;
   --danger-color: #ef4444;
   
-  --dark-color: #021d47;
+  --dark-color: #002561;
   --darker-color: #0f172a;
   --light-color: #f8fafc;
   --lighter-color: #f1f5f9;
@@ -1043,7 +1043,7 @@ a:hover {
   position: relative;
   height: 80vh;
   padding: 6rem 0;
-  background: linear-gradient(90deg,rgba(0, 50, 230, 1) 0%, rgba(98, 174, 240, 1) 62%, rgba(219, 241, 255, 1) 100%);
+  background: linear-gradient(90deg,rgb(38, 107, 209) 0%, rgb(77, 155, 224) 62%, rgba(219, 241, 255, 1) 100%);
   color: var(--white);
   overflow: hidden;
 }
@@ -1666,7 +1666,7 @@ a:hover {
   CTA Section
 ================ */
 .cta-section {
-  background: linear-gradient(135deg, var(--primary-color), var(--darker-color));
+  background: var(--darker-color);
   color: var(--white);
   padding: 4rem 0;
   text-align: center;
@@ -1697,7 +1697,7 @@ a:hover {
   Footer
 ================ */
 .site-footer {
-  background: var(--dark-color);
+  background: var(--darker-color);
   color: var(--white);
   padding: 4rem 0 2rem;
 }

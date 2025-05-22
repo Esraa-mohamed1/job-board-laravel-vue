@@ -517,7 +517,7 @@ export default {
     
     toggleFilterDropdown() {
     this.showFilterDropdown = !this.showFilterDropdown;
-    this.showSortDropdown = false; // إغلاق قائمة التصنيف إذا كانت مفتوحة
+    this.showSortDropdown = false;
   },
   
   toggleSortDropdown() {
