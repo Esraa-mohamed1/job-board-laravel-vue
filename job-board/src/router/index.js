@@ -95,13 +95,14 @@ const routes = [
     children: [
       {
         path: "",
-        redirect: { name: "employer-overview" },
+        redirect: { name: "EmployerOverview" },
       },
-      {
-        path: "overview",
-        name: "employer-overview",
-        component: EmployerOverview,
-      },
+       {
+       path: 'overview',
+      name: 'EmployerOverview',
+      component: () => import('@/views/employer/Overview.vue'),
+     },
+
       {
         path: "profile",
         name: "employer-profile",
@@ -133,6 +134,12 @@ const routes = [
       },
     ],
   },
+
+
+ 
+
+
+
   {
     path: "/candidate",
     name: "candidate",

@@ -195,7 +195,7 @@
       "logo": "/images/company-logos/techcorp.png"
     },
     {
-      "id": 2,
+      "id": "2",
       "title": "UX Designer",
       "company": "DesignHub",
       "location": "New York, NY",
@@ -210,7 +210,7 @@
       "logo": "/images/company-logos/designhub.png"
     },
     {
-      "id": 3,
+      "id": "3",
       "title": "Backend Engineer",
       "company": "DataSystems",
       "location": "Remote",
@@ -225,12 +225,12 @@
       "logo": "/images/company-logos/datasystems.png"
     },
     {
-      "id": 4,
+      "id": "4",
       "title": "Product Manager",
       "company": "InnovateCo",
       "location": "Boston, MA",
       "jobType": "Full Time",
-      "category":"Career Tips",
+      "category": "Career Tips",
       "salary": "$110,000/yr",
       "description": "Lead product development from conception to launch.",
       "requirements": [
@@ -241,7 +241,7 @@
       "logo": "/images/company-logos/innovateco.png"
     },
     {
-      "id": 6,
+      "id": "6",
       "title": "Product Manager",
       "category": "Product Management",
       "location": "Boston, MA",
@@ -249,10 +249,16 @@
       "company": "NextGen Products",
       "postedDate": "2025-05-09",
       "salary": "110k - 140k",
-      "tags": ["Agile", "Scrum", "Leadership", "Onsite", "SaaS"]
+      "tags": [
+        "Agile",
+        "Scrum",
+        "Leadership",
+        "Onsite",
+        "SaaS"
+      ]
     },
     {
-      "id": 7,
+      "id": "7",
       "title": "Backend Developer",
       "category": "Engineering",
       "location": "Denver, CO",
@@ -260,12 +266,60 @@
       "company": "Cloud Systems",
       "postedDate": "2025-05-08",
       "salary": "95k - 115k",
-      "tags": ["Node.js", "MongoDB", "Mid-Level", "Remote", "API Design"]
+      "tags": [
+        "Node.js",
+        "MongoDB",
+        "Mid-Level",
+        "Remote",
+        "API Design"
+      ]
+    },
+    {
+      "id": "9eec",
+      "title": "senior",
+      "type": "full-time",
+      "category": "development",
+      "location": "ny",
+      "salaryType": "fixed",
+      "minSalary": "",
+      "maxSalary": "",
+      "fixedSalary": 800,
+      "salaryTax": "",
+      "education": "high-school",
+      "experience": "entry",
+      "level": "intern",
+      "description": "no",
+      "responsibilities": "mooo",
+      "skills": [
+        "jk"
+      ],
+      "keywords": "ji"
+    },
+    {
+      "id": "0c71",
+      "title": "junior",
+      "type": "contract",
+      "category": "development",
+      "location": "ny",
+      "salaryType": "range",
+      "minSalary": 5000,
+      "maxSalary": 8000,
+      "fixedSalary": "",
+      "salaryTax": "",
+      "education": "high-school",
+      "experience": "entry",
+      "level": "junior",
+      "description": " ooooooooo",
+      "responsibilities": "weeeeeeee",
+      "skills": [
+        "no"
+      ],
+      "keywords": "no"
     }
   ],
   "posts": [
     {
-      "id": 1,
+      "id": "1",
       "title": "Blog Post Title",
       "date": "August 28, 2019",
       "author": "Admin",
@@ -279,7 +333,7 @@
       ]
     },
     {
-      "id": 1,
+      "id": "1",
       "title": "Blog Post Title",
       "date": "August 28, 2019",
       "author": "Admin",
@@ -293,7 +347,7 @@
       ]
     },
     {
-      "id": 1,
+      "id": "1",
       "title": "Blog Post Title",
       "date": "August 28, 2019",
       "author": "Admin",
@@ -309,36 +363,7 @@
   ],
   "blogs": [
     {
-      "id": 6,
-      "title": "How to Ace Your Job Interview",
-      "date": "August 28, 2023",
-      "author": "Career Expert",
-      "image": "https://images.pexels.com/photos/2251799/pexels-photo-2251799.jpeg?auto=compress&cs=tinysrgb&w=600",
-      "excerpt": "Learn the best strategies to impress your interviewers."
-    },{
-      "id": 5,
-      "title": "How to Ace Your Job Interview",
-      "date": "August 28, 2023",
-      "author": "Career Expert",
-      "image": "https://images.pexels.com/photos/2251799/pexels-photo-2251799.jpeg?auto=compress&cs=tinysrgb&w=600",
-      "excerpt": "Learn the best strategies to impress your interviewers."
-    },{
-      "id": 4,
-      "title": "How to Ace Your Job Interview",
-      "date": "August 28, 2023",
-      "author": "Career Expert",
-      "image": "https://images.pexels.com/photos/2251799/pexels-photo-2251799.jpeg?auto=compress&cs=tinysrgb&w=600",
-      "excerpt": "Learn the best strategies to impress your interviewers."
-    },
-
-
-
-
-
-
-
-    {
-      "id": 1,
+      "id": "6",
       "title": "How to Ace Your Job Interview",
       "date": "August 28, 2023",
       "author": "Career Expert",
@@ -346,7 +371,31 @@
       "excerpt": "Learn the best strategies to impress your interviewers."
     },
     {
-      "id": 2,
+      "id": "5",
+      "title": "How to Ace Your Job Interview",
+      "date": "August 28, 2023",
+      "author": "Career Expert",
+      "image": "https://images.pexels.com/photos/2251799/pexels-photo-2251799.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "excerpt": "Learn the best strategies to impress your interviewers."
+    },
+    {
+      "id": "4",
+      "title": "How to Ace Your Job Interview",
+      "date": "August 28, 2023",
+      "author": "Career Expert",
+      "image": "https://images.pexels.com/photos/2251799/pexels-photo-2251799.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "excerpt": "Learn the best strategies to impress your interviewers."
+    },
+    {
+      "id": "1",
+      "title": "How to Ace Your Job Interview",
+      "date": "August 28, 2023",
+      "author": "Career Expert",
+      "image": "https://images.pexels.com/photos/2251799/pexels-photo-2251799.jpeg?auto=compress&cs=tinysrgb&w=600",
+      "excerpt": "Learn the best strategies to impress your interviewers."
+    },
+    {
+      "id": "2",
       "title": "Top Tech Skills in Demand for 2023",
       "date": "September 15, 2023",
       "author": "Tech Analyst",
@@ -354,7 +403,7 @@
       "excerpt": "Discover which skills will make you most employable this year."
     },
     {
-      "id": 3,
+      "id": "3",
       "title": "Remote Work Best Practices",
       "date": "October 5, 2023",
       "author": "Remote Work Advocate",
@@ -374,7 +423,7 @@
   },
   "testimonials": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Sarah Johnson",
       "position": "Product Designer",
       "company": "Google",
@@ -382,7 +431,7 @@
       "image": "/images/testimonials/sarah.jpg"
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Michael Chen",
       "position": "Senior Developer",
       "company": "Amazon",
@@ -392,25 +441,25 @@
   ],
   "categories": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Web Development",
       "icon": "icon-code",
       "jobs": 1243
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Graphic Design",
       "icon": "icon-paint-brush",
       "jobs": 845
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "Marketing",
       "icon": "icon-bullhorn",
       "jobs": 1120
     },
     {
-      "id": 4,
+      "id": "4",
       "name": "Data Science",
       "icon": "icon-chart-bar",
       "jobs": 932
@@ -420,22 +469,26 @@
     {
       "title": "Create Account",
       "description": "Sign up and create your professional profile",
-      "icon": "icon-user-plus"
+      "icon": "icon-user-plus",
+      "id": "9389"
     },
     {
       "title": "Search Jobs",
       "description": "Browse thousands of job listings",
-      "icon": "icon-search"
+      "icon": "icon-search",
+      "id": "aaa7"
     },
     {
       "title": "Apply for Jobs",
       "description": "Submit applications to companies",
-      "icon": "icon-paper-plane"
+      "icon": "icon-paper-plane",
+      "id": "7e50"
     },
     {
       "title": "Get Hired",
       "description": "Start your new career journey",
-      "icon": "icon-trophy"
+      "icon": "icon-trophy",
+      "id": "0b4e"
     }
   ],
   "applications": [
@@ -487,21 +540,3 @@
     }
   ]
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
