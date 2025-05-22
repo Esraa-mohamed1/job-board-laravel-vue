@@ -981,9 +981,6 @@ a:hover {
   text-align: center;
 }
 
-/* ================ 
-  Buttons
-================ */
 .btn {
   display: inline-flex;
   align-items: center;
