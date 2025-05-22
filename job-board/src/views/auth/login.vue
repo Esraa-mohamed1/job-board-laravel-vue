@@ -22,9 +22,6 @@
               <i class="fas pb" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
             </button>
           </div>
-          <div><p class="forgot-password-link">
-              <router-link to="/forgot-password">Forgot your password?</router-link>
-            </p></div>
           <button type="submit" class="btn-register">
             <span v-if="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
             {{ loading ? 'Processing...' : 'Sign in' }}
@@ -36,10 +33,7 @@
         
           <div class="divider">or</div>
           
-          <button type="button" class="btn-google" @click="signInWithGoogle" :disabled="loading">
-            <img src="@/assets/google-icon.svg" alt="Google">
-            Sign up with Google
-          </button>
+          
         </form>
       </div>
     </div>
@@ -145,7 +139,7 @@ const handleLogin = async () => {
 }
 
 const showWelcomeAlert = (role) => {
-  const title = role === 'employer' ? 'Welcome Employer!' : 'Welcome Candidate!'
+  const title = role === 'employer' ? 'Welcome Employer!' : 'Welcome Admin!'
   const message = role === 'employer' 
     ? 'You now have access to employer dashboard features.' 
     : 'Start browsing jobs that match your skills.'
