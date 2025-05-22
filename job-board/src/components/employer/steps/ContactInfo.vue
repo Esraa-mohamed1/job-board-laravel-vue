@@ -1,12 +1,12 @@
 <template>
-  <div class="contact-info-container">
+  <div class="contact-info-container needs-validation">
     <div class="progress-header">
       <h2 class="section-title">Contact Information</h2>
     </div>
 
     <div class="contact-form">
       <div class="form-group full-width">
-        <label>Company Address</label>
+        <label for="companyAddress">Company Address</label>
         <input
           v-model="localData.company_address"
           type="text"
@@ -14,13 +14,14 @@
           required
           :class="{'is-invalid': errors.company_address}"
           class="form-control"
-        >
+          id="companyAddress"
+          @blur="validateField('company_address')" >
         <div v-if="errors.company_address" class="invalid-feedback">{{ errors.company_address }}</div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label>City</label>
+          <label for="city">City</label>
           <input
             v-model="localData.city"
             type="text"
@@ -28,12 +29,13 @@
             required
             :class="{'is-invalid': errors.city}"
             class="form-control"
-          >
+            id="city"
+            @blur="validateField('city')" >
           <div v-if="errors.city" class="invalid-feedback">{{ errors.city }}</div>
         </div>
-        
+
         <div class="form-group">
-          <label>Country</label>
+          <label for="country">Country</label>
           <input
             v-model="localData.country"
             type="text"
@@ -41,7 +43,8 @@
             required
             :class="{'is-invalid': errors.country}"
             class="form-control"
-          >
+            id="country"
+            @blur="validateField('country')" >
           <div v-if="errors.country" class="invalid-feedback">{{ errors.country }}</div>
         </div>
       </div>
@@ -57,8 +60,9 @@
               required
               :class="{'is-invalid': errors.country_code}"
               class="form-control country-code-input"
+              id="countryCode"
               @input="formatCountryCode"
-            >
+              @blur="validateField('country_code')" >
             <input
               v-model="localData.phone"
               type="tel"
@@ -66,7 +70,8 @@
               required
               :class="{'is-invalid': errors.phone}"
               class="form-control"
-            >
+              id="phoneNumber"
+              @blur="validateField('phone')" >
           </div>
           <div class="hint">Example: +20 for Egypt, +1 for USA</div>
           <div v-if="errors.country_code" class="invalid-feedback">{{ errors.country_code }}</div>
@@ -74,7 +79,7 @@
         </div>
 
         <div class="form-group">
-          <label>Email</label>
+          <label for="email">Email</label>
           <input
             v-model="localData.email"
             type="email"
@@ -82,7 +87,8 @@
             required
             :class="{'is-invalid': errors.email}"
             class="form-control"
-          >
+            id="email"
+            @blur="validateField('email')" >
           <div v-if="errors.email" class="invalid-feedback">{{ errors.email }}</div>
         </div>
       </div>
@@ -90,7 +96,7 @@
 
     <div class="navigation-buttons">
       <button class="btn-prev" @click="goToPreviousStep">Previous</button>
-      <button class="btn-finish" :disabled="!isFormValid" @click="submitContactInfo">Save & Complete Profile</button>
+      <button class="btn-next" :disabled="!isFormValid" @click="submitContactInfo">Next</button>
     </div>
   </div>
 </template>
@@ -98,7 +104,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 
-const emit = defineEmits(['prev', 'next', 'complete'])
+const emit = defineEmits(['prev', 'next'])
 const props = defineProps({
   formData: {
     type: Object,
@@ -124,13 +130,86 @@ const errors = ref({
   email: ''
 })
 
+// Track which fields have been touched by the user
+const touchedFields = ref({
+  company_address: false,
+  city: false,
+  country: false,
+  country_code: false,
+  phone: false,
+  email: false
+})
+
+// Modified validateField to only show errors after field is touched
+const validateField = (fieldName) => {
+  touchedFields.value[fieldName] = true
+  errors.value[fieldName] = '' // Clear previous error for this field
+
+  const value = localData.value[fieldName].trim()
+  
+  switch (fieldName) {
+    case 'company_address':
+      if (value === '') {
+        errors.value.company_address = 'Company address is required'
+      }
+      break
+    case 'city':
+      if (value === '') {
+        errors.value.city = 'City is required'
+      } else if (!/^[a-zA-Z\s]+$/.test(value)) {
+        errors.value.city = 'City should only contain letters'
+      }
+      break
+    case 'country':
+      if (value === '') {
+        errors.value.country = 'Country is required'
+      } else if (!/^[a-zA-Z\s]+$/.test(value)) {
+        errors.value.country = 'Country should only contain letters'
+      }
+      break
+    case 'country_code':
+      if (value === '') {
+        errors.value.country_code = 'Country code is required'
+      } else if (!/^\+[0-9]{1,4}$/.test(value)) {
+        errors.value.country_code = 'Please enter a valid country code (e.g. +20, +1)'
+      }
+      break
+    case 'phone':
+      if (value === '') {
+        errors.value.phone = 'Phone number is required'
+      } else if (!/^[0-9]+$/.test(value)) {
+        errors.value.phone = 'Phone number should only contain numbers'
+      } else if (value.length < 7) {
+        errors.value.phone = 'Phone number should be at least 7 digits'
+      }
+      break
+    case 'email':
+      if (value === '') {
+        errors.value.email = 'Email is required'
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        errors.value.email = 'Please enter a valid email address'
+      }
+      break
+  }
+}
+
+// Only validate fields that have been touched
 const isFormValid = computed(() => {
-  return localData.value.company_address.trim() !== '' &&
-         localData.value.city.trim() !== '' &&
-         localData.value.country.trim() !== '' &&
-         localData.value.country_code.trim() !== '' &&
-         localData.value.phone.trim() !== '' &&
-         localData.value.email.trim() !== ''
+  // Check required fields
+  if (!localData.value.company_address.trim()) return false
+  if (!localData.value.city.trim()) return false
+  if (!localData.value.country.trim()) return false
+  if (!localData.value.country_code.trim()) return false
+  if (!localData.value.phone.trim()) return false
+  if (!localData.value.email.trim()) return false
+
+  // Check if any error exists in the errors object for touched fields
+  for (const key in touchedFields.value) {
+    if (touchedFields.value[key] && errors.value[key]) {
+      return false
+    }
+  }
+  return true
 })
 
 const formatCountryCode = () => {
@@ -139,98 +218,39 @@ const formatCountryCode = () => {
   } else {
     localData.value.country_code = '+' + localData.value.country_code.slice(1).replace(/[^0-9]/g, '')
   }
-}
-
-const validateForm = () => {
-  let valid = true
-  errors.value = {
-    company_address: '',
-    city: '',
-    country: '',
-    country_code: '',
-    phone: '',
-    email: ''
-  }
-
-  if (localData.value.company_address.trim() === '') {
-    errors.value.company_address = 'Company address is required'
-    valid = false
-  }
-
-  if (localData.value.city.trim() === '') {
-    errors.value.city = 'City is required'
-    valid = false
-  } else if (!/^[a-zA-Z\s]+$/.test(localData.value.city)) {
-    errors.value.city = 'City should only contain letters'
-    valid = false
-  }
-
-  if (localData.value.country.trim() === '') {
-    errors.value.country = 'Country is required'
-    valid = false
-  } else if (!/^[a-zA-Z\s]+$/.test(localData.value.country)) {
-    errors.value.country = 'Country should only contain letters'
-    valid = false
-  }
-
-  if (localData.value.country_code.trim() === '') {
-    errors.value.country_code = 'Country code is required'
-    valid = false
-  } else if (!/^\+[0-9]{1,4}$/.test(localData.value.country_code)) {
-    errors.value.country_code = 'Please enter a valid country code (e.g. +20, +1)'
-    valid = false
-  }
-
-  if (localData.value.phone.trim() === '') {
-    errors.value.phone = 'Phone number is required'
-    valid = false
-  } else if (!/^[0-9]+$/.test(localData.value.phone)) {
-    errors.value.phone = 'Phone number should only contain numbers'
-    valid = false
-  } else if (localData.value.phone.length < 7) {
-    errors.value.phone = 'Phone number should be at least 7 digits'
-    valid = false
-  }
-
-  if (localData.value.email.trim() === '') {
-    errors.value.email = 'Email is required'
-    valid = false
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(localData.value.email)) {
-    errors.value.email = 'Please enter a valid email address'
-    valid = false
-  }
-
-  return valid
+  validateField('country_code')
 }
 
 const goToPreviousStep = () => {
   emit('prev')
 }
 
-const submitContactInfo = async () => {
-  if (!validateForm()) return;
-  
-  try {
-    const contactData = {
-      company_address: localData.value.company_address,
-      city: localData.value.city,
-      country: localData.value.country,
-      phone: `${localData.value.country_code}${localData.value.phone}`,
-      email: localData.value.email,
-      isComplete: true
-    };
-    
-    emit('next', contactData);
-    emit('complete'); // إرسال حدث الإكتمال
-  } catch (error) {
-    console.error('Error submitting contact info:', error);
-    alert('Failed to save contact information. Please try again.');
+const submitContactInfo = () => {
+  // Validate all fields on submit
+  Object.keys(touchedFields.value).forEach(field => {
+    touchedFields.value[field] = true
+    validateField(field)
+  })
+
+  if (!isFormValid.value) {
+    return
   }
+
+  const contactData = {
+    company_address: localData.value.company_address,
+    city: localData.value.city,
+    country: localData.value.country,
+    phone: `${localData.value.country_code}${localData.value.phone}`,
+    email: localData.value.email
+  }
+
+  emit('next', contactData);
+    emit('complete');
 }
 </script>
 
-
 <style scoped>
+/* Your existing styles remain largely the same, they already support Bootstrap's classes */
 .contact-info-container {
   max-width: 800px;
   margin: 0 auto;
@@ -248,7 +268,25 @@ const submitContactInfo = async () => {
   margin-bottom: 0.5rem;
   font-size: 1.5rem;
 }
+.btn-next {
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #0A65CC;
+  color: white;
+  border: none;
+}
 
+.btn-next:hover {
+  background-color: #084b99;
+}
+
+.btn-next:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
 .contact-form {
   margin-top: 2rem;
 }
@@ -258,7 +296,7 @@ const submitContactInfo = async () => {
 }
 
 .form-group.full-width {
-  grid-column: span 2;
+  /* No change, still handles layout */
 }
 
 .form-row {
@@ -277,6 +315,7 @@ label {
   font-weight: 500;
 }
 
+/* Bootstrap's .form-control will override some of this, but it's good as a base */
 input {
   width: 100%;
   padding: 0.75rem;
@@ -346,11 +385,11 @@ input {
   .form-row {
     flex-direction: column;
   }
-  
+
   .phone-input {
     flex-direction: column;
   }
-  
+
   .country-code-input {
     width: 100%;
   }
