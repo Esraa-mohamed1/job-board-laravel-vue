@@ -35,6 +35,7 @@ import SocialMedia from './steps/SocialMedia.vue'
 import ContactInfo from './steps/ContactInfo.vue'
 import CompletedProgress from './steps/CompletedProgress.vue'
 import axios from 'axios'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 const authStore = localStorage.getItem('userData')
@@ -77,28 +78,44 @@ const stepIcons = [
   'fas fa-landmark',
   'fas fa-share-alt',
   'fas fa-address-book',
-  'fas fa-check-circle'
+  'fas fa-check-circle' // Assuming this icon is for Review, you might want a distinct one for 'Complete'
 ]
 
 const progressPercentage = computed(() => {
+  // Calculates progress based on the current step's index
   return `${(currentStep.value + 1) / steps.length * 100}%`
 })
 
 const goToStep = (index) => {
+  // Allow navigation to previous steps or the final 'Complete' step
   if (index < currentStep.value || index === steps.length - 1) {
     currentStep.value = index
   }
 }
 
 const handleNextStep = (stepData) => {
+  // Merge the data received from the current step component into the main formData
   Object.assign(formData, stepData)
-  
-  if (currentStep.value < steps.length - 2) {
+
+  // Determine the next step
+  // If the current step is the one *before* Review (Contact Info, which is index 3),
+  // move directly to the Review step (index 4).
+  if (currentStep.value === 3) {
+    currentStep.value = 4 // Move from Contact Info to Review
+  }
+  // If the current step is Review (index 4), the 'next' event here means
+  // it's ready to complete, so move to the 'Complete' step (index 5).
+  // Note: ReviewStep's "Submit" button should probably emit 'complete' directly,
+  // but if it emits 'next', this handles it.
+  else if (currentStep.value === 4) {
+    currentStep.value = 5 // Move from Review to Complete
+  }
+  // For all other intermediate steps, just increment to the next step
+  else if (currentStep.value < steps.length - 1) {
     currentStep.value++
-  } else if (currentStep.value === steps.length - 2) {
-    currentStep.value = steps.length - 1
   }
 }
+
 
 const goToPrevStep = () => {
   if (currentStep.value > 0) {
@@ -109,7 +126,7 @@ const goToPrevStep = () => {
 const handleComplete = async () => {
   try {
     const formPayload = new FormData()
-    
+
     // Format date properly (ensure it's in YYYY-MM-DD format)
     const formattedDate = formData.establishment_year
       ? new Date(formData.establishment_year).toISOString().split('T')[0]
@@ -146,6 +163,10 @@ const handleComplete = async () => {
       formPayload.append('user_id', userData.id)
     }
 
+  // Log form data before sending
+  for (let [key, value] of formPayload) {
+    console.log(key, value);
+  }
     const response = await axios.post('http://localhost:8000/api/companies', formPayload, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -154,26 +175,24 @@ const handleComplete = async () => {
     })
 
     if (response.status === 201) {
+      ElMessage.success('Company profile created successfully!')
       router.push('/employer/dashboard')
     } else {
       throw new Error('Unexpected response status: ' + response.status)
     }
   } catch (error) {
     console.error('Error submitting company data:', error)
-    
+
     let errorMessage = 'Failed to save company data'
     if (error.response) {
-      // The request was made and the server responded with a status code
       errorMessage += ': ' + (error.response.data?.message || error.response.statusText)
     } else if (error.request) {
-      // The request was made but no response was received
       errorMessage += ': No response from server'
     } else {
-      // Something happened in setting up the request
       errorMessage += ': ' + error.message
     }
-    
-    alert(errorMessage)
+
+    ElMessage.error(errorMessage)
   }
 }
 </script>
