@@ -101,10 +101,11 @@
 
     <div v-else class="applications-container">
       <div 
-        v-for="application in currentTabApplications" 
-        :key="application.id" 
-        class="application-card" 
-        :class="application.status"
+      v-for="application in currentTabApplications" 
+    :key="application.id" 
+    class="application-card" 
+    :class="application.status"
+    @click="showApplicationDetails(application)"
       >
         <div class="candidate-info">
           <div class="candidate-details">
@@ -162,6 +163,81 @@
         </div>
       </div>
     </div>
+    <div v-if="selectedApplication" class="modal-overlay" @click.self="closeModal">
+      <div class="modal-content">
+        <button class="close-modal" @click="closeModal">
+          <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="modal-header">
+          <h2>Application Details</h2>
+          <span class="status-badge" :class="selectedApplication.status">
+            <i :class="statusIcons[selectedApplication.status]"></i>
+            {{ selectedApplication.status }}
+          </span>
+        </div>
+        
+        <div class="modal-body">
+          <div class="candidate-profile">
+            <div class="candidate-info">
+              <h3>{{ selectedApplication.user.name }}</h3>
+              <p class="position">{{ selectedApplication.user.position || 'No position specified' }}</p>
+              <div class="contact-info">
+                <p><i class="fas fa-envelope"></i> {{ selectedApplication.user.email }}</p>
+                <p v-if="selectedApplication.user.phone"><i class="fas fa-phone"></i> {{ selectedApplication.user.phone }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="details-section">
+            <h4><i class="fas fa-calendar-alt"></i> Applied On</h4>
+            <p>{{ formatDate(selectedApplication.created_at) }}</p>
+          </div>
+          
+          <div class="cover-letter" v-if="selectedApplication.cover_letter">
+            <h4><i class="fas fa-file-alt"></i> Cover Letter</h4>
+            <div class="cover-letter-content">
+              {{ selectedApplication.cover_letter }}
+            </div>
+          </div>
+          <div v-else class="no-cover-letter">
+            <h4><i class="fas fa-file-alt"></i> Cover Letter</h4>
+            <p>No cover letter provided</p>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button class="action-btn download-btn" @click.stop="downloadCV(selectedApplication)">
+            <i class="fas fa-download"></i> Download CV
+          </button>
+          
+          <button 
+            class="action-btn shortlist-btn" 
+            @click.stop="updateStatus(selectedApplication, 'reviewed')"
+            :disabled="selectedApplication.status === 'reviewed' || selectedApplication.status === 'accepted' || selectedApplication.status === 'rejected'"
+          >
+            <i class="fas fa-star"></i> 
+            {{ selectedApplication.status === 'reviewed' ? 'Under Review' : 'Mark as Reviewed' }}
+          </button>
+          
+          <button 
+            class="action-btn accept-btn" 
+            @click.stop="updateStatus(selectedApplication, 'accepted')"
+            :disabled="selectedApplication.status === 'accepted' || selectedApplication.status === 'rejected'"
+          >
+            <i class="fas fa-check-circle"></i> Accept
+          </button>
+          
+          <button 
+            class="action-btn reject-btn" 
+            @click.stop="updateStatus(selectedApplication, 'rejected')"
+            :disabled="selectedApplication.status === 'rejected' || selectedApplication.status === 'accepted'"
+          >
+            <i class="fas fa-times-circle"></i> Reject
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -172,7 +248,9 @@ export default {
   props: {
     id: {
       type: String,
-      required: true
+      required: true,
+      selectedApplication: null
+
     }
   },
   data() {
@@ -192,7 +270,7 @@ export default {
       accepted: 'Accepted'
     },
       statusIcons: {
-        pending: 'fas fa-clock',
+        pending: 'fas fa-hourglass-half',
         shortlisted: 'fas fa-star',
         accepted: 'fas fa-check-circle',
         rejected: 'fas fa-times-circle'
@@ -204,7 +282,9 @@ export default {
         experience: '',
         education: ''
       },
-      sortBy: 'newest'
+      sortBy: 'newest',
+      sortBy: 'newest',
+      selectedApplication: null
     };
   },
   computed: {
@@ -340,22 +420,28 @@ export default {
     });
   }
 },
-downloadCV(application) {
-  const userId = application.user.id; 
-  const resumeId = application.user.resume_id; // This property name might vary based on your backend
-
-  if (userId && resumeId) {
-    window.open(`http://localhost:8000/api/users/${userId}/resumes/${resumeId}`, '_blank');
-  } else {
-    // You might want to add a notification or alert if the CV cannot be downloaded
-    this.$notify({
-      type: 'warn',
-      title: 'CV Not Found',
-      text: 'Cannot download CV. User ID or Resume ID is missing.'
-    });
-    console.warn('Attempted to download CV, but userId or resumeId was missing:', application);
-  }
-},
+    showApplicationDetails(application) {
+      this.selectedApplication = application;
+      document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
+    },
+    
+    closeModal() {
+      this.$emit('close'); // Emit an event to the parent to close the modal
+    },
+    formatDate(dateString) {
+      if (!dateString) return '';
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    },
+    downloadCV(application) {
+      // Implement CV download logic here
+      console.log('Downloading CV for:', application.user.name);
+    },
+    updateStatus(application, newStatus) {
+      console.log(`Updating status for ${application.user.name} to ${newStatus}`);
+      this.$emit('update-status', application.id, newStatus);
+    },
+    
     applyFilters() {
       this.showFilterDropdown = false;
     },
@@ -393,7 +479,190 @@ downloadCV(application) {
   color: #007bff;
   text-decoration: none;
 }
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
 
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 25px;
+  position: relative;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+.close-modal {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+}
+
+.close-modal:hover {
+  color: #333;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #333;
+}
+
+.modal-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.candidate-profile {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 25px;
+  grid-column: 1 / -1;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.candidate-info h3 {
+  margin: 0 0 5px 0;
+  font-size: 22px;
+}
+
+.position {
+  margin: 0 0 10px 0;
+  color: #666;
+  font-size: 16px;
+}
+
+.contact-info p {
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #555;
+}
+
+.details-section {
+  margin-bottom: 20px;
+}
+
+.details-section h4 {
+  margin: 15px 0 5px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #444;
+}
+
+.details-section p {
+  margin: 0 0 15px 0;
+  color: #666;
+}
+
+.cover-letter {
+  grid-column: 1 / -1;
+  margin-top: 15px;
+}
+
+.cover-letter h4 {
+  margin: 0 0 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cover-letter-content {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  white-space: pre-line;
+  line-height: 1.6;
+}
+
+.no-cover-letter {
+  grid-column: 1 / -1;
+  color: #777;
+  font-style: italic;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  grid-column: 1 / -1;
+}
+
+/* Make sure card is clickable */
+.application-card {
+  cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modal-body {
+    grid-template-columns: 1fr;
+  }
+  
+  .modal-content {
+    padding: 15px;
+  }
+  
+  .candidate-profile {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    width: 100%;
+  }
+}
 .breadcrumb a:hover {
   text-decoration: underline;
 }

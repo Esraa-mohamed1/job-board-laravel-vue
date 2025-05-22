@@ -1,5 +1,5 @@
 <template>
-  <div class="social-media-step">
+  <div class="social-media-step">    
     <h2>Social Media Links</h2>
     <p class="subtitle">Add your company's social media profiles</p>
     
@@ -14,19 +14,25 @@
         <input
           v-model="link.platform"
           placeholder="Platform (e.g. Facebook, Twitter)"
-          required
-          :class="{'is-invalid': errors[index] && errors[index].platform}"
+          :class="{'is-invalid': (touchedLinks[index] && touchedLinks[index].platform) && (errors[index] && errors[index].platform)}"
           class="form-control"
+          @blur="markAsTouched(index, 'platform')"
+          @input="validateOnInput(index, 'platform')"
         >
         <input
           v-model="link.url"
           placeholder="Profile URL"
-          required
-          :class="{'is-invalid': errors[index] && errors[index].url}"
+          :class="{'is-invalid': touchedLinks[index] && touchedLinks[index].url && errors[index] && errors[index].url}"
           class="form-control"
+          @blur="markAsTouched(index, 'url')"
+          @input="validateOnInput(index, 'url')"
         >
-        <div v-if="getPlatformError(index)" class="invalid-feedback">{{ getPlatformError(index) }}</div>
-        <div v-if="getErrorUrl(index)" class="invalid-feedback">{{ getErrorUrl(index) }}</div>
+        <div v-if="isPlatformTouchedAndHasError(index)" class="invalid-feedback">
+          {{ getPlatformError(index) }}
+        </div>
+        <div v-if="touchedLinks[index] && touchedLinks[index].url && getErrorUrl(index)" class="invalid-feedback">
+          {{ getErrorUrl(index) }}
+        </div>
       </div>
     </div>
     
@@ -43,6 +49,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { ElMessage } from 'element-plus'
 
 const emit = defineEmits(['prev', 'next'])
 const props = defineProps({
@@ -59,17 +66,35 @@ const localData = ref({
 })
 
 const errors = ref([])
+const touchedLinks = ref([]) // Track which fields have been touched
 
 const isFormValid = computed(() => {
-  return localData.value.social_links.every(link => 
-    link.platform.trim() !== '' && 
-    link.url.trim() !== '' && 
-    isValidUrl(link.url)
-  )
+  return localData.value.social_links.every((link, index) => {
+    return link.platform.trim() !== '' &&
+           link.url.trim() !== '' &&
+           isValidUrl(link.url, link.platform) &&
+           (!errors.value[index] || (!errors.value[index].platform && !errors.value[index].url))
+  })
 })
-const isValidUrl = (url) => {
+
+const isValidUrl = (url, platform) => {
+  if (!url.trim()) return true // Don't validate empty URLs until touched
+  
   try {
     new URL(url)
+
+    const lowerCasePlatform = platform.toLowerCase()
+    if (lowerCasePlatform.includes('facebook')) {
+      return url.includes('facebook.com')
+    } else if (lowerCasePlatform.includes('twitter')) {
+      return url.includes('twitter.com') || url.includes('x.com')
+    } else if (lowerCasePlatform.includes('linkedin')) {
+      return url.includes('linkedin.com')
+    } else if (lowerCasePlatform.includes('instagram')) {
+      return url.includes('instagram.com')
+    } else if (lowerCasePlatform.includes('youtube')) {
+      return url.includes('youtube.com')
+    }
     return true
   } catch {
     return false
@@ -77,43 +102,78 @@ const isValidUrl = (url) => {
 }
 
 const getPlatformError = (index) => {
-  return errors.value[index] && errors.value[index].platform;
-};
+  return errors.value[index] && errors.value[index].platform
+}
+
+const isPlatformTouchedAndHasError = (index) => {
+  return touchedLinks.value[index] && touchedLinks.value[index].platform && getPlatformError(index)
+}
 
 const getErrorUrl = (index) => {
-  return errors.value[index] && errors.value[index].url;
-};
+  return errors.value[index]?.url
+}
 
-const validateForm = () => {
-  let valid = true
-  errors.value = []
+const markAsTouched = (index, field) => {
+  if (!touchedLinks.value[index]) {
+    touchedLinks.value[index] = {}
+  }
+  touchedLinks.value[index][field] = true
+  validateLink(index)
+}
 
-  localData.value.social_links.forEach((link, index) => {
+const validateOnInput = (index, field) => {
+  if (touchedLinks.value[index]?.[field]) {
+    validateLink(index)
+  }
+}
+
+const validateLink = (index) => {
+  const link = localData.value.social_links[index]
+  if (!errors.value[index]) {
     errors.value[index] = { platform: '', url: '' }
+  }
 
-    if (link.platform.trim() === '') {
-      errors.value[index].platform = 'Platform is required'
-      valid = false
+  // Validate Platform
+  if (!link.platform.trim()) {
+    errors.value[index].platform = 'Platform is required'
+  } else {
+    errors.value[index].platform = ''
+  }
+
+  // Validate URL
+  if (!link.url.trim()) {
+    errors.value[index].url = 'URL is required'
+  } else if (!isValidUrl(link.url, link.platform)) {
+    let errorMessage = 'Please enter a valid URL.'
+    const lowerCasePlatform = link.platform.toLowerCase()
+
+    if (lowerCasePlatform.includes('facebook')) {
+      errorMessage = 'Please enter a valid Facebook URL.'
+    } else if (lowerCasePlatform.includes('twitter')) {
+      errorMessage = 'Please enter a valid Twitter (X.com) URL.'
+    } else if (lowerCasePlatform.includes('linkedin')) {
+      errorMessage = 'Please enter a valid LinkedIn URL.'
+    } else if (lowerCasePlatform.includes('instagram')) {
+      errorMessage = 'Please enter a valid Instagram URL.'
+    } else if (lowerCasePlatform.includes('youtube')) {
+      errorMessage = 'Please enter a valid YouTube URL.'
     }
-
-    if (link.url.trim() === '') {
-      errors.value[index].url = 'URL is required'
-      valid = false
-    } else if (!isValidUrl(link.url)) {
-      errors.value[index].url = 'Please enter a valid URL'
-      valid = false
-    }
-  })
-
-  return valid
+    errors.value[index].url = errorMessage
+  } else {
+    errors.value[index].url = ''
+  }
 }
 
 const addLink = () => {
   localData.value.social_links.push({ platform: '', url: '' })
+  errors.value.push({ platform: '', url: '' })
+  touchedLinks.value.push({}) // Add touched tracking for new link
 }
 
 const removeLink = (index) => {
   localData.value.social_links.splice(index, 1)
+  errors.value.splice(index, 1)
+  touchedLinks.value.splice(index, 1)
 }
 
 const goToPrevious = () => {
@@ -121,25 +181,44 @@ const goToPrevious = () => {
 }
 
 const submitForm = () => {
-  if (!validateForm()) return
+  // Mark all fields as touched when submitting
+  localData.value.social_links.forEach((_, index) => {
+    touchedLinks.value[index] = { platform: true, url: true }
+  })
   
+  // Validate all fields
+  localData.value.social_links.forEach((_, index) => validateLink(index))
+  
+  if (!isFormValid.value) {
+    ElMessage.error('Please correct the errors before proceeding.')
+    return
+  }
+
+  ElMessage.success('Social media links saved')
+
   const socialData = {
     linkedIn: '',
     facebook: '',
-    twitter: ''
+    twitter: '',
+    instagram: '',
+    youtube: ''
   }
-  
+
   localData.value.social_links.forEach(link => {
-    const platform = link.platform.toLowerCase()
-    if (platform.includes('linkedin')) {
+    const lowerCasePlatform = link.platform.toLowerCase()
+    if (lowerCasePlatform.includes('linkedin')) {
       socialData.linkedIn = link.url
-    } else if (platform.includes('facebook')) {
+    } else if (lowerCasePlatform.includes('facebook')) {
       socialData.facebook = link.url
-    } else if (platform.includes('twitter')) {
+    } else if (lowerCasePlatform.includes('twitter')) {
       socialData.twitter = link.url
+    } else if (lowerCasePlatform.includes('instagram')) {
+      socialData.instagram = link.url
+    } else if (lowerCasePlatform.includes('youtube')) {
+      socialData.youtube = link.url
     }
   })
-  
+
   emit('next', socialData)
 }
 </script>

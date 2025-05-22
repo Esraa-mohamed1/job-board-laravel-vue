@@ -1,7 +1,7 @@
 <template>
   <nav 
     class="navbar navbar-expand-lg navbar-light border-bottom py-2 sticky-top"
-    :class="[user?.is_premium ? 'bg-gold' : 'bg-white']"
+    :class="navbarClass"
   >
     <div class="container-fluid px-3 px-lg-4">
       <button 
@@ -96,6 +96,10 @@ const user = ref(null)
 const toggleNavbar = () => {
   navbarOpen.value = !navbarOpen.value
 }
+
+const navbarClass = computed(() => {
+  return user.value && user.value.is_premium ? 'bg-gold' : 'bg-white'
+})
 
 const closeNavbarOnMobile = () => {
   if (window.innerWidth < 992) {
