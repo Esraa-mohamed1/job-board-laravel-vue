@@ -1,3 +1,4 @@
+
 <template>
   <div class="admin-dashboard">
     <div class="row g-0">
@@ -65,12 +66,7 @@
                         <span class="badge bg-success">Approved</span>
                       </td>
                       <td>
-                        <button
-                          class="btn btn-sm btn-outline-secondary"
-                          @click="viewJobDetails(job.id)"
-                        >
-                          View Details
-                        </button>
+                        
                       </td>
                     </tr>
                     <tr v-if="jobStore.approvedJobs.length === 0">

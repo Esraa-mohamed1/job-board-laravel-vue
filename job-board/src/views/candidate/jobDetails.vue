@@ -123,39 +123,6 @@
         </form>
       </div>
     </div>
-
-  <div v-if="showApplyModal" class="modal-overlay" @click.self="closeModal">
-    <div class="apply-modal">
-      <button class="close-btn" @click="closeModal">&times;</button>
-      <h2 class="modal-title">Apply Job: {{ jobData.title }}</h2>
-      <form @submit.prevent="submitApplication" class="apply-form">
-        <label class="form-label mt-3">Choose Resume</label>
-        <select v-model="selectedResume" class="form-select" required>
-          <option value="" disabled>Select...</option>
-          <option v-for="resume in resumes" :key="resume.id" :value="resume.path">
-            {{ resume.name }}
-          </option>
-        </select>
-        <label class="form-label mt-4">Cover Letter</label>
-        <textarea
-          class="form-control cover-letter-input"
-          rows="6"
-          v-model="coverLetter"
-          placeholder="Write down your biography here. Let the employers know who you are..."
-          required
-        ></textarea>
-        <div class="modal-actions">
-          <button class="btn btn-light cancel-btn" type="button" @click="closeModal">Cancel</button>
-          <button class="btn btn-primary apply-btn" type="submit" :disabled="submitting">
-            <span v-if="submitting" class="spinner-border spinner-border-sm"></span>
-            <span v-else>Apply Now</span>
-          </button>
-        </div>
-        <div v-if="errorMsg" class="alert alert-danger mt-2">{{ errorMsg }}</div>
-        <div v-if="successMsg" class="alert alert-success mt-2">{{ successMsg }}</div>
-      </form>
-    </div>
-    </div>
   </div>
 </template>
 
@@ -235,7 +202,7 @@ const submitApplication = async () => {
   errorMsg.value = '';
   successMsg.value = '';
   submitting.value = true;
-      const token = localStorage.getItem('authToken')
+  const token = localStorage.getItem('authToken');
 
   try {
     const jobId = jobData.value.id;
@@ -243,13 +210,20 @@ const submitApplication = async () => {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-         'Authorization': `Bearer ${token}`
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
-        cover_letter: coverLetter.value,
+        cover_letter: coverLetter.value.trim(),
         resume_path: selectedResume.value
       })
     });
+
+    if (!coverLetter.value.trim() || !selectedResume.value) {
+      errorMsg.value = "Both resume and cover letter are required.";
+      submitting.value = false;
+      return;
+    }
 
     if (response.status === 409) {
       const data = await response.json();
@@ -257,16 +231,18 @@ const submitApplication = async () => {
       submitting.value = false;
       return;
     }
+
     if (!response.ok) {
       const data = await response.json();
       errorMsg.value = data.message || "Failed to apply for job.";
       submitting.value = false;
       return;
     }
+
     successMsg.value = "Application submitted successfully.";
     setTimeout(closeModal, 1200);
   } catch (err) {
-    errorMsg.value = err;
+    errorMsg.value = err.message || "An unexpected error occurred.";
   } finally {
     submitting.value = false;
   }
@@ -276,6 +252,7 @@ onMounted(() => {
   loadJobData();
 });
 </script>
+
 
 <style scoped>
 .modal-overlay {

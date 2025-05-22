@@ -81,12 +81,7 @@
                         </td>
                         <td>{{ job.rejection_reason }}</td>
                         <td>
-                          <button
-                            class="btn btn-sm btn-outline-secondary"
-                            @click="viewJobDetails(job.id)"
-                          >
-                            View Details
-                          </button>
+                          
                         </td>
                       </tr>
                       <tr v-if="jobStore.rejectedJobs.length === 0">

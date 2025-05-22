@@ -4,7 +4,9 @@
     @mouseover="hover = true"
     @mouseleave="hover = false"
   >
-    <img :src="company.logo" alt="Company Logo" class="company-logo rounded" />
+    <div class="company-icon d-flex justify-content-center align-items-center rounded">
+      <i class="fa-solid fa-briefcase fs-5 text-primary"></i>
+    </div>
 
     <div class="flex-grow-1">
       <div class="d-flex">
@@ -12,26 +14,29 @@
           {{ title }}
         </h5>
         <div class="badge bg-outline-primary text-primary border rounded-pill px-3 py-2">
-          {{  job_type }}
+          {{ job_type }}
         </div>
       </div>
 
-      <p class="mb-1 text-muted small">{{ company.name }}</p>
+      <p class="mb-1 text-muted small">
+        {{ company || 'Unknown Company' }}
+      </p>
+
       <div class="d-flex flex-wrap gap-2 align-items-center text-muted small">
         <i class="fas fa-map-marker-alt"></i>
         <span>{{ location }}</span>
         <span class="mx-2">|</span>
+
         <i class="fas fa-dollar-sign"></i>
-        <span>{{ salary }}</span>
-        <span class="mx-2">|</span>
-        <i class="fas fa-calendar-alt"></i>
-        <span>{{ time }}</span>
+        <span>
+          {{ salary || (min_salary && max_salary ? `${min_salary} - ${max_salary}` : 'Not specified') }}
+        </span>
+
       </div>
     </div>
 
     <div class="text-end">
       <div class="mt-2 d-flex align-items-center gap-2">
-        <i class="fas fa-bookmark fs-5 text-secondary p-3" :class="{ 'hover-icon': hover }"></i>
         <RouterLink :to="`/candidate/jobs/${id}`">
           <button
             class="btn btn-primary btn-md d-flex align-items-center gap-1"
@@ -59,20 +64,14 @@ defineProps({
   description: String,
   location: String,
   salary: String,
+  min_salary: String,
+  max_salary: String,
   job_type: String,
   time: String,
-  company: {
-    type: Object,
-    required: true,
-    validator: (value) => {
-      return (
-        typeof value.name === 'string' &&
-        typeof value.logo === 'string'
-      );
-    }
-  }
+  company: String,
 });
 </script>
+
 
 <style scoped>
 .job-card {

@@ -1,3 +1,4 @@
+
 <template>
   <div class="admin-dashboard">
     <div class="row g-0">
@@ -64,12 +65,7 @@
                       </td>
                       <td>
                         <div class="btn-group">
-                          <button
-                            class="btn btn-sm btn-outline-secondary"
-                            @click="viewJobDetails(job.id)"
-                          >
-                            View
-                          </button>
+                          
                           <button
                             class="btn btn-sm btn-success"
                             @click="jobStore.approveJob(job.id)"
