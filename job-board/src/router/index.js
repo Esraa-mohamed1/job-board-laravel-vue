@@ -98,6 +98,10 @@ const routes = [
         redirect: { name: "employer-overview" },
       },
       {
+        path: "Candidate-Support",
+        component: candidateSupport,
+      },
+      {
         path: "overview",
         name: "employer-overview",
         component: EmployerOverview,

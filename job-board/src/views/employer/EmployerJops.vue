@@ -389,7 +389,7 @@ export default {
     getUserIdFromToken() {
       const token = localStorage.getItem('authToken');
 
-        axios.get('http://localhost:8000/api/jobs', {
+        axios.get('http://localhost:8000/api/myjobs', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -414,7 +414,7 @@ export default {
   this.loading = true;
   try {
     const token = localStorage.getItem('authToken');
-    const response = await axios.get('http://localhost:8000/api/jobs', {
+    const response = await axios.get('http://localhost:8000/api/myjobs', {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Accept': 'application/json'
@@ -632,7 +632,7 @@ formatExperienceLevel(level) {
     }
     console.log('Job Data:', jobData);
     const response = await axios.put(
-      `http://localhost:8000/api/jobs/${this.modal.job.id}`,
+      `http://localhost:8000/api/myjobs/${this.modal.job.id}`,
       jobData,
       {
         headers: {

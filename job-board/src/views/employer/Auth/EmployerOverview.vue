@@ -33,15 +33,15 @@
       <div class="quick-actions">
         <h2>Quick Actions</h2>
         <div class="action-buttons">
-          <button @click="navigateTo('/employer/jobs/new')" class="btn-action">
+          <button @click="navigateTo('/employer/dashboard/post')" class="btn-action">
             <span>+</span>
             Post New Job
           </button>
-          <button @click="navigateTo('/employer/applications')" class="btn-action">
+          <button @click="navigateTo('/employer/dashboard/myjobs')" class="btn-action">
             <span>📋</span>
             View Applications
           </button>
-          <button @click="navigateTo('/employer/profile')" class="btn-action">
+          <button @click="navigateTo('/employer/dashboard/settings')" class="btn-action">
             <span>⚙️</span>
             Edit Profile
           </button>

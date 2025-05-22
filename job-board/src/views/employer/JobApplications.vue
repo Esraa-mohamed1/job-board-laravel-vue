@@ -116,10 +116,10 @@
                 {{ application.status }}
               </span>
             </div>
-            <p class="candidate-position">{{ application.user.position || 'No position specified' }}</p>
+            <p class="candidate-position">{{ application.user.position || 'Full Stack Developer' }}</p>
             <div class="candidate-meta">
-              <span><i class="fas fa-briefcase"></i> {{ application.user.experience || '0' }} years experience</span>
-              <span><i class="fas fa-graduation-cap"></i> {{ application.user.education || 'Not specified' }}</span>
+              <span><i class="fas fa-briefcase"></i> {{ application.user.experience || '2' }} years experience</span>
+              <span><i class="fas fa-graduation-cap"></i> {{ application.user.education || 'Minya University' }}</span>
             </div>
           </div>
         </div>
@@ -163,81 +163,148 @@
         </div>
       </div>
     </div>
+
     <div v-if="selectedApplication" class="modal-overlay" @click.self="closeModal">
-      <div class="modal-content">
-        <button class="close-modal" @click="closeModal">
-          <i class="fas fa-times"></i>
-        </button>
-        
-        <div class="modal-header">
-          <h2>Application Details</h2>
+  <div class="modal-content proposal-card">
+    <button class="close-modal" @click="closeModal">
+      <i class="fas fa-times"></i>
+    </button>
+    
+    <!-- Header with candidate photo and basic info -->
+    <div class="modal-header">
+      <div class="candidate-photo">
+        <img src="../../assets/portrait-smiling-charming-young-man-grey-t-shirt-standing-against-plain-background.jpg" alt="Candidate Photo">
+      </div>
+      <div class="candidate-header-info">
+        <h2>{{ selectedApplication.user.name }}</h2>
+        <p class="candidate-title">{{ selectedApplication.user.position || 'Senior Full Stack' }}</p>
+        <div class="application-status">
           <span class="status-badge" :class="selectedApplication.status">
             <i :class="statusIcons[selectedApplication.status]"></i>
             {{ selectedApplication.status }}
           </span>
-        </div>
-        
-        <div class="modal-body">
-          <div class="candidate-profile">
-            <div class="candidate-info">
-              <h3>{{ selectedApplication.user.name }}</h3>
-              <p class="position">{{ selectedApplication.user.position || 'No position specified' }}</p>
-              <div class="contact-info">
-                <p><i class="fas fa-envelope"></i> {{ selectedApplication.user.email }}</p>
-                <p v-if="selectedApplication.user.phone"><i class="fas fa-phone"></i> {{ selectedApplication.user.phone }}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div class="details-section">
-            <h4><i class="fas fa-calendar-alt"></i> Applied On</h4>
-            <p>{{ formatDate(selectedApplication.created_at) }}</p>
-          </div>
-          
-          <div class="cover-letter" v-if="selectedApplication.cover_letter">
-            <h4><i class="fas fa-file-alt"></i> Cover Letter</h4>
-            <div class="cover-letter-content">
-              {{ selectedApplication.cover_letter }}
-            </div>
-          </div>
-          <div v-else class="no-cover-letter">
-            <h4><i class="fas fa-file-alt"></i> Cover Letter</h4>
-            <p>No cover letter provided</p>
-          </div>
-        </div>
-        
-        <div class="modal-actions">
-          <button class="action-btn download-btn" @click.stop="downloadCV(selectedApplication)">
-            <i class="fas fa-download"></i> Download CV
-          </button>
-          
-          <button 
-            class="action-btn shortlist-btn" 
-            @click.stop="updateStatus(selectedApplication, 'reviewed')"
-            :disabled="selectedApplication.status === 'reviewed' || selectedApplication.status === 'accepted' || selectedApplication.status === 'rejected'"
-          >
-            <i class="fas fa-star"></i> 
-            {{ selectedApplication.status === 'reviewed' ? 'Under Review' : 'Mark as Reviewed' }}
-          </button>
-          
-          <button 
-            class="action-btn accept-btn" 
-            @click.stop="updateStatus(selectedApplication, 'accepted')"
-            :disabled="selectedApplication.status === 'accepted' || selectedApplication.status === 'rejected'"
-          >
-            <i class="fas fa-check-circle"></i> Accept
-          </button>
-          
-          <button 
-            class="action-btn reject-btn" 
-            @click.stop="updateStatus(selectedApplication, 'rejected')"
-            :disabled="selectedApplication.status === 'rejected' || selectedApplication.status === 'accepted'"
-          >
-            <i class="fas fa-times-circle"></i> Reject
-          </button>
+          <span class="application-date">
+            <i class="fas fa-calendar-alt"></i> Applied: {{ formatDate(selectedApplication.created_at) }}
+          </span>
         </div>
       </div>
     </div>
+    
+    <!-- Main content with tabs -->
+    <div class="modal-body">
+      <div class="proposal-tabs">
+        <button 
+          v-for="tab in proposalTabs" 
+          :key="tab.id"
+          :class="{ active: activeProposalTab === tab.id }"
+          @click="activeProposalTab = tab.id"
+        >
+          <i :class="tab.icon"></i> {{ tab.label }}
+        </button>
+      </div>
+      
+      <!-- Contact Information Tab -->
+      <div v-if="activeProposalTab === 'contact'" class="tab-content">
+        <div class="contact-info-grid">
+          <div class="contact-card">
+            <i class="fas fa-envelope"></i>
+            <div>
+              <h4>Email</h4>
+              <p>{{ selectedApplication.user.email }}</p>
+            </div>
+          </div>
+          
+          <div v-if="selectedApplication.user.phone" class="contact-card">
+            <i class="fas fa-phone"></i>
+            <div>
+              <h4>Phone</h4>
+              <p>{{ selectedApplication.user.phone }}</p>
+            </div>
+          </div>
+          
+          <div class="contact-card">
+            <i class="fas fa-briefcase"></i>
+            <div>
+              <h4>Experience</h4>
+              <p>{{ selectedApplication.user.experience || '0' }} years</p>
+            </div>
+          </div>
+          
+          <div class="contact-card">
+            <i class="fas fa-graduation-cap"></i>
+            <div>
+              <h4>Education</h4>
+              <p>{{ selectedApplication.user.education || 'Not specified' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Cover Letter Tab -->
+      <div v-if="activeProposalTab === 'cover-letter'" class="tab-content">
+        <div v-if="selectedApplication.cover_letter" class="cover-letter-container">
+          <div class="cover-letter-content">
+            <h3><i class="fas fa-file-alt"></i> Cover Letter</h3>
+            <div class="letter-text">
+              {{ selectedApplication.cover_letter }}
+            </div>
+          </div>
+        </div>
+        <div v-else class="no-cover-letter">
+          <i class="fas fa-file-alt"></i>
+          <p>No cover letter provided</p>
+        </div>
+      </div>
+      
+      <!-- Attachments Tab -->
+      <div v-if="activeProposalTab === 'attachments'" class="tab-content">
+        <div class="attachments-list">
+          <div class="attachment-card" @click="downloadCV(selectedApplication)">
+            <div class="attachment-icon">
+              <i class="fas fa-file-pdf"></i>
+            </div>
+            <div class="attachment-info">
+              <h4>Candidate CV</h4>
+              <p>PDF Document</p>
+            </div>
+            <button class="download-attachment">
+              <i class="fas fa-download"></i>
+            </button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer with action buttons -->
+    <div class="modal-actions">
+      <button 
+        class="action-btn shortlist-btn" 
+        @click.stop="updateStatus(selectedApplication, 'reviewed')"
+        :disabled="selectedApplication.status === 'reviewed' || selectedApplication.status === 'accepted' || selectedApplication.status === 'rejected'"
+      >
+        <i class="fas fa-star"></i> 
+        {{ selectedApplication.status === 'reviewed' ? 'Under Review' : 'Mark as Reviewed' }}
+      </button>
+      
+      <button 
+        class="action-btn accept-btn" 
+        @click.stop="updateStatus(selectedApplication, 'accepted')"
+        :disabled="selectedApplication.status === 'accepted' || selectedApplication.status === 'rejected'"
+      >
+        <i class="fas fa-check-circle"></i> Accept
+      </button>
+      
+      <button 
+        class="action-btn reject-btn" 
+        @click.stop="updateStatus(selectedApplication, 'rejected')"
+        :disabled="selectedApplication.status === 'rejected' || selectedApplication.status === 'accepted'"
+      >
+        <i class="fas fa-times-circle"></i> Reject
+      </button>
+    </div>
+  </div>
+</div>
   </div>
 </template>
 
@@ -249,7 +316,6 @@ export default {
     id: {
       type: String,
       required: true,
-      selectedApplication: null
 
     }
   },
@@ -277,14 +343,19 @@ export default {
       },
       loading: true,
       showFilterDropdown: false,
-      showSortDropdown: false,
-      filters: {
-        experience: '',
-        education: ''
-      },
-      sortBy: 'newest',
-      sortBy: 'newest',
-      selectedApplication: null
+    showSortDropdown: false,
+    filters: {
+      experience: '',
+      education: ''
+    },
+    sortBy: '',
+      selectedApplication: null,
+      activeProposalTab: 'contact',
+    proposalTabs: [
+      { id: 'contact', label: 'Contact Info', icon: 'fas fa-user' },
+      { id: 'cover-letter', label: 'Cover Letter', icon: 'fas fa-file-alt' },
+      { id: 'attachments', label: 'Attachments', icon: 'fas fa-paperclip' }
+    ]
     };
   },
   computed: {
@@ -345,6 +416,11 @@ export default {
         console.error('Failed to fetch job:', error);
       }
     },
+    showApplicationDetails(application) {
+    this.selectedApplication = application;
+    this.activeProposalTab = 'contact';
+    document.body.classList.add('modal-open');
+  },
     async fetchApplications() {
       try {
         this.loading = true;
@@ -380,10 +456,6 @@ export default {
       } finally {
         this.loading = false;
       }
-    },
-    formatDate(dateStr) {
-      const date = new Date(dateStr);
-      return date.toLocaleDateString();
     },
     async updateStatus(application, status) {
   if (application.status === status) return;
@@ -426,7 +498,8 @@ export default {
     },
     
     closeModal() {
-      this.$emit('close'); // Emit an event to the parent to close the modal
+      this.selectedApplication = null;
+  document.body.style.overflow = ''; // Emit an event to the parent to close the modal
     },
     formatDate(dateString) {
       if (!dateString) return '';
@@ -442,16 +515,33 @@ export default {
       this.$emit('update-status', application.id, newStatus);
     },
     
-    applyFilters() {
-      this.showFilterDropdown = false;
-    },
-    resetFilters() {
-      this.filters = {
-        experience: '',
-        education: ''
-      };
-      this.showFilterDropdown = false;
-    }
+    toggleFilterDropdown() {
+    this.showFilterDropdown = !this.showFilterDropdown;
+    this.showSortDropdown = false;
+  },
+  
+  toggleSortDropdown() {
+    this.showSortDropdown = !this.showSortDropdown;
+    this.showFilterDropdown = false; 
+  },
+  
+  applyFilters() {
+    this.showFilterDropdown = false;
+    
+  },
+  
+  resetFilters() {
+    this.filters = {
+      experience: '',
+      education: ''
+    };
+    this.showFilterDropdown = false;
+  },
+  
+  setSort(sortType) {
+    this.sortBy = sortType;
+    this.showSortDropdown = false;
+  }
   },
   async created() {
     await this.fetchJob();
@@ -486,24 +576,281 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.proposal-card {
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  display: flex;
+  padding: 25px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+  border-bottom: 1px solid #e1e5eb;
+}
+
+.candidate-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 20px;
+  border: 3px solid white;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.candidate-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.candidate-header-info {
+  flex: 1;
+}
+
+.candidate-header-info h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+}
+
+.candidate-title {
+  margin: 5px 0;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.application-status {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.status-badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  margin-right: 15px;
+}
+
+.status-badge i {
+  margin-right: 5px;
+}
+
+.application-date {
+  font-size: 0.8rem;
+  color: #7f8c8d;
+}
+
+.application-date i {
+  margin-right: 5px;
+}
+
+.proposal-tabs {
+  display: flex;
+  border-bottom: 1px solid #e1e5eb;
+  padding: 0 25px;
+}
+
+.proposal-tabs button {
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.proposal-tabs button.active {
+  color: #3498db;
+  font-weight: 600;
+}
+
+.proposal-tabs button.active:after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #3498db;
+  border-radius: 3px 3px 0 0;
+}
+
+.tab-content {
+  padding: 25px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.contact-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.contact-card {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.contact-card:hover {
+  background: #e9ecef;
+  transform: translateY(-2px);
+}
+
+.contact-card i {
+  font-size: 1.2rem;
+  color: #3498db;
+  margin-right: 15px;
+  width: 30px;
+  text-align: center;
+}
+
+.contact-card h4 {
+  margin: 0 0 5px 0;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.contact-card p {
+  margin: 0;
+  color: #7f8c8d;
+  font-size: 0.85rem;
+}
+
+.cover-letter-container {
+  background: #f8f9fa;
+  border-radius: 8px;
   padding: 20px;
 }
 
-.modal-content {
-  background: white;
+.cover-letter-content h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.letter-text {
+  white-space: pre-line;
+  line-height: 1.6;
+  color: #34495e;
+}
+
+.no-cover-letter {
+  text-align: center;
+  padding: 40px;
+  color: #bdc3c7;
+}
+
+.no-cover-letter i {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.attachments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.attachment-card {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background: #f8f9fa;
   border-radius: 8px;
-  max-width: 800px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: 25px;
-  position: relative;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.attachment-card:hover {
+  background: #e9ecef;
+  transform: translateY(-2px);
+}
+
+.attachment-icon {
+  width: 40px;
+  height: 40px;
+  background: #3498db;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.attachment-info {
+  flex: 1;
+}
+
+.attachment-info h4 {
+  margin: 0 0 3px 0;
+  color: #2c3e50;
+  font-size: 0.9rem;
+}
+
+.attachment-info p {
+  margin: 0;
+  color: #7f8c8d;
+  font-size: 0.8rem;
+}
+
+.download-attachment {
+  background: none;
+  border: none;
+  color: #3498db;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 15px 25px;
+  border-top: 1px solid #e1e5eb;
+  gap: 10px;
 }
 
 .close-modal {
@@ -512,129 +859,50 @@ export default {
   right: 15px;
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 1.2rem;
   cursor: pointer;
-  color: #666;
+  color: #7f8c8d;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
 }
 
 .close-modal:hover {
-  color: #333;
+  background: #f8f9fa;
+  color: #e74c3c;
 }
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modal-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .candidate-photo {
+    margin: 0 auto 15px auto;
+  }
+  
+  .application-status {
+    justify-content: center;
+  }
+  
+  .proposal-tabs {
+    overflow-x: auto;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    width: 100%;
+  }
 }
-
-.modal-header h2 {
-  margin: 0;
-  color: #333;
-}
-
-.modal-body {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
-}
-
-.candidate-profile {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  margin-bottom: 25px;
-  grid-column: 1 / -1;
-}
-
-.avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.candidate-info h3 {
-  margin: 0 0 5px 0;
-  font-size: 22px;
-}
-
-.position {
-  margin: 0 0 10px 0;
-  color: #666;
-  font-size: 16px;
-}
-
-.contact-info p {
-  margin: 5px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #555;
-}
-
-.details-section {
-  margin-bottom: 20px;
-}
-
-.details-section h4 {
-  margin: 15px 0 5px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #444;
-}
-
-.details-section p {
-  margin: 0 0 15px 0;
-  color: #666;
-}
-
-.cover-letter {
-  grid-column: 1 / -1;
-  margin-top: 15px;
-}
-
-.cover-letter h4 {
-  margin: 0 0 10px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.cover-letter-content {
-  background: #f9f9f9;
-  padding: 15px;
-  border-radius: 8px;
-  white-space: pre-line;
-  line-height: 1.6;
-}
-
-.no-cover-letter {
-  grid-column: 1 / -1;
-  color: #777;
-  font-style: italic;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 25px;
-  padding-top: 20px;
-  border-top: 1px solid #eee;
-  grid-column: 1 / -1;
-}
-
 /* Make sure card is clickable */
 .application-card {
   cursor: pointer;
@@ -737,8 +1005,8 @@ export default {
 
 .filter-dropdown, .sort-dropdown {
   position: absolute;
-  top: 100%;
-  right: 0;
+  top: 34.3%;
+  right: 12;
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -908,10 +1176,12 @@ export default {
 }
 
 .name-status {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+    display: flex;
+    width: 332px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 11px;
+    flex-wrap: wrap;
 }
 
 .candidate-details h3 {
@@ -955,7 +1225,7 @@ export default {
   color: #856404;
 }
 
-.status-badge.shortlisted {
+.status-badge.reviewed{
   background-color: #fff3cd;
   color: #856404;
 }

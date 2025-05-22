@@ -333,6 +333,7 @@
 
 <script>
 import axios from 'axios'
+import { ElMessage } from 'element-plus'
 
 export default {
   data() {
@@ -532,7 +533,7 @@ export default {
   this.isLoading = true;
 
   try {
-    const response = await axios.post('http://localhost:8000/api/jobs', {
+    const response = await axios.post('http://localhost:8000/api/myjobs', {
       // Only send fields that exist in your database
       title: this.job.title,
       type: this.job.type,
@@ -559,7 +560,7 @@ export default {
 
     this.showAlert('Job posted successfully!', 'success');
     this.resetForm();
-    this.$router.push('/employer/dashboard/jobs');
+    this.$router.push('/employer/dashboard/myjobs');
     
   } catch (error) {
     let errorMessage = 'Failed to post job';
@@ -613,10 +614,13 @@ resetForm() {
     skills: ''
   }
 },
-    showAlert(message, type) {
-      // Replace with your preferred alert/notification system
-      alert(`${type.toUpperCase()}: ${message}`)
-    }
+showAlert(message, type) {
+  ElMessage({
+    message,
+    type, // 'success' or 'error'
+    duration: 3000
+  });
+}
   }
 }
 </script>
