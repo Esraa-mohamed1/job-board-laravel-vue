@@ -17,11 +17,10 @@
             </router-link>
             <div class="navbar-nav me-auto d-none d-lg-flex flex-row gap-3">
               <router-link class="nav-link small px-2" to="/">Home</router-link>
-              <router-link class="nav-link small px-2" to="/candidates">Find Candidate</router-link>
               <router-link class="nav-link small px-2" to="/employer/dashboard">Dashboard</router-link>
-              <router-link class="nav-link small px-2" to="/myjobs">My Jobs</router-link>
-              <router-link class="nav-link small px-2" to="/applications">Applications</router-link>
-              <router-link class="nav-link small px-2" to="/support">Customer Support</router-link>
+              <router-link class="nav-link small px-2" to="/employer/dashboard/myjobs">My Jobs</router-link>
+              <router-link class="nav-link small px-2" to="/employer/dashboard/myjobs">Applications</router-link>
+              <router-link class="nav-link small px-2" to="/employer/dashboard/Candidate-Support">Customer Support</router-link>
             </div>
           </div>
           
@@ -119,7 +118,16 @@
                   <span class="small">My Jobs</span>
                 </router-link>
               </div>
-              
+              <div class="sidebar-menu-item mb-2">
+                <router-link 
+                  to="/employer/dashboard/Candidate-Support" 
+                  class="d-flex align-items-center text-decoration-none py-2 px-2 rounded"
+                  :class="{ 'text-primary bg-light': $route.path.includes('settings') }"
+                >
+                  <i class="fas fa-phone me-2" :class="{ 'text-muted': !$route.path.includes('settings') }"></i>
+                  <span class="small">Customer Support</span>
+                </router-link>
+              </div>
               <div class="sidebar-menu-item mb-2">
                 <router-link 
                   to="/employer/dashboard/settings" 

@@ -143,11 +143,11 @@ const loading = ref(false)
 const errors = ref({})
 const successMessage = ref('')
 const isFormValid = computed(() => {
-  const basicValidation = form.value.fullName && 
-                        form.value.email && 
-                        form.value.password && 
-                        form.value.password === form.value.confirmPassword && 
-                        form.value.agreeTerms
+const basicValidation = form.value.fullName && 
+  form.value.email && 
+  form.value.password && 
+  form.value.password === form.value.confirmPassword && 
+  form.value.agreeTerms
   return basicValidation
 })
 
